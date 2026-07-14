@@ -8,25 +8,138 @@ prerequisites: [recursion-trees, heaps-intro]
 objectives:
   - Compare merge, quick, heap, and counting sorts on time, space, stability
   - Predict quicksort's collapse on adversarial input and name the fixes
-  - Define stability and use it for multi-key sorting
-stub: true
-tags: [sorting, quicksort, mergesort, stability, timsort]
+  - Define stability and wield it for multi-key sorting
+  - Know why Timsort is Python's answer and when to reach past it
+tags: [sorting, quicksort, mergesort, stability, timsort, radix]
 ---
 
 <Intuition>
-Sorting is the drosophila of algorithms: every big idea — divide and
-conquer, randomization, adversarial inputs, time/space trades, lower
-bounds — shows up here first. Race the three below on the same array. Then
-feed the race an **already-sorted** input and watch naive-pivot quicksort,
-the average-case hero, degrade to bubble-sort pace while merge sort doesn't
-blink. Adversarial inputs are why "average case" is a bet, not a promise.
+Sorting is the drosophila of algorithms: every big idea in this course —
+divide and conquer, randomization, adversarial inputs, time/space trades,
+lower bounds — appears here first and clearest. You will almost never
+implement a sort professionally (`sorted()` exists and is excellent), but
+you will constantly *reason* like one: "is this n log n or n²," "does
+order survive," "what input breaks it." The race below is the whole
+lesson in one frame: three algorithms, one array, and an input selector
+that turns the average-case hero into roadkill.
 </Intuition>
+
+<Concept>
+## The three classical shapes
+
+**Merge sort** splits in half, sorts each, merges: T(n) = 2T(n/2) + n —
+your Module 1 recursion tree, flat level sums, **Θ(n log n) always**, no
+adversarial input exists. Costs O(n) scratch for merging; pays you back
+with *stability* and sequential access (the external-sort story below).
+
+**Quicksort** partitions around a pivot — smalls left, bigs right — then
+recurses on both sides. No merge step, in-place, gorgeous constants.
+Everything hinges on the pivot splitting evenly: balanced splits give
+n log n; the naive first/last-element pivot on *sorted input* gives
+splits of (0, n−1) every level — **Θ(n²)**, on the most ordinary input in
+production. Watch it happen: select "already sorted" below.
+
+**Heapsort**: heapify O(n), then extract-min n times — **Θ(n log n)
+worst case, O(1) space**, the insurance policy. Its sift paths jump
+around memory (cache-hostile), so it loses constant-factor races; C++'s
+introsort keeps it as the fallback when quicksort's recursion gets
+suspiciously deep.
+</Concept>
 
 <Visual id="sorting-race" />
 
+<Check id="q-pivot-short" />
+
+<Concept>
+## Fixing quicksort: make the adversary irrelevant
+
+The n² collapse isn't bad luck — it's *determinism*: a fixed pivot rule
+means one input class hits the worst case every single time. The repairs:
+
+- **Random pivot:** split quality no longer correlates with input order —
+  O(n log n) *expected* on every input; the worst case survives only as a
+  lottery loss.
+- **Median-of-three** (first/middle/last): deterministic, kills the
+  sorted-input case specifically, standard in practice.
+- **Introsort:** recursion depth exceeds ~2 log n → switch to heapsort.
+  Worst case restored to n log n by construction.
+
+Interview line worth memorizing: Lomuto partition (single pointer, pivot
+at the end) is the easy one to write; Hoare's (two pointers converging)
+does ~3× fewer swaps — know both names, write Lomuto.
+</Concept>
+
+<Concept>
+## Stability: the property everyone discovers by bug report
+
+A sort is **stable** if equal keys keep their original relative order.
+Sort orders by date, then stably by customer: within each customer, the
+dates stay sorted — multi-key sorting by chaining single-key sorts,
+last-key-first. Unstable sorts scramble the inner order, which is why
+"my report's secondary order randomizes" is the bug that teaches most
+engineers the word. Merge and Timsort are stable; quicksort and heapsort
+are not. Python's `sorted` guarantees stability, and the docs bless the
+chained-sort idiom explicitly.
+</Concept>
+
 <Check id="q-sort-stable" />
 
+<RealWorld source="External sort">
+How do you sort a 500GB log file with 16GB of RAM? Merge sort is the
+only classical answer that survives: **runs and merges.** Read
+RAM-sized chunks, sort each (in memory, with whatever), write them out as
+sorted runs; then k-way merge the runs with a min-heap of "next element
+from each run" (Module 7's k-way merge, verbatim) — streaming
+sequentially, which disks and SSDs love. Every database's
+`ORDER BY`-without-index, every MapReduce shuffle, every `sort(1)` on a
+big file is this two-phase dance. Quicksort can't do it: partitioning
+demands random access to everything at once.
+</RealWorld>
+
+<Concept>
+## Escaping n log n: sorts that never compare
+
+The Ω(n log n) lower bound is information-theoretic: n! orderings exist,
+each comparison splits the possibilities in two, so log₂(n!) ≈ n log n
+comparisons are *necessary* — for any algorithm that learns only by
+comparing. **Counting sort** doesn't compare; it uses the key as an
+index: histogram the keys, prefix-sum the counts into positions, place —
+O(n + k) for keys in range k. **Radix sort** extends it to big keys:
+stable counting passes digit by digit, O(d·(n+b)). The catch is k:
+counting 100 random 64-bit ids would allocate a universe. Small dense
+integer keys → radix; everything else → comparison sorts.
+</Concept>
+
+<Check id="q-counting-escape" />
+
+<TradeoffTable id="sort-zoo" />
+
+<Gotcha>
+`sorted(xs, key=lambda x: ...)` computes each key **once** (decorate-
+sort-undecorate) — but `list.sort(cmp=...)`-style pairwise comparators
+are gone from Python 3 for a reason: keys are O(n) computations,
+comparators O(n log n). And `xs.sort()` returns `None` — the
+`ys = xs.sort()` bug ships to production weekly somewhere. In-place
+sorts mutate and return nothing; `sorted()` copies and returns. Pick one
+knowingly.
+</Gotcha>
+
+<Aside title="Timsort — the sort that respects your data">
+Python's built-in is neither textbook merge nor quick: **Timsort** (Tim
+Peters, 2002) scans for *runs* — stretches already ascending or
+descending — and merges them with a galloping mode that exploits
+imbalance. Real data is full of runs (logs are nearly time-ordered;
+appended files are mostly sorted), so Timsort routinely hits O(n) where
+textbook sorts grind through n log n. Stable, adaptive, worst-case
+n log n. It's also in Java, Android, V8 — arguably the most-executed
+algorithm invented in your lifetime. Lesson: constants and input
+distributions are engineering, and engineering won.
+</Aside>
+
 <Cheatsheet>
-Full lecture pending — Lomuto vs Hoare, Timsort's run detection, external
-sort, and the stable-ORDER-BY anchor land here.
+The one-breath taxonomy: **merge = predictable + stable + external;
+quick = fastest in RAM, guard the pivot; heap = worst-case insurance,
+cache-poor; counting/radix = index don't compare, needs small keys;
+Timsort = all of the above's greatest hits, already installed.** Stability
+= equal keys keep order = chained multi-key sorts work.
 </Cheatsheet>

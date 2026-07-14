@@ -1,9 +1,9 @@
 import type { CheatsheetData } from '@/lib/types';
 
-// Cheatsheet skeletons for stub lessons (spec §6): the ops table, use/don't,
-// and stdlib line are real — the night-before view works today; prose lands later.
+// Cheatsheets for the module lectures — the night-before ops tables,
+// use/don’t-use verdicts, and stdlib lines aggregated on /reference.
 
-export const STUB_CHEATSHEETS: CheatsheetData[] = [
+export const MODULE_CHEATSHEETS: CheatsheetData[] = [
   {
     lessonId: 'dynamic-arrays',
     opsTable: [

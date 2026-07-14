@@ -1,34 +1,169 @@
 ---
 id: dp-foundations
 module: dp
-title: From recursion to tables — DP foundations
+title: From recursion to tables — DP, memo to tabulation, and honest greed
 order: 1
 estimatedMinutes: 50
 prerequisites: [recursion-trees]
 objectives:
   - Diagnose overlapping subproblems from a recursion tree
   - Convert memo (top-down) to tabulation (bottom-up) and back on the same problem
-  - Read a filled edit-distance table as a diff script
-stub: true
-tags: [dp, memoization, tabulation, edit-distance]
+  - Space-optimize a table by reading the recurrence's true dependencies
+  - Read a filled edit-distance table as a diff script, and know when greedy is provably safe
+tags: [dp, memoization, tabulation, edit-distance, greedy]
 ---
 
 <Intuition>
-Dynamic programming has a reputation it doesn't deserve. It is one move,
-applied relentlessly: **your recursion keeps re-solving the same
-subproblems — stop doing that.** Cache them (memoization) or fill them in
-order (tabulation); either way the exponential tree from Module 1 flattens
-into a table. The visual fills the *same* edit-distance table both ways —
-top-down's sparse, need-driven fill against bottom-up's dense sweep. Same
-cells, two orders: once you see that, DP is bookkeeping, not magic. The
-arrows in the table are literally your diff tool's output.
+Dynamic programming has a terrifying reputation and a one-sentence
+secret: **your recursion keeps re-solving the same subproblems — stop
+doing that.** That's it. The exponential fib tree from Module 1
+contained only n distinct subproblems drowning in duplicates; cache them
+and the tree collapses to a line. Every DP "technique" is logistics
+around that one move: memoization caches lazily from the top,
+tabulation fills eagerly from the bottom, space optimization notices the
+table is mostly garbage-collectable. The insight is one idea; the
+reputation is bookkeeping.
 </Intuition>
 
-<Visual id="dp-table" />
+<Concept>
+## The two prerequisites, checked honestly
+
+DP pays off exactly when both hold:
+
+1. **Overlapping subproblems** — the naive recursion tree contains the
+   same nodes many times. fib(50)'s tree holds fib(38) about 75,000
+   times. Contrast merge sort: every subarray sorted exactly once,
+   nothing overlaps, memoization would cache entries nobody asks for
+   twice.
+2. **Optimal substructure** — an optimal answer is assembled from
+   optimal answers to subproblems. Shortest paths have it; *longest
+   simple* paths famously don't (gluing two longest sub-paths can
+   revisit nodes).
+
+Diagnosis procedure: draw three levels of the recursion tree (Module 1's
+skill). Repeated nodes → DP. All-distinct nodes → plain divide and
+conquer.
+</Concept>
 
 <Check id="q-dp-overlap" />
 
+<Concept>
+## One problem, three costumes
+
+Count the ways to climb n stairs by 1 or 2 steps. The recurrence:
+`ways(n) = ways(n−1) + ways(n−2)` — land from one below or two below.
+
+**Naive recursion** — branches twice, shrinks by 1–2: Θ(φⁿ), the
+exponential signature.
+
+**Memoization (top-down)** — same function, plus a cache:
+
+```python
+@lru_cache(None)
+def ways(n):
+    if n <= 1: return 1
+    return ways(n - 1) + ways(n - 2)
+```
+
+Each of n subproblems computed once: Θ(n). The recursion *shape*
+survives; the waste dies.
+
+**Tabulation (bottom-up)** — replace recursion with fill order:
+
+```python
+dp = [0] * (n + 1)
+dp[0] = dp[1] = 1
+for i in range(2, n + 1):
+    dp[i] = dp[i - 1] + dp[i - 2]
+```
+
+Same table, no stack (no recursion limit), and the fill order is
+explicit — which unlocks the third costume: the recurrence only ever
+reads two cells back, so keep two variables and drop O(n) space to
+**O(1)**: `a, b = b, a + b`. That three-step ladder — memo → tabulate →
+space-optimize — is the standard DP interview arc. Climb it yourself:
+</Concept>
+
+<Exercise id="q-stairs-code" />
+
+<Concept>
+## The same table, two fill orders
+
+Edit distance — the minimum insert/delete/substitute operations turning
+one string into another — is the canonical two-index DP: cell (i, j)
+answers "distance between the first i chars of a and first j of b,"
+depending on its top, left, and diagonal neighbors. The visual fills the
+*identical* table two ways: **tabulation** sweeps densely row by row;
+**memoization** recurses from the goal corner and touches only what the
+answer actually demands — watch matching characters shortcut to the
+diagonal and leave whole regions blank. Same cells, two orders. Once you
+see that, the memo/tab "debate" dissolves: it's evaluation strategy, not
+algorithm.
+</Concept>
+
+<Visual id="dp-table" />
+
+<RealWorld source="diff">
+`git diff`'s output — those `+`/`-` hunks — is an edit-distance table
+read backwards. Diff computes the *longest common subsequence* (edit
+distance's twin: what to keep instead of what to change) between file
+versions, then walks the filled table from the far corner following the
+arrows: diagonal = line kept, up = line deleted, left = line inserted.
+The table's arrows literally *are* the patch script. Same DP family:
+spell-checker suggestions (smallest edit distance to a dictionary word),
+DNA alignment (Needleman-Wunsch is edit distance with biology-flavored
+costs), and your autocomplete's fuzzy matching.
+</RealWorld>
+
+<Gotcha>
+`@lru_cache` on a method — or on any function taking a list — is the
+classic DP-in-Python faceplant: lists aren't hashable (Module 3's
+filing invariant!), and caching on `self` pins the object alive forever.
+Convert list state to tuples or, better, to *indices into* the
+unchanging input. Deeper trap: memoizing a function whose "state"
+doesn't fully determine its answer (hidden globals, mutation between
+calls) caches lies. The discipline: a DP state is a **complete, hashable
+description** of a subproblem — if you can't name the state in words,
+the bug is already written.
+</Gotcha>
+
+<Concept>
+## When greedy is provably safe — and when it's a trap
+
+Greedy is DP's fast cousin: commit to the locally best choice, never
+reconsider. Sometimes that's *correct* — and then it beats DP outright
+(less work, same answer): interval scheduling by earliest finish,
+Huffman coding, Dijkstra, Kruskal. What makes those safe is an
+**exchange argument**: any optimal solution can be rewritten, swap by
+swap, to start with the greedy choice without getting worse.
+
+No proof, no greed. Coin change with coins {1, 3, 4} making 6: greedy
+grabs 4+1+1 (three coins); optimal is 3+3 (two). The greedy choice
+*blocked* the optimum, and only DP — which tries every first coin and
+keeps the best — notices. The professional posture: greedy is a claim
+that requires a proof; DP is the default that requires only the two
+prerequisites.
+</Concept>
+
+<Check id="q-greedy-coins" />
+
+<Aside title="The 0/1 knapsack, sketched — and LIS name-dropped">
+Knapsack (items with weights and values, capacity W, maximize value):
+state = (first i items, remaining capacity w); choice = skip item i or
+take it; table is n × W filled by that two-way max. Note the fine print:
+O(nW) is *pseudo-polynomial* — polynomial in the numeric value W, not in
+its bit-length, which is why knapsack is still NP-hard in theory and
+totally solvable at dinner-party sizes. Longest Increasing Subsequence:
+the O(n²) DP is "best ending at each index"; the O(n log n) upgrade
+keeps a pile of "smallest tail per length" maintained with bisect —
+Module 11 sneaking into Module 12, as promised.
+</Aside>
+
 <Cheatsheet>
-Full lecture pending — knapsack, LIS, space optimization, and when greedy
-is provably safe land here.
+The ritual, in order: **name the state in words → write the recurrence →
+memoize it (correctness first) → tabulate if the stack threatens →
+space-optimize by reading which cells the recurrence actually touches.**
+Greedy only with an exchange argument; {1,3,4}→6 is your counterexample
+on retainer. Edit distance's table IS diff — say that in an interview
+and watch the interviewer sit up.
 </Cheatsheet>

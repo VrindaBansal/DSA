@@ -1,33 +1,142 @@
 ---
 id: trees-bst
 module: trees
-title: Binary search trees and why balance exists
+title: Binary search trees, balance, and tries
 order: 1
-estimatedMinutes: 40
+estimatedMinutes: 45
 prerequisites: [linked-lists, recursion-trees]
 objectives:
   - Execute BST insert and all three delete cases by hand
-  - Demonstrate the sorted-insert degeneration and connect it to balancing
-  - Explain why in-order traversal yields sorted order, and what B-trees change
-stub: true
-tags: [trees, bst, balance, traversal]
+  - Demonstrate the sorted-insert degeneration and connect it to why balancing exists
+  - Prove in-order traversal yields sorted order from the invariant
+  - Explain tries and why B-trees sit under every SQL index
+tags: [trees, bst, balance, traversal, tries, b-trees]
 ---
 
 <Intuition>
-A BST is binary search made into a place you can live: left is smaller,
-right is bigger, so every lookup walks one root-to-leaf path. All costs are
-O(height) — which is the whole story, because nothing forces height to be
-log n. Feed the tree sorted input below and watch it collapse into a
-linked list. That degeneration — not aesthetics — is why AVL, red-black
-trees, and the B-trees under every SQL index exist: they are machines for
-keeping height honest.
+A binary search tree is binary search made into a *place you can live*:
+the sorted array's "look in the middle, go left or right" frozen into
+pointers, but with O(log n) **insertion** — the operation sorted arrays
+do in O(n). Left subtree smaller, right subtree bigger, recursively,
+everywhere. Every operation is a walk down one root-to-leaf path, so
+every cost is **O(height)** — and that little word "height" is where all
+the drama in this module lives, because nothing in the basic BST forces
+height to stay near log n.
 </Intuition>
+
+<Concept>
+## The invariant, and what it buys
+
+The BST property is *global*: every key in a node's left subtree is less
+than the node; every key in its right subtree greater. Not just the
+children — the entire subtrees. That global reach is what makes one
+comparison per level sufficient: "go left" discards the whole right
+half-world, exactly like binary search discarding half an array.
+
+It also yields the module's most elegant fact — **in-order traversal
+(left, node, right) emits any BST in sorted order.** Not sometimes;
+provably, by induction: if in-order sorts each subtree, then
+sorted(left) + node + sorted(right) is sorted precisely because the
+invariant places every left value below the node and every right value
+above. A BST is a sorted sequence wearing a tree costume, which is why it
+supports what hash maps cannot: range queries, floor/ceiling, "next
+largest," sorted iteration.
+</Concept>
+
+<Check id="q-inorder-short" />
+
+<Concept>
+## Insert, delete, and the three cases
+
+Insert is a search that ends in an attachment: walk down comparing, and
+the null you fall off of is where the new leaf belongs. Delete is a
+search that ends in surgery, with escalating cases:
+
+1. **Leaf** — unlink it. Done.
+2. **One child** — splice the child up into the vacancy.
+3. **Two children** — the vacancy must be filled by a key that keeps
+   everything left smaller and everything right bigger: the **in-order
+   successor** (leftmost node of the right subtree). Copy its value up,
+   then delete *it* — guaranteed to be case 1 or 2, since a leftmost node
+   has no left child.
+
+Drive all three below — then press **sorted build** and watch the
+punchline: inserting 10, 20, 30… produces a tree where every node has
+only a right child. Height = n. Every O(height) promise now reads O(n).
+Your "tree" is a linked list with delusions.
+</Concept>
 
 <Visual id="bst-ops" />
 
 <Check id="q-bst-degenerate" />
 
+<Concept>
+## Balance: the machinery the degeneration justifies
+
+Sorted input isn't rare — it's the *common* case (imports, timestamps,
+auto-increment ids). So real systems never ship plain BSTs; they ship
+BSTs plus a repair crew. **AVL trees** track subtree heights and fix any
+±2 imbalance with rotations — an O(1) pointer pirouette that lifts the
+middle key of a heavy path upward. **Red-black trees** enforce a looser
+color discipline (height ≤ 2·log n) for cheaper maintenance — they're
+under `std::map` and Java's `TreeMap`. Conceptual takeaway over
+mechanics: rotations preserve the BST invariant while redistributing
+height, and some bookkeeping rule decides *when* to rotate. Balanced
+trees are BSTs that pay O(log n) rent every write to keep O(log n) reads
+honest.
+</Concept>
+
+<RealWorld source="SQL indexes">
+`CREATE INDEX ON users(email)` builds a **B-tree** — the BST idea
+re-engineered for disk, where the expensive unit is a page fetch, not a
+comparison. So each node becomes a 4KB page holding *hundreds* of sorted
+keys, and the tree's fan-out explodes: a billion rows in height 3–4.
+Every `WHERE email = ?`, every `ORDER BY created_at`, every range scan
+walks one. The B-tree/hash-index split is this module vs Module 3 in
+production: B-trees keep order (ranges, sorting), hash indexes answer
+only equality, faster. Postgres defaults to B-tree for a reason.
+</RealWorld>
+
+<Concept>
+## Tries: when the key IS the path
+
+For string keys there's a tree that never compares keys at all — it
+*spells* them. Each edge is a character; each root-to-node path is a
+prefix; word-ends carry a flag. Lookup of "mon" costs O(3) — three edge
+hops — whether the dictionary holds a thousand words or a hundred
+million. Corpus size affects breadth, never path length. That decoupling
+owns autocomplete: "all completions of this prefix" = walk the prefix,
+then enumerate the subtree — which is why your search box's suggestions
+appear before you finish the word.
+</Concept>
+
+<Check id="q-trie-cost" />
+
+<Gotcha>
+Validating a BST by checking `node.left.val < node.val < node.right.val`
+at each node is the famous wrong answer — it checks children, but the
+invariant covers whole *subtrees* (a grandchild can violate what all
+parent-child pairs satisfy). Validate by passing down (lo, hi) bounds, or
+by checking that the in-order walk is strictly increasing. Interviewers
+plant this trap on purpose; now you plant your foot around it.
+</Gotcha>
+
+<Aside title="Why not just balance perfectly?">
+Perfect balance (a complete tree) would mean global restructuring on
+every insert — O(n) writes to save O(1) of read depth. AVL's genius is
+*local* repair: height violations are detected on the insertion path and
+fixed with at most O(log n) rotations there. Red-black loosens further:
+guaranteed ≤ 2·log n height with amortized O(1) rotations per insert.
+The engineering spectrum — perfect/expensive → AVL/tighter-reads →
+red-black/cheaper-writes → B-tree/disk-tuned — is one long negotiation
+between read depth and write cost. Databases picked their point decades
+ago and never left.
+</Aside>
+
 <Cheatsheet>
-Full lecture pending — traversals, delete's three cases in prose, tries,
-and the B-tree/SQL-index anchor land here.
+Every BST answer starts the same way: **"all operations are O(height);
+balanced trees force height to log n; sorted input degenerates a naive
+BST to a list."** Then the specializations: in-order = sorted (proof:
+the invariant), successor fills two-child deletions, tries charge by key
+length, B-trees are BSTs that think in pages.
 </Cheatsheet>

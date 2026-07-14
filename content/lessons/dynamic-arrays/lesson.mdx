@@ -3,31 +3,141 @@ id: dynamic-arrays
 module: arrays
 title: Dynamic arrays, two pointers, sliding window
 order: 1
-estimatedMinutes: 35
+estimatedMinutes: 40
 prerequisites: [big-o, amortized]
 objectives:
-  - Explain Python list internals — capacity, doubling, contiguity
+  - Explain Python list internals — capacity, geometric growth, contiguity
   - Recognize when two pointers or a sliding window turns O(n²) into O(n)
-  - Use prefix sums to answer range queries in O(1)
-stub: true
+  - Use prefix sums to answer range queries in O(1) after one linear pass
+  - Spot the hidden-copy traps in slices and string building
 tags: [arrays, two-pointers, sliding-window, prefix-sums]
 ---
 
 <Intuition>
-The array is the structure the hardware actually wants: contiguous memory,
-index arithmetic, cache lines full of your data. Every technique in this
-module — two pointers, sliding windows, prefix sums — is a way of touching
-that contiguous block **once** instead of once per query. Watch the window
-below maintain its sum with one add and one subtract per slide; that
-overlap-reuse move is the heart of half of all easy-to-medium interview
-problems.
+The array is the structure the hardware actually wants: one contiguous block,
+index arithmetic instead of pointer chasing, cache lines arriving pre-loaded
+with your next four elements. Everything else in this course is a negotiation
+*away* from the array, paid for by some operation the array does badly. And
+every technique in this lesson — two pointers, sliding windows, prefix sums —
+is the same move in different clothes: **touch the contiguous block once,
+and make one pass answer many questions.**
 </Intuition>
+
+<Concept>
+## What a Python list actually is
+
+A `list` is not a linked list. It is a contiguous array of **pointers to
+objects**, plus three fields: length, capacity, and the block's address.
+Indexing is address arithmetic — `base + 8·i` — which is why `a[i]` is O(1)
+and doesn't care whether i is 3 or 3 million.
+
+The dynamic part is the growth policy you proved in Module 1: when length
+hits capacity, CPython allocates a bigger block (~1.125× + constant) and
+copies. Geometric growth → geometric series → **amortized O(1) append**.
+The same visual, one more lap, now wearing its natural habitat:
+</Concept>
+
+<Visual id="amortized-doubling" />
+
+<Gotcha>
+**Every slice is a full copy.** `a[1:]`, `a[::-1]`, even the innocent
+`a[:]` allocate a brand-new array and copy the range — O(k) time and space,
+invisible in the syntax. The classic self-own is recursing with `a[1:]`:
+n levels × O(n) copies = an O(n²) "linear" algorithm. Pass indices, not
+slices. Same family: `s += piece` in a loop rebuilds the immutable string
+every time — use `"".join(parts)`.
+</Gotcha>
+
+<Concept>
+## Two pointers: earning the right to discard
+
+Pair-sum in a sorted array: does any pair hit `target`? Brute force checks
+all n²/2 pairs. Two pointers walks in from both ends:
+
+```python
+def pair_sum(a, target):          # a is SORTED
+    l, r = 0, len(a) - 1
+    while l < r:
+        s = a[l] + a[r]
+        if s == target:
+            return (l, r)
+        if s < target:
+            l += 1                # a[l] is too small for ANY partner ≤ r
+        else:
+            r -= 1                # a[r] is too big for ANY partner ≥ l
+    return None
+```
+
+Each step permanently discards one element — n steps total. The discards
+are *proofs*, not guesses: if `a[l] + a[r] < target`, then `a[l]` plus
+anything left of `r` is even smaller, so `a[l]` can never participate —
+retire it. **Sortedness is what funds the proof.** On unsorted data the
+same moves discard viable pairs and return garbage; that's the trap the
+next check probes.
+</Concept>
+
+<Check id="q-twoptr-sorted" />
+
+<Concept>
+## Sliding window: never recompute the overlap
+
+Fixed-size window sums are the cleanest instance of the big idea:
+consecutive windows share k−1 elements, so recomputing each window from
+scratch (O(nk)) pays k-fold for information you already have. Maintain the
+sum instead: one add for the element entering, one subtract for the one
+leaving. Drive it below — the running sum never gets rebuilt.
+</Concept>
 
 <Visual id="sliding-window" />
 
 <Check id="q-window-sum" />
 
+<RealWorld source="Image convolution">
+Every blur, sharpen, and edge-detect filter is a 2-D sliding window: a 3×3
+kernel sweeping across megapixels. Naively that's 9 reads per output pixel —
+and for box blurs, libraries do better with the 2-D version of the running
+sum (a *summed-area table*, which is literally prefix sums in two
+dimensions): four lookups per pixel regardless of kernel size. When your
+phone applies a filter to a 12-megapixel photo in a frame, this lesson's
+two tricks are why. GPUs make it parallel; the algorithm makes it possible.
+</RealWorld>
+
+<Concept>
+## Prefix sums: precompute once, answer forever
+
+When queries are *ranges* rather than windows, the running-sum trick
+generalizes. Pay one O(n) pass to build `P[k]` = sum of the first k
+elements; then any range sum is a subtraction:
+
+```python
+P = [0]
+for x in a:
+    P.append(P[-1] + x)       # P[k] = a[0] + ... + a[k-1]
+
+def range_sum(i, j):          # inclusive i..j
+    return P[j + 1] - P[i]    # O(1), any width
+```
+
+The mental model: `P` stores "everything up to here," and a range is the
+difference of two everythings. Interviews dress this up endlessly —
+"subarray sum equals k" is prefix sums plus a hash map of seen prefixes;
+2-D versions power the convolution story above.
+</Concept>
+
+<Check id="q-prefix-short" />
+
+<Aside title="Why not one struct per element? — boxing and locality">
+A C array of ints stores the ints themselves; a Python list stores 8-byte
+pointers to heap-allocated int objects. That indirection costs a cache miss
+per element on top of the list's own (excellent) locality — one reason
+NumPy exists: `np.array` stores raw unboxed values contiguously, turning
+per-element pointer chases into vectorized sweeps. When someone says
+"Python is slow at numerics," they mostly mean this boxing, not the
+interpreter loop.
+</Aside>
+
 <Cheatsheet>
-Full lecture pending — image convolution as a sliding window, Python list
-internals, and the two-pointer taxonomy land here.
+The module in one breath: **arrays win by locality; keep your pass count at
+one.** Two pointers when sorted order funds a discard proof; a window when
+consecutive answers overlap; prefix sums when many range queries loom.
 </Cheatsheet>

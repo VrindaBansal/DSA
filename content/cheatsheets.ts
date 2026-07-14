@@ -5,7 +5,7 @@ import { CHEATSHEET as bigO } from './lessons/big-o/cheatsheet';
 import { CHEATSHEET as amortized } from './lessons/amortized/cheatsheet';
 import { CHEATSHEET as space } from './lessons/space-complexity/cheatsheet';
 import { CHEATSHEET as recursionTrees } from './lessons/recursion-trees/cheatsheet';
-import { STUB_CHEATSHEETS } from './stub-cheatsheets';
+import { MODULE_CHEATSHEETS } from './module-cheatsheets';
 
 export const CHEATSHEETS: CheatsheetData[] = [
   bigO,
@@ -14,7 +14,7 @@ export const CHEATSHEETS: CheatsheetData[] = [
   recursionTrees,
   queues,
   deques,
-  ...STUB_CHEATSHEETS,
+  ...MODULE_CHEATSHEETS,
 ];
 
 export const CHEATSHEET_BY_LESSON: Record<string, CheatsheetData> =

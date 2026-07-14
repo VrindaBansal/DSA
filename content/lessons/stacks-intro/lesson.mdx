@@ -1,31 +1,122 @@
 ---
 id: stacks-intro
 module: stacks
-title: Stacks and the monotonic pattern
+title: Stacks, the call stack, and the monotonic pattern
 order: 1
-estimatedMinutes: 30
+estimatedMinutes: 35
 prerequisites: [big-o]
 objectives:
   - Map LIFO onto nesting — brackets, call frames, undo
   - Read a stack trace as a literal picture of the call stack
-  - Apply the monotonic stack to next-greater-element problems in O(n)
-stub: true
+  - Apply the monotonic stack to next-greater problems in O(n), and defend the bound
+  - Choose array vs linked backing and know why Python's answer is list
 tags: [stacks, lifo, monotonic, call-stack]
 ---
 
 <Intuition>
-You already run a stack all day: every function call pushes a frame, every
-return pops one, and a stack trace is just the stack printed mid-flight.
-LIFO is the natural shape of **nesting** — the most recently opened thing
-must close first, whether it's a bracket, an HTML tag, or a database
-transaction. The sleeper hit of this module is the *monotonic* stack: keep
-the stack sorted by popping violators, and a whole family of "next greater
-element" problems collapses from O(n²) to O(n).
+A stack is the data structure of **unfinished business**: whatever you
+started most recently is what you must finish first. That's not an
+arbitrary discipline — it is the shape of *nesting itself*. An inner
+bracket closes before its outer one; an inner function returns before its
+caller; the last edit is the first undo. Whenever a problem contains
+things-opened-inside-other-things, a stack isn't a choice, it's a
+transcription.
 </Intuition>
+
+<Concept>
+## The contract and the backing
+
+`push(x)`, `pop()`, `peek()` — all O(1), all at one end. Python's answer
+is just `list`: `append` and `pop()` hit the cheap end of the array
+(amortized O(1), Module 1), with perfect cache locality. A linked backing
+also gives O(1) push/pop — plus a pointer per element and a cache miss
+per hop — so it wins only when you need worst-case O(1) with no resize
+spikes. Rule: **stack = list, and never `insert(0,...)`/`pop(0)`** — the
+wrong end costs O(n) per call, the same trap queues hit in Module 6.
+</Concept>
 
 <Check id="q-stack-lifo" />
 
+<Concept>
+## The call stack: the stack you already run
+
+Every function call pushes a **frame** — locals, arguments, return
+address. Every `return` pops one. A stack trace is this structure printed
+mid-flight, innermost frame first: read one bottom-to-top and you are
+reading pushes in order. Three consequences you've already met:
+
+- Recursion depth = stack height = **space complexity** (Module 1's
+  space lesson).
+- `RecursionError` at ~1000 frames is the stack's capacity limit talking.
+- Any recursion can be converted to a loop with an *explicit* stack — you
+  are just doing by hand what the runtime did for you. That conversion is
+  the standard escape when depth would blow the limit (deep tree walks,
+  Module 8).
+</Concept>
+
+<RealWorld source="Expression parsing">
+Your compiler evaluates `3 + 4 * (2 - 1)` with two stacks (Dijkstra's
+shunting-yard): operands on one, operators on the other; parentheses push
+context, closing them pops back out. Undo/redo is the same architecture
+in an editor: an undo stack and a redo stack, `Ctrl+Z` popping one and
+pushing the other — and a new edit *truncating* the redo stack, exactly
+like the browser history splice from Module 4. Nesting in, LIFO out,
+every time.
+</RealWorld>
+
+<Concept>
+## The monotonic stack: this module's power tool
+
+"For each day, how many days until a warmer temperature?" Brute force
+scans rightward from every index: O(n²). The monotonic stack does it in
+one pass: keep a stack of indices whose answer is *pending*, maintained so
+their values are decreasing. When a new value arrives, it **resolves**
+every pending index it beats — pop, record, pop, record — then joins the
+stack itself:
+
+```python
+def next_greater(a):
+    res = [-1] * len(a)
+    stack = []                        # pending indices, values decreasing
+    for i, x in enumerate(a):
+        while stack and a[stack[-1]] < x:
+            res[stack.pop()] = x      # x is their long-awaited answer
+        stack.append(i)
+    return res
+```
+
+The nested loop *looks* quadratic. It isn't: every index is pushed once
+and popped at most once, so the while-loop's **lifetime total** is ≤ n.
+Charge work to elements, not to loop nests — Module 1's amortized lens,
+third appearance. This one pattern solves daily-temperatures, histogram
+largest-rectangle, stock spans, and trapping-rain-water.
+</Concept>
+
+<Check id="q-monotonic-amortized" />
+
+<Exercise id="q-nge-code" />
+
+<Gotcha>
+Storing **values** on the stack instead of **indices** is the classic
+monotonic-stack bug: the moment you pop, you know *what* beat you but not
+*where* to record the answer. Push indices; look values up through them.
+Second trap: `while stack and ...` — flip the order and the empty-stack
+check happens after the peek, and `stack[-1]` raises on the first
+element.
+</Gotcha>
+
+<Aside title="Strict vs non-strict, and why duplicates decide it">
+`a[stack[-1]] < x` resolves on *strictly greater*; `<=` would resolve
+equal values too. For "next greater" the strict version is correct
+(equal isn't greater), but the choice matters for the harder problems:
+largest-rectangle-in-histogram gives wrong areas with the wrong
+strictness, and it's the most common bug in otherwise-correct solutions.
+Decide what equal elements mean *before* writing the comparison, and put
+a duplicate-heavy case in your tests — like `[2, 2, 3]` above.
+</Aside>
+
 <Cheatsheet>
-Full lecture pending — expression parsing, undo/redo, and the monotonic
-stack walkthrough land here.
+Triggers to burn in: **nesting → stack; "trace this recursion" → draw
+frames; "next greater/smaller to the left/right" → monotonic stack,
+indices on the stack, amortized O(n) and say why.**
 </Cheatsheet>

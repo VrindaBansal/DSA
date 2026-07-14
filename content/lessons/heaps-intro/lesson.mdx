@@ -3,33 +3,129 @@ id: heaps-intro
 module: heaps
 title: Binary heaps — the tree that lives in an array
 order: 1
-estimatedMinutes: 40
+estimatedMinutes: 45
 prerequisites: [recursion-trees, deques]
 objectives:
   - Hold the tree/array duality — children at 2i+1, 2i+2 — without translating
-  - Implement sift_down and say why heapify is O(n), not O(n log n)
-  - Deploy the two-heap median and top-K patterns
-stub: true
-tags: [heaps, priority-queue, sift, heapify]
+  - Implement sift_down and explain why heapify is O(n), not O(n log n)
+  - Deploy the top-K and two-heap-median patterns on streams
+  - Use heapq idiomatically, including the negation trick for max-heaps
+tags: [heaps, priority-queue, sift, heapify, top-k]
 ---
 
 <Intuition>
-A heap is a tree that gave up everything except one promise — **the parent
-is never worse than its children** — and in exchange got to live inside a
-flat array with no pointers at all. The index math IS the tree: children of
-i at 2i+1 and 2i+2. The visual shows both views side by side because the
-duality is the lesson: what looks like "swap with parent" on the tree is
-"swap two array slots" in memory. This is how your OS scheduler and Uber
-dispatch keep "most important next" one array-read away.
+Module 6 ended on a cliffhanger: when "next" means *most important* rather
+than *oldest*, you need a priority queue — and serving from a sorted list
+costs O(n) per insert. The heap's insight is that **total order is
+overkill.** To serve the minimum, you only need to know the minimum; the
+rest can stay comfortably vague. So the heap maintains one lazy promise —
+every parent ≤ its children — which pins the extreme element to the root
+while leaving siblings in cheerful disorder. Less order maintained = less
+work per operation: O(log n) instead of O(n).
 </Intuition>
+
+<Concept>
+## The duality: a tree with no pointers
+
+A heap is a *complete* binary tree — every level full, last level packed
+left. Completeness means the tree can be flattened into an array with
+zero pointers: **children of index i sit at 2i+1 and 2i+2; the parent at
+(i−1)//2.** The index math *is* the edges.
+
+This is the lesson the visual insists on by showing both views at once:
+"swap with parent" on the tree and "swap slots 4 and 1" in the array are
+the same event. No allocation, no pointer chasing, perfect locality —
+the heap is the rare structure that's both asymptotically and
+constant-factor fast.
+
+Two repair moves maintain the invariant, both walking one root-to-leaf
+path (height = ⌊log₂ n⌋, thanks to completeness):
+
+- **sift up** — new element appended at the end bubbles up while smaller
+  than its parent. Powers `push`.
+- **sift down** — root replaced by the last element sinks, swapping with
+  its *smaller* child. Powers `pop-min`.
+</Concept>
 
 <Visual id="heap-sift" />
 
+<Concept>
+## heapify: the O(n) that sounds illegal
+
+Building a heap from n arbitrary items by pushing one at a time costs
+O(n log n). `heapify` does it in **O(n)** by running sift_down bottom-up
+from the last internal node. The accounting: sift_down's cost is the
+node's *height*, and heights are wildly lopsided in a complete tree —
+half the nodes are leaves (height 0, free), a quarter have height 1, an
+eighth height 2… The sum Σ n/2^(h+1) · h converges to O(n). Pushing
+one-by-one charges every element log-of-size; bottom-up charges by
+height, and heights are mostly zero. This is a classic interview
+flashpoint precisely because the true answer sounds like a mistake.
+</Concept>
+
 <Check id="q-heapify" />
+
+<RealWorld source="OS scheduler">
+Your kernel's CFS scheduler answers "which task runs next?" thousands of
+times per second over thousands of tasks — always the one with least
+runtime so far, always one pop away. Uber dispatch: nearest idle driver =
+pop-min on a heap keyed by ETA. A search ranker's "top 10 results from
+50 million candidates" never sorts 50 million — it streams them past a
+size-10 heap. Whenever a system serves *best-next* under churn, there is
+a heap under the floorboards.
+</RealWorld>
+
+<Concept>
+## Build sift_down
+
+The tests check the invariant everywhere, the smaller-child rule, and
+that you respect the size bound n (heapsort depends on sifting within a
+shrinking prefix). ≥2 hints and its complexity question joins your review
+queue.
+</Concept>
 
 <Exercise id="q-siftdown-code" />
 
+<Concept>
+## The streaming patterns
+
+**Top-K:** keep a *min*-heap of size k — yes, min, for top-K-largest.
+The root is the weakest current champion, i.e. the only one a newcomer
+needs to beat. Each of n events: O(1) rejection or O(log k) replacement —
+O(n log k) total, O(k) memory, stream never stored.
+
+**Two-heap median:** a max-heap of the lower half and a min-heap of the
+upper half, sizes kept within 1. The median is a root read — O(1) query,
+O(log n) insert — where a sorted array would pay O(n) per insert. This
+pair is the standard answer to "running median over a stream."
+</Concept>
+
+<Check id="q-topk-short" />
+
+<Gotcha>
+`heapq` is functions over a plain list, and it is **min-heap only**. For
+a max-heap, push negated keys — `heappush(h, -x)` — and negate on the way
+out; for compound priorities push tuples `(priority, tiebreak, item)`,
+remembering tuples compare element-wise, so equal priorities fall through
+to comparing items (crash city for un-comparable objects — hence the
+tiebreak counter). And never `heap[1]` expecting the second-smallest:
+below the root, a heap is *not* sorted; that vagueness is exactly what
+you paid less to get.
+</Gotcha>
+
+<Aside title="Heapsort in one paragraph — and why Python doesn't use it">
+heapify (O(n)), then repeatedly swap the root to the shrinking suffix and
+sift_down the prefix: sorted array, in place, Θ(n log n) worst case,
+no recursion. The catch is memory behavior: sift paths jump 2i+1 strides —
+cache-hostile — so Timsort's sequential merges beat it in practice
+despite identical asymptotics. Heapsort survives as the worst-case
+insurance inside C++'s introsort: quicksort until the depth limit, then
+heapsort. Module 10 races them.
+</Aside>
+
 <Cheatsheet>
-Full lecture pending — two-heap median, top-K streams, and the scheduler
-anchor land here.
+The whole structure from the invariant: **parent ≤ children keeps the min
+at the root; completeness keeps height at log n and lets the tree live in
+an array at 2i+1/2i+2; every operation is one path repair.** heapify is
+O(n) — say "heights telescope" and mean it.
 </Cheatsheet>
