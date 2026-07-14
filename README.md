@@ -45,11 +45,15 @@ one-line imports in the registries. No app code changes.
 
 ## Curriculum state
 
-- **Module 1 (Complexity)** — 4 lessons fully authored.
-- **Module 6 (Queues)** — 2 lessons fully authored (the flagship, per §12 Phase 1).
-- Remaining 10 modules — stub lessons: objectives, their required visual,
-  an anchor check question, and a real cheatsheet skeleton (the ops tables on
-  `/reference` work today). Phase 7 fills in the prose.
+- **All 12 modules fully authored** — 16 lessons total, no stubs. Every
+  lesson has real-world anchors, inline checks, a terminal cheatsheet, and
+  (where the spec requires one) its interactive visual. Modules 1 and 6
+  carry multiple lessons; modules 2–5 and 7–12 each ship one comprehensive
+  lecture covering the spec §6 topic list for that module.
+- **Question bank:** ~50 questions across MCQ / short-response / code,
+  including 8 structural code exercises (ring buffer, two-stack queue,
+  sift_down, union-find, fast–slow midpoint, next-greater monotonic stack,
+  bisect_left, climbing stairs).
 - All 11 required visuals (§7) are implemented, each with play/step/speed
   controls, live state readout, drive-it-yourself inputs, lockstep Python
   line highlighting, and `prefers-reduced-motion` support.
@@ -63,6 +67,38 @@ swap point required by §3:
 - **`NEXT_PUBLIC_PERSIST=sqlite`**: server-side SQLite via `/api/progress`
   using Node's built-in `node:sqlite` (no native deps). DB file: `data/progress.db`.
 - A Supabase adapter for a Vercel deploy would be a third class in the same file.
+
+## Deploy to Vercel
+
+Local dev remains the primary target (spec §3), but the app deploys to
+Vercel as-is:
+
+1. **Import the repo** at [vercel.com/new](https://vercel.com/new) — the
+   framework preset auto-detects Next.js; no build settings to change.
+   (Or from the CLI: `npx vercel`, then `npx vercel --prod`.)
+2. **Set one environment variable** in Project → Settings → Environment
+   Variables: `OPENAI_API_KEY`. That's the only secret; it is read
+   exclusively inside the `/api/chat` and `/api/grade` route handlers and
+   never reaches a client bundle. Optionally set `OPENAI_MODEL` to override
+   the default in `lib/config.ts`.
+3. **Leave persistence on the default (localStorage).** Do NOT set
+   `NEXT_PUBLIC_PERSIST=sqlite` on Vercel — serverless filesystems are
+   ephemeral, so the SQLite file would vanish between invocations.
+   localStorage gives durable single-user progress in the browser you study
+   from, which matches how this app is used. If you later want progress to
+   follow you across devices, add a Supabase adapter as a third class in
+   `lib/progress/repo.ts` (the one-file swap point) — the repo interface is
+   two methods, `load()` and `save()`.
+
+Notes that make this work (already wired):
+
+- `next.config.mjs` traces `content/**` into the serverless bundle via
+  `outputFileTracingIncludes`, so the dynamic routes (`/practice`, which
+  reads `searchParams`) can read lesson MDX at request time. All lesson,
+  module, and cheatsheet pages are statically generated at build.
+- Pyodide loads client-side from the jsDelivr CDN — nothing to configure.
+- The in-process rate guard on the OpenAI routes works per serverless
+  instance; for a single-user app that is plenty.
 
 ## Decisions on the spec's open questions (§14)
 

@@ -1,35 +1,141 @@
 ---
 id: binary-search
 module: searching
-title: Binary search and its invariant
+title: Binary search — the invariant and the answer space
 order: 1
-estimatedMinutes: 35
+estimatedMinutes: 40
 prerequisites: [big-o, dynamic-arrays]
 objectives:
-  - Write binary search from the invariant, not from memorized ± 1s
-  - Rebuild bisect_left and bisect_right from scratch
-  - Recognize "binary search on the answer" in problems with no array at all
-stub: true
-tags: [binary-search, bisect, invariant]
+  - Write binary search from the invariant, not from memorized ±1s
+  - Rebuild bisect_left from scratch with half-open bounds
+  - Recognize "binary search on the answer" in problems with no array anywhere
+  - Reach for quickselect when only the k-th element matters
+tags: [binary-search, bisect, invariant, quickselect]
 ---
 
 <Intuition>
-Binary search is twenty characters of code and a decade of off-by-one bugs
-— because people memorize the code instead of the **invariant**: *"if the
-target exists, it lives in a[lo..hi]."* Every line either preserves that
-sentence or shrinks the bracket; get both right and the code writes itself.
-The visual prints the invariant at every step while the search space
-collapses. And the trick that makes this module bigger than arrays:
-anything with a monotonic yes/no answer — "can we ship at capacity c?",
-"which commit broke the build?" — is binary-searchable. git bisect is this
-visual with commits instead of cells.
+Binary search is twenty characters of code and a decade of off-by-one
+bugs — because people memorize the code instead of the **invariant**:
+*"if the target exists, it lies in a[lo..hi]."* Hold that sentence and
+every line writes itself: each iteration must (1) keep the sentence true
+and (2) shrink the bracket. Get both and termination plus correctness
+fall out; lose either and you get the infinite loop or the evicted
+answer that made this algorithm famous. The visual prints the sentence
+at every step — watch it survive while the bracket collapses.
 </Intuition>
+
+<Concept>
+## The canonical form
+
+```python
+def binary_search(a, target):
+    lo, hi = 0, len(a) - 1          # invariant: target ∈ a[lo..hi] if present
+    while lo <= hi:
+        mid = (lo + hi) // 2
+        if a[mid] == target:
+            return mid
+        elif a[mid] < target:
+            lo = mid + 1            # a[lo..mid] proven too small — discard
+        else:
+            hi = mid - 1            # a[mid..hi] proven too big — discard
+    return -1                       # bracket empty: proven absent
+```
+
+Read the two updates as invariant maintenance: `a[mid] < target` proves
+everything up *through* mid is too small, so `lo = mid + 1` keeps the
+sentence true — and the `+1` is what guarantees shrinkage (`lo = mid`
+can stall forever on a two-element bracket). Cost: the bracket halves
+per probe, ⌈log₂ n⌉ probes max — Module 1's "the log is the number of
+halvings," now load-bearing.
+</Concept>
 
 <Visual id="binary-search" />
 
 <Check id="q-bsearch-invariant" />
 
+<Concept>
+## bisect_left: boundary questions beat membership questions
+
+"Is x here?" is the amateur question. The professional one is **"where
+does x's run begin?"** — the leftmost index with value ≥ x. That form
+handles duplicates, gives insertion points, and composes into
+first/last-occurrence and count-of-equal queries. Two structural changes
+from the canonical form: half-open bounds `[lo, hi)`, and — deliberately —
+**no equality early-exit**, because meeting *an* equal element proves
+nothing about the *leftmost* one. Build it; the tests hunt exactly that
+bug.
+</Concept>
+
+<Exercise id="q-bisect-code" />
+
+<Gotcha>
+`hi = mid` versus `hi = mid - 1` is not a style choice — it follows from
+what mid might be. In bisect_left, `a[mid] ≥ x` means mid *could be the
+answer*, so it must stay in the bracket: `hi = mid`. In the canonical
+form, `a[mid] ≠ target` means mid is dead: `hi = mid - 1`. Mixing the
+two conventions is THE binary search bug. Derive the update from "can
+mid still be the answer?" every single time, and the ±1s stop being
+memorized and start being obvious.
+</Gotcha>
+
+<RealWorld source="git bisect">
+Your build broke sometime in the last 400 commits. `git bisect` runs
+binary search over *history*: the predicate "does this commit have the
+bug?" is monotone — once introduced, the bug persists — so the timeline
+splits into GOOD…GOOD BAD…BAD with one boundary, findable in
+⌈log₂ 400⌉ = 9 test runs instead of 400. No array in sight; just a
+monotonic predicate over an ordered space. That reframing is the door to
+this lesson's biggest idea.
+</RealWorld>
+
+<Concept>
+## Binary search on the answer
+
+The grown-up version: when a problem asks "minimize the capacity /
+threshold / time such that a condition holds," search the **answer
+space**. Requirements: the answers are ordered, and the feasibility
+check is **monotone** — if capacity c works, every c′ > c works, so the
+yes/no answers form NO…NO YES…YES with a single boundary to hunt.
+
+```python
+def min_capacity(weights, days):
+    def can_ship(c):                     # monotone in c
+        used, cur = 1, 0
+        for w in weights:
+            if cur + w > c: used, cur = used + 1, 0
+            cur += w
+        return used <= days
+    lo, hi = max(weights), sum(weights)  # bracket the answer space
+    while lo < hi:
+        mid = (lo + hi) // 2
+        if can_ship(mid): hi = mid       # mid works — answer ≤ mid
+        else: lo = mid + 1               # mid fails — answer > mid
+    return lo
+```
+
+O(n log range): each probe runs an O(n) check, and the log tames the
+range. Rate-limit threshold tuning, "minimum eating speed," percentile
+cutoffs — same skeleton, different `can_*`. When a problem smells like
+optimization but the check is easy, ask: *is the check monotone?*
+</Concept>
+
+<Check id="q-answer-monotonic" />
+
+<Aside title="Quickselect — when you don't need the whole order">
+"Find the median / the k-th largest" doesn't require sorting. Quickselect
+runs quicksort's partition but recurses into only the side containing
+index k: n + n/2 + n/4 + … = **O(n) expected** (Module 1's root-dominated
+regime). Same pivot caveats as quicksort — random pivot or suffer n² on
+adversarial input; there's even a guaranteed-O(n) version
+(median-of-medians) that nobody uses because its constants are grim.
+`heapq.nlargest(k, xs)` covers the small-k cases; quickselect covers the
+median-ish middle where heaps would pay n log k for nothing.
+</Aside>
+
 <Cheatsheet>
-Full lecture pending — bisect from scratch, search-on-answer worked
-examples, and quickselect land here.
+Speak invariants, not code: **"the answer, if present, stays inside the
+bracket; every step provably discards half."** bisect_left = first index
+≥ x, half-open, hi = mid, no early exit. No array required — any
+monotone predicate over an ordered space is searchable, and git bisect
+is the proof everyone already believes.
 </Cheatsheet>

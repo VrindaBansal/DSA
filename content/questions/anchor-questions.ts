@@ -1,7 +1,7 @@
 import type { Question } from '@/lib/types';
 
-// One or two anchor questions per stub lesson so practice and review span the
-// whole curriculum even before the long-tail lectures are written (§12 P7).
+// The original anchor questions for each module lecture — kept alongside the
+// per-lesson deep-dive banks in content/lessons/<id>/questions.ts.
 
 export const QUESTIONS: Question[] = [
   {

@@ -3,31 +3,131 @@ id: linked-lists
 module: linked-structures
 title: Linked lists and pointer surgery
 order: 1
-estimatedMinutes: 35
+estimatedMinutes: 40
 prerequisites: [big-o]
 objectives:
   - Perform pointer surgery (reversal, splice) without losing the tail
-  - Apply fast–slow pointers for cycles and midpoints
+  - Apply fast–slow pointers for midpoints and cycle detection
   - Assemble the LRU cache from a hash map + doubly-linked list
-stub: true
-tags: [linked-lists, pointers, lru]
+  - Say precisely when a linked list beats an array — and how rarely that is
+tags: [linked-lists, pointers, lru, fast-slow]
 ---
 
 <Intuition>
 Arrays make you pay to rearrange; linked lists make rearrangement a
-three-pointer shuffle — and make you pay for everything else. The list
-earns its place in exactly one situation: **you're already holding the node
-you care about**, and you want to splice in O(1). That's browser history,
-undo chains, and the eviction end of every LRU cache. Below: reversal, the
-canonical pointer surgery. The bug you will write someday — overwriting a
-pointer you hadn't read yet — is drawn in red when it would happen.
+three-pointer shuffle — and make you pay for everything else. Each node
+knows only its value and where the next node lives; the structure is pure
+relationship, no geometry. That buys exactly one superpower: **if you're
+already holding a node, you can splice around it in O(1)** — no shifting,
+no reallocation. The honest career advice: you will rarely *store* data in
+a linked list, but the pointer discipline it teaches — never overwrite a
+pointer you haven't finished reading — is the muscle every tree and graph
+algorithm uses.
 </Intuition>
+
+<Concept>
+## The trade, stated without romance
+
+Singly linked: each node holds `val` and `next`. Doubly linked: add
+`prev`, doubling the wiring in exchange for O(1) deletion of a node
+you're *holding* (you can reach the neighbor whose pointer must change).
+Against the array:
+
+- **Splice at a held position:** list O(1), array O(n). The list's whole
+  case.
+- **Index, scan, search:** array wins — O(1) indexing, and even the O(n)
+  scans run ~10× faster in practice because contiguous memory prefetches
+  while list nodes cache-miss one by one.
+
+That cache gap is why `collections.deque` exists (blocks of 64, not
+node-per-element) and why real LRU caches are the only place most
+engineers ever deploy a hand-wired doubly-linked list.
+</Concept>
+
+<Concept>
+## Reversal: the canonical pointer surgery
+
+Reverse a singly linked list in place. Three pointers, one loop, and one
+line that separates working code from a lost tail — `nxt = curr.next`
+*before* the flip. Watch the red moment below: the step where skipping the
+save would orphan everything to the right.
+</Concept>
 
 <Visual id="linked-reversal" />
 
 <Check id="q-ll-reverse" />
 
+<Concept>
+## Fast–slow pointers: one pass, no length
+
+Send two runners down the list: `slow` steps once, `fast` twice. When
+`fast` exhausts the list, `slow` stands at the middle — one pass, O(1)
+space, no pre-counting. Same trick, deeper cut: in a list with a cycle,
+`fast` laps `slow` *inside* the cycle (Floyd's algorithm) — the runners
+must meet because their gap shrinks by one each step, and "is there a
+cycle?" gets answered with two pointers and zero extra memory, where the
+naive answer is an O(n) visited-set.
+
+Build the midpoint version yourself — the loop condition is where
+everyone's first attempt crashes:
+</Concept>
+
+<Exercise id="q-fastslow-code" />
+
+<RealWorld source="Browser history">
+Back and Forward are a doubly-linked list you use hourly: each page holds
+prev and next; Back is `curr = curr.prev`, O(1). And when you go Back
+three pages then click a new link? The forward chain gets *truncated* —
+splice, don't shift. An array-backed history would memmove your tab
+gymnastics; the list edits two pointers. The same shape runs undo chains
+in editors — and, one splice fancier, the LRU below.
+</RealWorld>
+
+<Concept>
+## The LRU cache: the module's boss fight
+
+An LRU cache evicts the least-recently-used entry when full, with `get`
+and `put` both O(1). No single structure can do it: recency is an
+*ordering* (a map can't hold one) and lookup is *by key* (a list can't do
+it in O(1)). So you marry them:
+
+- **Hash map:** key → node pointer. O(1) find.
+- **Doubly-linked list:** nodes in recency order — front = hottest,
+  tail = next to evict.
+
+Every `get`: map finds the node, list unlinks it and re-splices it at the
+front — possible in O(1) *only because* the node carries `prev`. Every
+eviction: unlink the tail. The map covers the list's lookup weakness; the
+list covers the map's ordering weakness. This composite is a CDN edge
+node's working set, your OS page cache, and `functools.lru_cache` — which
+is exactly this design in C.
+</Concept>
+
+<Check id="q-lru-design" />
+
+<Gotcha>
+Python has no null-pointer segfault, but `NoneType has no attribute
+'next'` is the same bug wearing a nicer exception. It is almost always the
+loop condition: `while fast and fast.next:` — check the pointer *before*
+dereferencing one step further than you verified. Off-by-one in linked
+lists means off-by-one-dereference, and the empty list / single node cases
+are where every submission dies. Test those two first, always.
+</Gotcha>
+
+<Aside title="Why real systems still avoid linked lists">
+Bjarne Stroustrup has a famous demo: even for random middle insertions —
+the list's on-paper best case — a vector beats a linked list until n gets
+large, because finding the insertion point is O(n) for both, and the
+vector's O(n) is a prefetched streaming scan while the list's is a
+cache-miss parade. The moral isn't "lists are bad"; it's that **big-O
+models operation counts, not memory hierarchies.** Lists win only when
+you hold the node already (LRU) or when splicing is the workload
+(adjacency lists, free lists in allocators).
+</Aside>
+
 <Cheatsheet>
-Full lecture pending — fast–slow pointers, the LRU build, and CDN edge
-cache anchor land here.
+Interview reflex: the moment a problem says *O(1) removal from the middle
+while holding a reference* — say doubly-linked list; the moment it says
+*cycle or midpoint in one pass* — say fast–slow. Everything else, say
+array, and say it with the cache-locality reason.
 </Cheatsheet>

@@ -1,35 +1,144 @@
 ---
 id: graphs-traversal
 module: graphs
-title: Graph traversal — BFS, DFS, and friends
+title: Graphs — traversal, ordering, connectivity
 order: 1
-estimatedMinutes: 45
+estimatedMinutes: 50
 prerequisites: [deques, stacks-intro]
 objectives:
   - Run BFS and DFS from the same loop, swapping only the frontier container
-  - State why BFS layers equal shortest paths in unweighted graphs
-  - Use union-find with path compression for connectivity
-stub: true
-tags: [graphs, bfs, dfs, union-find, topo-sort]
+  - Prove why BFS layers equal shortest paths, and where Dijkstra picks up
+  - Produce a topological order and detect the cycle that forbids one
+  - Use union-find with path compression for near-O(1) connectivity
+tags: [graphs, bfs, dfs, dijkstra, topo-sort, union-find]
 ---
 
 <Intuition>
-BFS and DFS are the same five lines of code. The only difference is the
-container holding the frontier: a **queue** explores in rings (oldest
-first), a **stack** dives down corridors (newest first). The visual runs
-both on the identical graph simultaneously — watching the two frontiers
-diverge teaches more than any prose. This is npm resolving your dependency
-order, Maps flooding outward from your location, and "people you may know"
-at distance two.
+A graph is the structure you get when you stop pretending relationships
+are hierarchical. Trees said "one parent"; arrays said "one neighbor per
+side"; graphs shrug and allow anything: nodes (vertices) and connections
+(edges), cycles included. The price of that honesty is disorientation —
+there's no root, no "start," no natural order. Every algorithm in this
+lesson is a machine for **imposing order on a structure that refuses to
+provide its own**: visit order (traversal), dependency order (topo sort),
+group order (connectivity).
 </Intuition>
+
+<Concept>
+## Representation: the adjacency list default
+
+Store, for each node, the list of its neighbors: `dict[node,
+list[node]]`. Space O(V + E), neighbor iteration proportional to actual
+degree — right for the sparse graphs reality produces (your social graph
+is not densely wired to all eight billion). The alternative — an
+adjacency *matrix*, V×V booleans — buys O(1) "are u,v connected?" for
+O(V²) space, worth it only for dense graphs or tiny ones. Interview
+default: adjacency list, and say "V plus E" like it's one word.
+</Concept>
+
+<Concept>
+## Traversal: one loop, two worlds
+
+Both BFS and DFS run the identical loop: take a node from the frontier,
+visit it, add unseen neighbors to the frontier. The **only difference is
+the container** — and the container decides everything:
+
+- **Queue (FIFO)** → BFS: expand oldest-discovered first. The traversal
+  sweeps outward in distance layers — all nodes k edges away before any
+  at k+1. That layering is a *proof*: first arrival = fewest edges, so
+  BFS computes shortest paths in unweighted graphs as a side effect.
+- **Stack (LIFO)** → DFS: chase newest-discovered first. The traversal
+  dives down a corridor to its end before backtracking — the shape that
+  yields cycle detection, topological order, and connected components.
+
+Watch them diverge on the same graph below; the frontier readouts under
+each panel are the entire explanation.
+</Concept>
 
 <Visual id="bfs-dfs" />
 
 <Check id="q-bfs-shortest" />
 
+<Gotcha>
+Mark nodes seen **when you enqueue them, not when you pop them.** Marking
+at pop time lets a node sit in the frontier multiple times (added by
+several neighbors before its first pop) — still terminates, but the
+frontier bloats and the "first arrival = shortest" proof quietly breaks
+for the duplicated nodes' bookkeeping. This single line is the most
+common graph-BFS bug in interviews: `seen.add(u)` goes next to
+`frontier.append(u)`, never next to `pop`.
+</Gotcha>
+
+<Concept>
+## Weighted edges: Dijkstra is BFS with a better frontier
+
+Give edges weights and BFS's proof collapses — a two-edge path can be
+cheaper than a one-edge path, so layer number no longer means cost.
+Dijkstra's repair is surgical: keep the same loop, but make the frontier
+a **min-heap keyed by distance-so-far** (Module 7 reporting for duty).
+Popping the cheapest node guarantees its distance is final: any
+alternative route would pass through a frontier node that already costs
+more, and — *the load-bearing assumption* — non-negative edges can only
+add to that. Negative weights void the warranty (Bellman-Ford exists for
+them). Cost: O((V+E) log V). Your Maps app runs this idea (plus
+heuristics — A* is Dijkstra with a compass) at continental scale.
+</Concept>
+
+<Check id="q-dijkstra-frontier" />
+
+<RealWorld source="npm install">
+Package installation is a topological sort: every package must land
+after its dependencies. **Kahn's algorithm** is BFS wearing a hard hat:
+compute in-degrees (dependency counts), queue everything at zero, and
+each time you "install" a node, decrement its dependents — enqueueing any
+that hit zero. If the queue starves before emitting all V nodes, the
+leftovers form a **cycle**: A needs B needs A — and Kahn's early
+termination *is* the "circular dependency detected" error npm prints.
+Same algorithm schedules your build system (Make), your spreadsheet's
+cell recalculation, and university prerequisite charts.
+</RealWorld>
+
+<Check id="q-topo-cycle" />
+
+<Concept>
+## Union-find: connectivity without traversal
+
+"Are these two nodes in the same component?" asked millions of times as
+edges stream in — traversing per query would be ruinous. **Union-find**
+maintains components directly: each node points toward a root
+representative; `find(x)` walks to the root; `union(a, b)` links one
+root under the other. Two accelerants make it *effectively O(1)*:
+
+- **Path compression:** every find re-points the nodes it visited
+  straight at the root — the walk flattens the structure as a side
+  effect. Early expensive finds prepay later trivial ones (amortized
+  analysis, fourth appearance).
+- **Union by rank:** attach the shallower tree under the deeper.
+
+Together: O(α(n)) amortized — inverse Ackermann, ≤ 4 for any n that fits
+in this universe. This is Kruskal's MST engine, network-partition
+detection, and image-region merging.
+</Concept>
+
 <Exercise id="q-unionfind-code" />
 
+<TradeoffTable id="frontier-choice" />
+
+<Aside title="DFS recursion vs explicit stack">
+Recursive DFS is beautiful and dies at Python's ~1000-frame limit — a
+path graph 10,000 nodes long overflows before your logic gets a vote
+(recursion depth = space, Module 1). Production DFS uses an explicit
+stack (Module 5's conversion), which also makes the queue/stack symmetry
+visible in code: the two traversals really do differ by one word. Bonus
+subtlety: stack-DFS visits neighbors in *reversed* adjacency order
+relative to recursive DFS — irrelevant for correctness, disorienting in
+tests.
+</Aside>
+
 <Cheatsheet>
-Full lecture pending — representations, topological sort, Dijkstra, and the
-build-ordering anchor land here.
+The frontier IS the algorithm: **queue → layers → unweighted shortest
+paths; stack → corridors → cycles and ordering; min-heap → cheapest-first
+→ Dijkstra (weights ≥ 0); in-degree queue → topo sort, starvation =
+cycle.** Connectivity-only questions skip traversal: union-find, α(n),
+"effectively constant."
 </Cheatsheet>

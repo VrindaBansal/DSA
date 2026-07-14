@@ -3,30 +3,123 @@ id: hashing-internals
 module: hashing
 title: Hash maps under the hood
 order: 1
-estimatedMinutes: 35
+estimatedMinutes: 40
 prerequisites: [dynamic-arrays]
 objectives:
   - Trace a key from hash function to bucket, through a collision
   - Compare chaining and open addressing and say what load factor governs
   - Name the exact conditions under which dict stops being O(1)
-stub: true
+  - Explain why keys must be immutable, from the filing invariant
 tags: [hashing, dict, collisions, load-factor]
 ---
 
 <Intuition>
 A hash map is a bet: sacrifice all ordering, and in exchange answer "have I
-seen this key?" in constant time. The bet is honest only while keys spread
-evenly across buckets. The visual below lets you toggle a bad hash function
-and watch the structure quietly renege — chains grow, and O(1) lookup decays
-into a linear scan. Every database index, DNS cache, and deduped event
-stream is this diagram wearing a production budget.
+seen this key?" in constant time. The mechanism is almost insultingly
+simple — **turn the key into an array index and jump there.** Everything
+interesting about hash maps is what happens when the bet's fine print
+activates: two keys landing on the same index, the table filling up, a key
+changing underneath you. This lesson is about the fine print, because the
+fine print is what interviewers ask about.
 </Intuition>
+
+<Concept>
+## The mechanism
+
+Three steps, every operation: `hash(key)` produces a large integer;
+`% num_buckets` folds it into a slot index; the slot is read or written.
+That's the whole O(1) claim — one hash, one modulo, one array access.
+
+The claim has two dependencies. First, hashing must be cheap: it's O(len)
+for strings, which is why "O(1) lookup" quietly assumes short keys. Second
+— and this is the load-bearing one — **keys must spread evenly.** The
+pigeonhole principle guarantees collisions (more possible keys than
+buckets, always); a good hash function makes them *rare and unclustered*.
+A bad one concentrates them, and concentration is death. Toggle the bad
+hash below and watch the structure renege on its bet in real time.
+</Concept>
 
 <Visual id="hash-collisions" />
 
 <Check id="q-hash-load" />
 
+<Concept>
+## The two collision strategies
+
+**Chaining** hangs a little list off each bucket; colliding keys append to
+it, lookups walk it. Simple, tolerant of high load, but every chain hop is
+a pointer chase to a random heap address — cache-hostile.
+
+**Open addressing** keeps everything in the flat table: on collision,
+*probe* another slot by a deterministic rule until an empty one appears.
+Lookups retrace the same probe path. All accesses stay in one contiguous
+array — cache-friendly — but performance decays sharply as the table
+fills, and deletion gets weird: emptying a slot would break every probe
+path that passed through it, so you leave a **tombstone** marker instead.
+
+The scoreboard metric for both is the **load factor** α = items/buckets.
+Chaining degrades gently as α grows (average chain = α); open addressing
+degrades violently as α → 1 (probe sequences explode). CPython's dict is
+open addressing and resizes at α ≈ ⅔ precisely to stay out of the violent
+zone — the resize being amortized O(1), by the same geometric argument as
+list doubling.
+</Concept>
+
+<TradeoffTable id="collision-strategies" />
+
+<Check id="q-open-addressing" />
+
+<RealWorld source="Event dedupe">
+Every analytics pipeline has a dedupe stage: events arrive at-least-once
+(retries, replays), and downstream wants exactly-once. The core is a hash
+set of event ids — `if event.id in seen: drop`. At 100k events/sec, that
+`in` must be O(1); a linear scan would need 10 billion comparisons per
+second by lunch. The same shape at other scales: DNS resolvers cache
+name → IP with TTLs (a dict with expiry); databases keep hash indexes for
+equality predicates — `WHERE email = ?` hits a hash index, while
+`WHERE age > 30` cannot, because hashing annihilates order. Choosing hash
+vs B-tree indexes IS the ordering-for-speed bet, made by DBAs daily.
+</RealWorld>
+
+<Concept>
+## The filing invariant, or: why keys must be immutable
+
+A dict files each entry under the bucket dictated by its hash *at insert
+time*, and looks it up by hashing *at lookup time*. The entire structure
+rests on those two computations agreeing forever. A mutable key breaks the
+treaty: mutate it, the hash changes, lookups probe the new bucket, and the
+entry — still in the old one — becomes a ghost: in memory, counted by
+`len()`, unreachable by key. Python forbids the whole failure class by
+requiring hashability = lifetime-stable hash: tuples of immutables in,
+lists out.
+</Concept>
+
+<Check id="q-hash-mutable-short" />
+
+<Gotcha>
+`hash(-1) == hash(-2) == -2` in CPython (a C-API quirk: −1 signals errors,
+so it's remapped). Harmless, but a perfect demo that **collisions exist
+even for tiny ints** — code that assumes distinct keys have distinct
+hashes is wrong by construction. Related trap: floats and ints that
+compare equal hash equal (`hash(1) == hash(1.0)`), so `d[1.0]` overwrites
+`d[1]`. Equality and hashing travel together — override one, override both.
+</Gotcha>
+
+<Aside title="Hash-DoS — when collisions become an attack">
+If an attacker knows your hash function, they can mail you thousands of
+keys crafted to land in one bucket, turning every dict operation on your
+request parser into an O(n) chain walk — a denial of service built from
+pure algorithm analysis (the 2011 "hash flooding" advisories hit every
+major web framework at once). Python's fix: string hashing is seeded per
+process (`PYTHONHASHSEED`) with SipHash, so bucket targets are
+unpredictable. This is also the real reason string hash values differ
+between runs — a security feature that surprises people in tests.
+</Aside>
+
 <Cheatsheet>
-Full lecture pending — hash functions, chaining vs open addressing, resize
-policy, and the hash-DoS story land here.
+Say it like the fine print matters: **"dict is O(1) *average*, assuming a
+good hash and a bounded load factor — CPython's open addressing resizes at
+⅔ load to keep it true, and the worst case is O(n) under adversarial
+collisions."** That sentence is the difference between using dicts and
+knowing them.
 </Cheatsheet>
