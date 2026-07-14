@@ -26,7 +26,7 @@ export function TradeoffTableBlock({
     );
   }
   return (
-    <BlockShell lessonId={lessonId} blockId={blockId} className="my-8">
+    <BlockShell lessonId={lessonId} blockId={blockId} className="not-prose my-8">
       <TradeoffTableView data={data} />
     </BlockShell>
   );

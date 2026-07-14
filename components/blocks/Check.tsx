@@ -36,7 +36,7 @@ export function CheckBlock({
   const prior = lp.checks[id];
 
   return (
-    <BlockShell lessonId={lessonId} blockId={blockId} className="my-8">
+    <BlockShell lessonId={lessonId} blockId={blockId} className="not-prose my-8">
       <div className="rounded-md border border-line bg-panel p-5">
         <div className="mb-3 flex items-center justify-between">
           <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-active-deep">

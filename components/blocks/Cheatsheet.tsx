@@ -29,7 +29,7 @@ export function CheatsheetBlock({
     <BlockShell
       lessonId={lessonId}
       blockId={blockId}
-      className="my-10"
+      className="not-prose my-10"
       onSeen={() => setCompleted(lessonId)}
     >
       <div className="print-sheet overflow-hidden rounded-md border-[1.5px] border-ink bg-panel">

@@ -41,7 +41,7 @@ export function ExerciseBlock({
     );
   }
   return (
-    <BlockShell lessonId={lessonId} blockId={blockId} className="my-8">
+    <BlockShell lessonId={lessonId} blockId={blockId} className="not-prose my-8">
       <ExerciseCard lessonId={lessonId} q={q} />
     </BlockShell>
   );

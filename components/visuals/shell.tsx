@@ -25,7 +25,7 @@ export function VisualShell({
   code: React.ReactNode;
   drive?: React.ReactNode;
   readout?: React.ReactNode;
-  codeTitle?: string;
+  codeTitle?: React.ReactNode;
 }) {
   return (
     <figure className="not-prose my-8 overflow-hidden rounded-md border-[1.5px] border-ink bg-panel">
