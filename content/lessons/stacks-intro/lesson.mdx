@@ -1,0 +1,31 @@
+---
+id: stacks-intro
+module: stacks
+title: Stacks and the monotonic pattern
+order: 1
+estimatedMinutes: 30
+prerequisites: [big-o]
+objectives:
+  - Map LIFO onto nesting — brackets, call frames, undo
+  - Read a stack trace as a literal picture of the call stack
+  - Apply the monotonic stack to next-greater-element problems in O(n)
+stub: true
+tags: [stacks, lifo, monotonic, call-stack]
+---
+
+<Intuition>
+You already run a stack all day: every function call pushes a frame, every
+return pops one, and a stack trace is just the stack printed mid-flight.
+LIFO is the natural shape of **nesting** — the most recently opened thing
+must close first, whether it's a bracket, an HTML tag, or a database
+transaction. The sleeper hit of this module is the *monotonic* stack: keep
+the stack sorted by popping violators, and a whole family of "next greater
+element" problems collapses from O(n²) to O(n).
+</Intuition>
+
+<Check id="q-stack-lifo" />
+
+<Cheatsheet>
+Full lecture pending — expression parsing, undo/redo, and the monotonic
+stack walkthrough land here.
+</Cheatsheet>

@@ -1,0 +1,34 @@
+---
+id: dp-foundations
+module: dp
+title: From recursion to tables — DP foundations
+order: 1
+estimatedMinutes: 50
+prerequisites: [recursion-trees]
+objectives:
+  - Diagnose overlapping subproblems from a recursion tree
+  - Convert memo (top-down) to tabulation (bottom-up) and back on the same problem
+  - Read a filled edit-distance table as a diff script
+stub: true
+tags: [dp, memoization, tabulation, edit-distance]
+---
+
+<Intuition>
+Dynamic programming has a reputation it doesn't deserve. It is one move,
+applied relentlessly: **your recursion keeps re-solving the same
+subproblems — stop doing that.** Cache them (memoization) or fill them in
+order (tabulation); either way the exponential tree from Module 1 flattens
+into a table. The visual fills the *same* edit-distance table both ways —
+top-down's sparse, need-driven fill against bottom-up's dense sweep. Same
+cells, two orders: once you see that, DP is bookkeeping, not magic. The
+arrows in the table are literally your diff tool's output.
+</Intuition>
+
+<Visual id="dp-table" />
+
+<Check id="q-dp-overlap" />
+
+<Cheatsheet>
+Full lecture pending — knapsack, LIS, space optimization, and when greedy
+is provably safe land here.
+</Cheatsheet>

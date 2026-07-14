@@ -1,0 +1,32 @@
+---
+id: hashing-internals
+module: hashing
+title: Hash maps under the hood
+order: 1
+estimatedMinutes: 35
+prerequisites: [dynamic-arrays]
+objectives:
+  - Trace a key from hash function to bucket, through a collision
+  - Compare chaining and open addressing and say what load factor governs
+  - Name the exact conditions under which dict stops being O(1)
+stub: true
+tags: [hashing, dict, collisions, load-factor]
+---
+
+<Intuition>
+A hash map is a bet: sacrifice all ordering, and in exchange answer "have I
+seen this key?" in constant time. The bet is honest only while keys spread
+evenly across buckets. The visual below lets you toggle a bad hash function
+and watch the structure quietly renege — chains grow, and O(1) lookup decays
+into a linear scan. Every database index, DNS cache, and deduped event
+stream is this diagram wearing a production budget.
+</Intuition>
+
+<Visual id="hash-collisions" />
+
+<Check id="q-hash-load" />
+
+<Cheatsheet>
+Full lecture pending — hash functions, chaining vs open addressing, resize
+policy, and the hash-DoS story land here.
+</Cheatsheet>

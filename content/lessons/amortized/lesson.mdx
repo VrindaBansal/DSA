@@ -1,0 +1,112 @@
+---
+id: amortized
+module: complexity
+title: Amortized analysis — paying for the spike
+order: 2
+estimatedMinutes: 25
+prerequisites: [big-o]
+objectives:
+  - Define amortized cost as a guarantee over sequences, not a probabilistic average
+  - Prove the doubling argument for dynamic arrays with the geometric series
+  - Distinguish amortized O(1) from worst-case O(1) and know when the difference bites
+  - Recognize the accounting/banker's argument and reuse it on new structures
+tags: [complexity, amortized, dynamic-array]
+---
+
+<Intuition>
+Some operations are cheap a thousand times and brutal once. `list.append`
+is one memory write… until the array is full, and then it's "allocate a
+bigger block and copy *everything*." Judging that operation by its worst
+single call is slander; judging it by its typical call is denial.
+**Amortized analysis is the honest middle: total cost of the whole sequence,
+divided by the number of operations — guaranteed, not averaged over luck.**
+It's the accountant's view: the rare big invoice was prepaid by a thousand
+small deposits.
+</Intuition>
+
+<Concept>
+## The dynamic array, precisely
+
+Python's `list` keeps a contiguous block with some spare **capacity**. When
+`append` finds no spare slot, it allocates a bigger block (call it 2×,
+CPython actually uses ~1.125×), copies all n elements over, then appends.
+So an append costs 1 normally — and n at the resize.
+
+Watch the visual: the per-append cost spikes exactly at the doublings, and
+the **running average line stays flat**. That flat line is amortized O(1),
+drawn rather than claimed. Push elements yourself and try to make the
+average misbehave — you can't, and the *why* is the geometric series below.
+</Concept>
+
+<Visual id="amortized-doubling" />
+
+<Concept>
+## The proof in one paragraph
+
+Start at capacity 1 and append n times. Resizes fire at sizes 1, 2, 4, 8,
+…, and the resize at size k copies k elements. Total copies:
+
+```
+1 + 2 + 4 + ... + n/2 + n  <  2n
+```
+
+A geometric series is dominated by its last term — the whole history of
+copies costs less than twice the final size. Add the n unavoidable writes:
+under 3n total work for n appends, so **O(1) amortized per append**. No
+randomness, no "usually": *any* sequence of n appends costs O(n), even one
+chosen by an adversary.
+
+The same result via the **banker's trick**: charge every append 3 coins —
+one to write itself, two banked. When a resize copies k elements, the k/2
+elements appended since the last resize have exactly k coins banked between
+them. The invoice was prepaid. If you can invent a coin-charging scheme
+that never goes negative, you've proven an amortized bound — that's the
+whole method, and it transfers to the two-stack queue in Module 6 verbatim.
+</Concept>
+
+<Check id="q-amort-append" />
+
+<Check id="q-amort-def" />
+
+<Gotcha>
+Growth must be **multiplicative**. Grow by a fixed +16 instead of ×2 and a
+resize fires every 16 appends, each copying the whole current array:
+16 + 32 + 48 + … ≈ n²/32 total — **O(n) amortized per append**, a quadratic
+bulk load hiding behind an innocent-looking constant. If you ever hand-roll
+a growable buffer, the growth factor is the entire design.
+</Gotcha>
+
+<RealWorld source="Game engine">
+A physics engine appends collision events to a dynamic array every frame,
+16.6ms budget. Throughput is fine — amortized O(1) promised and delivered.
+Then one frame in a thousand lands on the resize: a multi-megabyte copy,
+the frame takes 40ms, and the game visibly hitches. Nothing is *wrong* —
+amortized analysis answers a throughput question, and the engine asked a
+latency one. The fixes are worst-case tools: preallocate
+(`reserve`-style), or a ring buffer (Module 6) whose O(1) has no asterisk.
+Amortized vs worst-case is not pedantry; it's whether your frame drops.
+</RealWorld>
+
+<Check id="q-amort-latency" />
+
+<TradeoffTable id="amortized-vs-worst" />
+
+<Aside title="Why CPython grows by ~1.125× instead of 2×">
+Any factor r > 1 keeps the series geometric — the amortized argument
+survives with a bigger constant (cost ≈ r/(r−1) per element). CPython trades
+a larger constant for tighter memory: doubling can strand almost half the
+allocation as unused capacity, painful when lists are huge. There's also a
+folklore argument about r < φ ≈ 1.618 letting allocators reuse the sum of
+previously freed blocks for the next growth. Growth factor choice is a
+memory-vs-copies dial, not a correctness question.
+</Aside>
+
+<Check id="q-amort-short" />
+
+<Cheatsheet>
+Say it the way an interviewer wants to hear it: **"append is amortized O(1)
+— resizes copy 1+2+4+…+n which is a geometric series under 2n, so any n
+appends cost O(n) total. If I need worst-case O(1) — real-time paths — I
+preallocate or use a ring buffer."** Two sentences, contract and escape
+hatch.
+</Cheatsheet>

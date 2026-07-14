@@ -1,0 +1,33 @@
+---
+id: linked-lists
+module: linked-structures
+title: Linked lists and pointer surgery
+order: 1
+estimatedMinutes: 35
+prerequisites: [big-o]
+objectives:
+  - Perform pointer surgery (reversal, splice) without losing the tail
+  - Apply fast–slow pointers for cycles and midpoints
+  - Assemble the LRU cache from a hash map + doubly-linked list
+stub: true
+tags: [linked-lists, pointers, lru]
+---
+
+<Intuition>
+Arrays make you pay to rearrange; linked lists make rearrangement a
+three-pointer shuffle — and make you pay for everything else. The list
+earns its place in exactly one situation: **you're already holding the node
+you care about**, and you want to splice in O(1). That's browser history,
+undo chains, and the eviction end of every LRU cache. Below: reversal, the
+canonical pointer surgery. The bug you will write someday — overwriting a
+pointer you hadn't read yet — is drawn in red when it would happen.
+</Intuition>
+
+<Visual id="linked-reversal" />
+
+<Check id="q-ll-reverse" />
+
+<Cheatsheet>
+Full lecture pending — fast–slow pointers, the LRU build, and CDN edge
+cache anchor land here.
+</Cheatsheet>

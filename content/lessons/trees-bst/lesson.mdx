@@ -1,0 +1,33 @@
+---
+id: trees-bst
+module: trees
+title: Binary search trees and why balance exists
+order: 1
+estimatedMinutes: 40
+prerequisites: [linked-lists, recursion-trees]
+objectives:
+  - Execute BST insert and all three delete cases by hand
+  - Demonstrate the sorted-insert degeneration and connect it to balancing
+  - Explain why in-order traversal yields sorted order, and what B-trees change
+stub: true
+tags: [trees, bst, balance, traversal]
+---
+
+<Intuition>
+A BST is binary search made into a place you can live: left is smaller,
+right is bigger, so every lookup walks one root-to-leaf path. All costs are
+O(height) — which is the whole story, because nothing forces height to be
+log n. Feed the tree sorted input below and watch it collapse into a
+linked list. That degeneration — not aesthetics — is why AVL, red-black
+trees, and the B-trees under every SQL index exist: they are machines for
+keeping height honest.
+</Intuition>
+
+<Visual id="bst-ops" />
+
+<Check id="q-bst-degenerate" />
+
+<Cheatsheet>
+Full lecture pending — traversals, delete's three cases in prose, tries,
+and the B-tree/SQL-index anchor land here.
+</Cheatsheet>

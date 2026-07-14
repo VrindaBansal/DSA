@@ -1,0 +1,35 @@
+---
+id: graphs-traversal
+module: graphs
+title: Graph traversal — BFS, DFS, and friends
+order: 1
+estimatedMinutes: 45
+prerequisites: [deques, stacks-intro]
+objectives:
+  - Run BFS and DFS from the same loop, swapping only the frontier container
+  - State why BFS layers equal shortest paths in unweighted graphs
+  - Use union-find with path compression for connectivity
+stub: true
+tags: [graphs, bfs, dfs, union-find, topo-sort]
+---
+
+<Intuition>
+BFS and DFS are the same five lines of code. The only difference is the
+container holding the frontier: a **queue** explores in rings (oldest
+first), a **stack** dives down corridors (newest first). The visual runs
+both on the identical graph simultaneously — watching the two frontiers
+diverge teaches more than any prose. This is npm resolving your dependency
+order, Maps flooding outward from your location, and "people you may know"
+at distance two.
+</Intuition>
+
+<Visual id="bfs-dfs" />
+
+<Check id="q-bfs-shortest" />
+
+<Exercise id="q-unionfind-code" />
+
+<Cheatsheet>
+Full lecture pending — representations, topological sort, Dijkstra, and the
+build-ordering anchor land here.
+</Cheatsheet>
