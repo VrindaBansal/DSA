@@ -44,6 +44,8 @@ interface ProgressApi {
   answerReview: (item: ReviewItem, correct: boolean) => void;
   appendChat: (lessonId: string, msg: ChatMessage) => void;
   clearChat: (lessonId: string) => void;
+  appendGeneralChat: (msg: ChatMessage) => void;
+  clearGeneralChat: () => void;
   addNote: (lessonId: string, note: string) => void;
   removeNote: (lessonId: string, index: number) => void;
   dueReview: () => ReviewItem[];
@@ -291,6 +293,14 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
     [updateLesson],
   );
 
+  const appendGeneralChat = useCallback((msg: ChatMessage) => {
+    setState((s) => ({ ...s, generalChat: [...s.generalChat, msg] }));
+  }, []);
+
+  const clearGeneralChat = useCallback(() => {
+    setState((s) => ({ ...s, generalChat: [] }));
+  }, []);
+
   const addNote = useCallback(
     (lessonId: string, note: string) => {
       updateLesson(lessonId, (lp) => ({ ...lp, notes: [...lp.notes, note] }));
@@ -325,6 +335,8 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
       answerReview,
       appendChat,
       clearChat,
+      appendGeneralChat,
+      clearGeneralChat,
       addNote,
       removeNote,
       dueReview,
@@ -343,6 +355,8 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
       answerReview,
       appendChat,
       clearChat,
+      appendGeneralChat,
+      clearGeneralChat,
       addNote,
       removeNote,
       dueReview,

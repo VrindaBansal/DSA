@@ -3,6 +3,8 @@ import { Space_Grotesk, Source_Serif_4, JetBrains_Mono } from 'next/font/google'
 import './globals.css';
 import { ProgressProvider } from '@/lib/progress/provider';
 import { TopNav } from '@/components/chrome/TopNav';
+import { TutorProvider } from '@/components/tutor/TutorContext';
+import { TutorLauncher } from '@/components/tutor/TutorLauncher';
 
 const display = Space_Grotesk({
   subsets: ['latin'],
@@ -35,8 +37,11 @@ export default function RootLayout({
     >
       <body>
         <ProgressProvider>
-          <TopNav />
-          <main className="min-h-screen">{children}</main>
+          <TutorProvider>
+            <TopNav />
+            <main className="min-h-screen">{children}</main>
+            <TutorLauncher />
+          </TutorProvider>
         </ProgressProvider>
       </body>
     </html>

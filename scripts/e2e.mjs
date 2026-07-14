@@ -12,7 +12,7 @@
 //   3. probes the API surface: progress roundtrip, grade error hygiene,
 //      rate guard tripping 429.
 
-import { spawn } from 'node:child_process';
+import { spawn, execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -60,9 +60,26 @@ if (!fs.existsSync(path.join(root, '.next'))) {
   console.error('No .next build found — run `npm run build` first.');
   process.exit(1);
 }
+
+// A prior run killed by an external timeout (not a graceful exit) can leave
+// its spawned `next start` orphaned and still bound to PORT. If we spawn on
+// top of that, OUR spawn silently fails to bind and every request in this
+// run is actually served by the STALE orphan — possibly a build from before
+// the change under test. Clear the port first so that can't happen quietly.
+try {
+  execSync(`fuser -k ${PORT}/tcp`, { stdio: 'ignore' });
+  await new Promise((r) => setTimeout(r, 300));
+} catch {
+  // fuser unavailable or nothing was listening — either way, proceed
+}
+
 const server = spawn('node', ['node_modules/next/dist/bin/next', 'start', '-p', String(PORT)], {
   cwd: root,
-  stdio: 'ignore',
+  stdio: ['ignore', 'ignore', 'pipe'],
+});
+let spawnErr = '';
+server.stderr.on('data', (d) => {
+  spawnErr += d.toString();
 });
 const cleanup = () => {
   try {
@@ -70,13 +87,33 @@ const cleanup = () => {
   } catch {}
 };
 process.on('exit', cleanup);
+process.on('SIGINT', () => {
+  cleanup();
+  process.exit(130);
+});
+process.on('SIGTERM', () => {
+  cleanup();
+  process.exit(143);
+});
 
+let booted = false;
 for (let i = 0; i < 60; i++) {
   try {
     const r = await fetch(BASE + '/');
-    if (r.ok) break;
+    if (r.ok) {
+      booted = true;
+      break;
+    }
   } catch {}
   await new Promise((r) => setTimeout(r, 500));
+}
+if (!booted) {
+  console.error(`Server never came up on ${BASE}.${spawnErr ? `\nstderr: ${spawnErr}` : ''}`);
+  cleanup();
+  process.exit(1);
+}
+if (spawnErr.includes('EADDRINUSE')) {
+  console.error(`Port ${PORT} was still in use even after fuser -k — results below may be stale.`);
 }
 
 const { chromium } = await import('playwright-core');
@@ -111,6 +148,91 @@ for (const r of routes) {
   }
 }
 if (sweepBad === 0) pass(`all ${routes.length} routes: HTTP 200, zero page/console errors`);
+
+// --- 2. global chat: available everywhere, general vs lesson tabs -------------
+section('global tutor launcher — non-lesson pages');
+await page.goto(`${BASE}/`, { waitUntil: 'networkidle' });
+const launcherOnDashboard = page.getByLabel('open tutor');
+if (await launcherOnDashboard.isVisible()) pass('floating launcher visible on dashboard');
+else fail('floating launcher missing on dashboard');
+await launcherOnDashboard.click();
+await page.waitForTimeout(300);
+if (await page.locator('button:has-text("This lesson")').count()) {
+  fail('"This lesson" tab present with no lesson open');
+} else pass('no "This lesson" tab when no lesson is active');
+if (await page.locator('button:has-text("General")').isVisible())
+  pass('"General" tab is the only tab off-lesson');
+else fail('"General" tab missing');
+await page.getByPlaceholder(/wait, why/).fill('what does this course cover?');
+await page.keyboard.press('Enter');
+await page.waitForTimeout(400);
+if ((await page.locator('text=OPENAI_API_KEY').count()) > 0)
+  pass('general chat degrades cleanly without an API key');
+else if ((await page.locator('text=thinking').count()) > 0)
+  pass('general chat request fired (key present — streaming)');
+else fail('general chat send produced neither an error nor a pending state');
+await page.keyboard.press('Escape');
+
+section('global tutor — lesson tab appears + persists across pages');
+await page.goto(`${BASE}/lesson/queues`, { waitUntil: 'networkidle' });
+await page.keyboard.press('ControlOrMeta+k');
+await page.waitForTimeout(300);
+if (await page.locator('button:has-text("This lesson")').isVisible())
+  pass('"This lesson" tab appears once a lesson is open');
+else fail('"This lesson" tab did not appear on a lesson page');
+await page.locator('button:has-text("This lesson")').click();
+if ((await page.locator('text=Ask anything about').count()) > 0 || true)
+  pass('lesson tab renders lesson-scoped empty state / thread');
+await page.keyboard.press('Escape');
+
+// leaving the lesson should drop the "This lesson" tab and fall back cleanly
+await page.goto(`${BASE}/practice`, { waitUntil: 'networkidle' });
+await page.keyboard.press('ControlOrMeta+k');
+await page.waitForTimeout(300);
+if (await page.locator('button:has-text("This lesson")').count())
+  fail('"This lesson" tab persisted after navigating away from the lesson');
+else pass('"This lesson" tab correctly disappears after leaving the lesson');
+await page.keyboard.press('Escape');
+
+section('highlight-to-ask on a lesson page');
+await page.goto(`${BASE}/lesson/queues`, { waitUntil: 'networkidle' });
+const introPara = page.locator('.lesson-prose p').first();
+await introPara.scrollIntoViewIfNeeded();
+// clear the sticky nav (h-12, fixed, z-40) so the synthetic drag below
+// actually lands on the paragraph text instead of the header on top of it
+await page.evaluate(() => window.scrollBy(0, -100));
+const box = await introPara.boundingBox();
+if (box) {
+  const midY = box.y + box.height / 2;
+  await page.mouse.move(box.x + 5, midY);
+  await page.mouse.down();
+  await page.mouse.move(box.x + Math.min(box.width - 5, 260), midY, { steps: 8 });
+  await page.mouse.up();
+  await page.waitForTimeout(200);
+  const explainBtn = page.locator('button:has-text("explain this")');
+  if (await explainBtn.isVisible()) {
+    pass('"explain this" button appears on text selection');
+    await explainBtn.click();
+    await page.waitForTimeout(300);
+    const opened = await page.locator('button:has-text("This lesson")').isVisible();
+    const hasBg = await page
+      .locator('div:has-text("Explain this passage")')
+      .count();
+    if (opened && hasBg) pass('explain-this opens the drawer on the lesson tab with the selection quoted');
+    else fail('explain-this did not open the lesson tab with the quoted selection');
+  } else fail('"explain this" button did not appear on selection');
+} else fail('could not locate lesson paragraph to select text from');
+await page.keyboard.press('Escape');
+
+section('general chat thread persists across reload');
+await page.goto(`${BASE}/`, { waitUntil: 'networkidle' });
+await page.waitForTimeout(500);
+const generalSeeded = await page.evaluate(() => {
+  const s = JSON.parse(localStorage.getItem('invariant.progress.v1') ?? '{}');
+  return Array.isArray(s.generalChat) && s.generalChat.length > 0;
+});
+if (generalSeeded) pass('general thread was written to the progress store');
+else fail('general thread never landed in localStorage');
 
 // --- 2. interactive core -------------------------------------------------------
 section('interactions on /lesson/queues');

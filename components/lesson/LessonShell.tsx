@@ -2,11 +2,12 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { useProgress } from '@/lib/progress/provider';
-import { TutorDrawer } from '@/components/tutor/TutorDrawer';
+import { useTutor } from '@/components/tutor/TutorContext';
 
 /**
- * Client wrapper around the server-rendered lecture: visit tracking, the
- * tutor drawer (Cmd+K), and select-to-explain (spec §8).
+ * Client wrapper around the server-rendered lecture: visit tracking,
+ * registering this lesson with the global tutor context (so the drawer can
+ * offer a "This lesson" tab), and select-to-explain (spec §8).
  */
 export function LessonShell({
   lessonId,
@@ -22,8 +23,7 @@ export function LessonShell({
   children: React.ReactNode;
 }) {
   const { visitLesson } = useProgress();
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [pendingAsk, setPendingAsk] = useState<string | null>(null);
+  const { setActiveLesson, askInLesson } = useTutor();
   const [selBtn, setSelBtn] = useState<{
     x: number;
     y: number;
@@ -35,6 +35,14 @@ export function LessonShell({
     visitLesson(lessonId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lessonId]);
+
+  // Register/unregister this lesson with the global tutor so the drawer's
+  // "This lesson" tab exists exactly while this page is mounted.
+  useEffect(() => {
+    setActiveLesson({ id: lessonId, title: lessonTitle, source: lessonSource, objectives });
+    return () => setActiveLesson(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lessonId, lessonTitle, lessonSource, objectives]);
 
   // "Explain this": floating button on text selection inside the lecture.
   useEffect(() => {
@@ -81,10 +89,9 @@ export function LessonShell({
       window.getSelection()?.anchorNode?.parentElement ?? null
     )?.closest('[data-block]');
     const blockId = block?.getAttribute('data-block');
-    setPendingAsk(
+    askInLesson(
       `Explain this passage from the lesson${blockId ? ` (block ${blockId})` : ''}:\n\n> ${selBtn.text}\n\nWhy is this true — and what am I most likely missing about it?`,
     );
-    setDrawerOpen(true);
     setSelBtn(null);
     window.getSelection()?.removeAllRanges();
   };
@@ -102,27 +109,6 @@ export function LessonShell({
           ✦ explain this
         </button>
       )}
-
-      {!drawerOpen && (
-        <button
-          onClick={() => setDrawerOpen(true)}
-          className="no-print fixed bottom-5 right-5 z-40 rounded-full border-[1.5px] border-ink bg-panel px-4 py-2 font-mono text-[11.5px] shadow-md transition-colors hover:bg-active-wash"
-          aria-label="open tutor"
-        >
-          ✦ tutor <span className="text-faint">⌘K</span>
-        </button>
-      )}
-
-      <TutorDrawer
-        lessonId={lessonId}
-        lessonTitle={lessonTitle}
-        lessonSource={lessonSource}
-        objectives={objectives}
-        open={drawerOpen}
-        onOpenChange={setDrawerOpen}
-        pendingAsk={pendingAsk}
-        onPendingConsumed={() => setPendingAsk(null)}
-      />
     </>
   );
 }

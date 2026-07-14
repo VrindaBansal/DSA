@@ -168,6 +168,8 @@ export interface AppState {
   lessons: Record<string, LessonProgress>;
   review: Record<string, ReviewItem>;
   lastLesson?: string;
+  /** The "General" tutor tab's thread — not scoped to any one lesson. */
+  generalChat: ChatMessage[];
 }
 
 export const emptyLessonProgress = (lessonId: string): LessonProgress => ({
@@ -179,4 +181,8 @@ export const emptyLessonProgress = (lessonId: string): LessonProgress => ({
   notes: [],
 });
 
-export const emptyAppState = (): AppState => ({ lessons: {}, review: {} });
+export const emptyAppState = (): AppState => ({
+  lessons: {},
+  review: {},
+  generalChat: [],
+});
