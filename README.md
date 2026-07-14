@@ -68,6 +68,29 @@ swap point required by §3:
   using Node's built-in `node:sqlite` (no native deps). DB file: `data/progress.db`.
 - A Supabase adapter for a Vercel deploy would be a third class in the same file.
 
+## Tests
+
+```bash
+npm test              # content integrity + code-exercise validation
+npm run test:content    # every Check/Exercise/Visual/TradeoffTable reference
+                        # resolves; frontmatter valid; cheatsheet terminal +
+                        # registered; question ids unique; prereqs exist
+npm run test:exercises  # runs every code exercise's SOLUTION against its
+                        # hidden tests with real Python (same contract as the
+                        # in-browser Pyodide harness), asserts the starter
+                        # FAILS them, and that a complexity check exists
+npm run test:e2e        # full browser sweep: all 49 routes load with zero
+                        # page errors, visual stepping + drive-it-yourself,
+                        # MCQ grading, progress persistence across reload,
+                        # review-queue round trip, print stylesheet, progress
+                        # API roundtrip, grade API error hygiene, rate guard
+```
+
+`test` needs only Node + Python 3. `test:e2e` additionally needs a
+production build (`npm run build`), `playwright-core`
+(`npm i --no-save playwright-core`), and a Chromium binary — point
+`CHROMIUM_PATH` at one if it isn't in the default location.
+
 ## Deploy to Vercel
 
 Local dev remains the primary target (spec §3), but the app deploys to

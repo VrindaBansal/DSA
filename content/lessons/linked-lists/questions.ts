@@ -63,7 +63,18 @@ def test_two():
       'Loop condition is the whole exercise: while fast and fast.next: — check fast BEFORE touching fast.next, or None will bite you.',
       'When the loop exits, slow.val is the answer — fast covered twice the distance, so slow stands at half.',
     ],
-    solution: `def middle(head):
+    solution: `class Node:
+    def __init__(self, val, next=None):
+        self.val = val
+        self.next = next
+
+def build(vals):
+    head = None
+    for v in reversed(vals):
+        head = Node(v, head)
+    return head
+
+def middle(head):
     slow = fast = head
     while fast and fast.next:
         slow = slow.next
