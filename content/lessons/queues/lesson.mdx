@@ -1,0 +1,208 @@
+---
+id: queues
+module: queues
+title: Queues and the ring buffer
+order: 1
+estimatedMinutes: 35
+prerequisites: [big-o, amortized]
+objectives:
+  - Explain why FIFO ordering is the right abstraction for buffering work
+  - Implement a ring buffer with O(1) enqueue and dequeue
+  - Diagnose the head==tail ambiguity and name both standard fixes
+  - Justify deque over list for anything that touches the front
+tags: [linear, fifo, buffering, ring-buffer]
+---
+
+<Intuition>
+Every queue in computing exists for one reason: **two parts of a system run at
+different speeds, and you refuse to make the fast one wait for the slow one.**
+The user types faster than the disk writes. Requests arrive faster than the
+database commits. The UI thread must return in 16ms but the network takes 900.
+A queue is the buffer you put between them — the fast side drops work in and
+moves on; the slow side drains at its own pace. The only promise the queue
+makes is *fairness*: first in, first out. Nothing gets starved, nothing gets
+reordered.
+</Intuition>
+
+<Concept>
+## The contract
+
+A **queue** supports exactly two essential operations:
+
+- `enqueue(x)` — add `x` to the **back** (the *tail*)
+- `dequeue()` — remove and return the item at the **front** (the *head*)
+
+Items leave in the order they arrived: **FIFO**, first-in-first-out. That's
+the entire contract. No indexing, no searching, no peeking at the middle —
+if you find yourself wanting those, you want a different structure.
+
+The invariant to hold in your head: **at every moment, the queue's contents
+are a contiguous run of the arrival sequence.** Dequeues eat from the old end,
+enqueues extend the new end, and nothing in between is ever touched. That
+untouchable middle is exactly why both ends can be O(1).
+</Concept>
+
+<RealWorld source="Gmail">
+When you press **Send**, Gmail does not open an SMTP connection, negotiate
+TLS, and wait for the receiving server to accept your message. That can take
+seconds — and can fail. Instead, Send does one fast, local thing: it
+**enqueues** your message and returns. The compose window closes instantly.
+A delivery worker drains that queue at its own pace: pop the oldest message,
+attempt SMTP delivery, retry with backoff on failure — all invisible to you.
+The queue decouples *your click* from *the internet*, while FIFO guarantees
+your three replies arrive in the order you wrote them. Every job system you
+will ever meet — Sidekiq, Celery, SQS, Kafka at heart — is this exact diagram
+with more zeroes on the throughput.
+</RealWorld>
+
+<Check id="q-fifo-why" />
+
+<Concept>
+## The obvious implementation is a trap
+
+A Python `list` looks like a free queue: `append(x)` to enqueue, `pop(0)` to
+dequeue. `append` is fine — amortized O(1), as Module 1 established. The trap
+is `pop(0)`. A list is one **contiguous array**; removing index 0 leaves a
+hole at the front, and CPython repairs it by shifting all n−1 survivors one
+slot left. Every dequeue costs O(n). Drain a 10,000-item queue and you've paid
+~50 million element moves to accomplish nothing.
+</Concept>
+
+<Gotcha>
+`lst.pop(0)` is **O(n)** — it `memmove`s the entire remaining list left by
+one slot, every single call. The symmetric trap is `lst.insert(0, x)`. A
+plain `list` makes the *back* cheap and the *front* expensive; a queue needs
+both. If you take one Python fact out of this lesson: **never back a queue
+with a list.**
+</Gotcha>
+
+<Check id="q-listpop" />
+
+<Concept>
+## The ring buffer: a queue in fixed memory
+
+The fix is to stop moving data and start moving *pointers*. Allocate one
+fixed array of capacity k. Keep two indices: `head` (next slot to read) and
+`tail` (next slot to write). Enqueue writes at `tail` and advances it;
+dequeue reads at `head` and advances it. When either pointer walks off the
+end, it **wraps to slot 0** — modular arithmetic, `(i + 1) % k`, turns the
+flat array into a circle.
+
+No element ever moves. No memory is ever allocated after construction. Both
+operations touch one slot and bump one index: **worst-case O(1)** — a
+strictly stronger promise than the dynamic array's *amortized* O(1), because
+there is no resize case at all. This is why ring buffers live in the hot
+paths of the world: keyboard input buffers, network card driver rings, audio
+pipelines, log shippers.
+
+Drive it yourself below. Enqueue until the tail wraps; watch what happens
+when you fill it completely.
+</Concept>
+
+<Visual id="ring-buffer" />
+
+<Concept>
+## The ambiguity you just watched
+
+Empty buffer: `head == tail`. Now fill all eight slots: `tail` wraps all the
+way around and… `head == tail` again. The pointer picture is **identical**
+when the buffer is empty and when it is full. The structure has lost
+information — pointers alone can't distinguish "nothing to read" from
+"nowhere to write."
+
+Two standard repairs:
+
+1. **Keep a count** (what the visual does). `count == 0` means empty,
+   `count == k` means full. One extra integer, updated in both operations.
+2. **Sacrifice one slot.** Declare *full* to be `(tail + 1) % k == head` —
+   the buffer never actually uses its last slot. Zero extra state, one slot
+   of capacity traded for it. Kernel code tends to pick this one.
+
+Either fix is fine. *Noticing the ambiguity* is the interview signal.
+</Concept>
+
+<Check id="q-ring-full" />
+
+<Aside title="The lock-free angle — why kernels sacrifice the slot">
+With a single producer and single consumer, the sacrificed-slot design has a
+beautiful property: the producer only writes `tail`, the consumer only writes
+`head`. Neither pointer is written by both sides, so — with the right memory
+barriers — the ring works **without any lock**. Add a shared `count` and
+you've reintroduced a variable both sides mutate, and with it, contention.
+This is why `kfifo` in the Linux kernel and most audio ring buffers use the
+empty-slot convention.
+</Aside>
+
+<Concept>
+## In practice: `collections.deque`
+
+When you don't need fixed memory, Python's answer is `collections.deque` —
+a doubly-linked chain of fixed-size blocks. Both ends are O(1) always; the
+middle is O(n), which a queue never touches anyway. Here is the Gmail diagram
+reduced to eight honest lines:
+</Concept>
+
+<CodeWalk
+  title="producer / consumer with deque"
+  lines={[
+    { code: "from collections import deque" },
+    { code: "" },
+    { code: "outbox = deque()", note: "The buffer between the two speeds. Unbounded here; deque(maxlen=k) would make it a drop-oldest ring." },
+    { code: "" },
+    { code: "def send_clicked(msg):        # UI thread — must return NOW" },
+    { code: "    outbox.append(msg)", note: "Enqueue at the tail: O(1), no I/O, no waiting. This is all the send button does." },
+    { code: "    return 'sent!'", note: "A small lie — it means 'safely queued'. Every fast UI tells it." },
+    { code: "" },
+    { code: "def smtp_worker():            # background — can be slow" },
+    { code: "    while True:" },
+    { code: "        if outbox:" },
+    { code: "            msg = outbox.popleft()", note: "Dequeue at the head: O(1). popleft, never pop(0) — this is the whole reason deque exists." },
+    { code: "            deliver_via_smtp(msg)", note: "The slow, failure-prone part happens here, off the user's critical path. Retry logic wraps this call." },
+  ]}
+/>
+
+<RealWorld source="Kafka">
+Scale the outbox up by nine orders of magnitude and you get Kafka: a
+**durable, partitioned queue** that happens to live on disk across a cluster.
+Producers append to the tail of a partition log; consumer groups advance a
+head pointer (the *offset*) at their own pace. Same two pointers, same FIFO
+promise per partition, same decoupling — plus replication so the buffer
+survives machine death. When an interviewer asks "how would you handle a
+traffic spike to this service?", the first word of the answer is usually
+"queue."
+</RealWorld>
+
+<Check id="q-queue-short" />
+
+<Concept>
+## Choosing a backing
+
+Three real candidates, one honest table. The pattern to internalize: `list`
+is wrong not because it's slow in general but because *one specific
+operation* — touching the front — fights its memory layout. Complexity
+analysis is always about finding that one operation you'll call in a loop.
+</Concept>
+
+<TradeoffTable id="queue-backings" />
+
+<Check id="q-ring-short" />
+
+<Concept>
+## Build it
+
+Time to earn the cheatsheet. Implement `enqueue` and `dequeue` on the ring
+buffer skeleton — the same one the animation above is running. The tests
+check FIFO order, wrapping, both exceptions, and that your buffer never
+grows. When the tests pass, the complexity question is the real finish line.
+
+For the LeetCode version of exactly this exercise, see
+<LeetCode slug="design-circular-queue">Design Circular Queue</LeetCode>.
+</Concept>
+
+<Exercise id="q-ring-code" />
+
+<Cheatsheet>
+One line to rule the module: **a queue trades random access for O(1) at both
+ends and a fairness guarantee — and a ring buffer makes the O(1) worst-case
+by refusing to grow.**
+</Cheatsheet>

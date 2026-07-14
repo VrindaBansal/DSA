@@ -1,0 +1,122 @@
+---
+id: deques
+module: queues
+title: Deques, frontiers, and a priority-queue preview
+order: 2
+estimatedMinutes: 25
+prerequisites: [queues]
+objectives:
+  - Explain the block-linked layout that makes both deque ends O(1)
+  - Recognize the BFS frontier as "the queue is the algorithm"
+  - State when the queue contract stops being enough and a priority queue begins
+  - Build a FIFO queue from two LIFO stacks and defend its amortized bound
+tags: [linear, deque, bfs, priority-queue]
+---
+
+<Intuition>
+A queue commits to one direction: in at the back, out at the front. A
+**deque** (double-ended queue, say "deck") refuses to choose — both ends are
+cheap, both ends are legal. That sounds like a luxury until you meet problems
+where the *front* and the *back* mean different things: a sliding window
+evicts from the left while admitting on the right; an undo buffer drops its
+oldest entry when full while pushing the newest. One structure, two live
+ends.
+</Intuition>
+
+<Concept>
+## Why both ends can be O(1)
+
+CPython's `deque` is a **doubly-linked list of blocks**, each block a small
+fixed array of 64 slots. The structure keeps pointers to the leftmost and
+rightmost blocks, and each of those blocks keeps spare capacity at its outer
+edge. `append` writes into the right block's spare slot; `appendleft` writes
+into the left block's; only when a block fills does the deque allocate one
+more block and link it in — O(1) either way.
+
+Compare the `list`: one contiguous array, so the back has spare capacity but
+the front *is* the memory address where the data starts. Making room at the
+front means shifting everything. The deque pays for its cheap ends elsewhere:
+indexing `d[i]` must walk the block chain — O(n) in the middle. Every layout
+is a bet on which operations you'll call in a loop.
+</Concept>
+
+<Check id="q-deque-short" />
+
+<RealWorld source="Print spooler">
+The office print spooler is a deque wearing a trench coat. Jobs join at the
+back; the printer drains from the front — plain FIFO so far. But "cancel my
+job" removes from *wherever*, and "URGENT — reprint the contract" jumps the
+line entirely. Real spoolers handle the urgent case by keeping *multiple
+queues by priority band* and draining the highest band first — which is a
+low-rent priority queue, and exactly where this lesson is headed.
+</RealWorld>
+
+<Concept>
+## The frontier: when the queue IS the algorithm
+
+Breadth-first search keeps a **frontier** — the set of discovered-but-not-
+yet-expanded nodes — in a queue. Pop the front, visit it, push its unseen
+neighbors on the back. That's the whole algorithm. The FIFO discipline is
+doing all the intellectual work: because nodes are expanded in discovery
+order, every node at distance k is processed before any node at distance
+k+1. The traversal sweeps outward in perfect rings, which is why BFS finds
+shortest paths in unweighted graphs.
+
+Here is the punchline you'll reuse in Module 9: **swap the queue for a stack
+and the identical loop becomes DFS.** The container's discipline — not the
+loop — decides the traversal. You'll watch the two run side by side on the
+same graph there.
+</Concept>
+
+<Check id="q-bfs-frontier" />
+
+<Concept>
+## When FIFO stops being fair enough
+
+An emergency room does not treat patients in arrival order; it treats the
+most critical first. The moment "next" means **most important** instead of
+**oldest**, the queue contract is the wrong contract. You want a **priority
+queue**: `push(item, priority)` and `pop_min()` (or max).
+
+Preview of Module 7, so the shape is familiar when you arrive: the standard
+implementation is a **binary heap** — a nearly-complete binary tree, stored
+flat in an array, holding one invariant (every parent ≤ its children). Push
+and pop each cost **O(log n)**: the price of keeping the extreme element
+always one step away. Python ships it as `heapq`.
+
+The progression of this module, in one line each:
+
+- `stack` — serve the **newest** (LIFO)
+- `queue` — serve the **oldest** (FIFO)
+- `deque` — serve **either end**
+- `priority queue` — serve the **most important**, O(log n)
+</Concept>
+
+<Check id="q-pq-preview" />
+
+<Gotcha>
+`deque(maxlen=k)` is wonderful and sneaky: when full, an `append` **silently
+evicts** from the far end instead of raising. Perfect for "keep the last k
+log lines," an unpleasant surprise if you assumed queue-full was an error.
+Bounded ≠ raising — read the contract you're actually getting.
+</Gotcha>
+
+<Concept>
+## Build it: a queue from two stacks
+
+Classic structural exercise, and the best amortized-analysis rep after
+Module 1: make FIFO out of two LIFOs. Push arrivals onto `inbox`; when you
+need to dequeue and `outbox` is empty, pour `inbox` into it — the pour
+reverses order, so `outbox` pops oldest-first. One unlucky dequeue pays O(n)
+for the pour, yet each element is moved at most twice in its lifetime, so
+the *sequence* averages O(1) per operation.
+</Concept>
+
+<Exercise id="q-twostacks-code" />
+
+<Cheatsheet>
+Interview posture: say "deque" the moment a problem touches both ends of a
+sequence, and say "priority queue" the moment the serving order isn't
+arrival order. Naming the contract before the code is what senior sounds
+like.
+</Cheatsheet>

@@ -1,0 +1,17 @@
+# dependencies
+/node_modules
+
+# next.js
+/.next/
+/out/
+
+# local env
+.env*.local
+
+# progress database (personal state, not content)
+/data/
+
+# misc
+.DS_Store
+*.tsbuildinfo
+next-env.d.ts

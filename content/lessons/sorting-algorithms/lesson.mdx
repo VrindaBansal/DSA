@@ -1,0 +1,32 @@
+---
+id: sorting-algorithms
+module: sorting
+title: The sorting landscape
+order: 1
+estimatedMinutes: 45
+prerequisites: [recursion-trees, heaps-intro]
+objectives:
+  - Compare merge, quick, heap, and counting sorts on time, space, stability
+  - Predict quicksort's collapse on adversarial input and name the fixes
+  - Define stability and use it for multi-key sorting
+stub: true
+tags: [sorting, quicksort, mergesort, stability, timsort]
+---
+
+<Intuition>
+Sorting is the drosophila of algorithms: every big idea — divide and
+conquer, randomization, adversarial inputs, time/space trades, lower
+bounds — shows up here first. Race the three below on the same array. Then
+feed the race an **already-sorted** input and watch naive-pivot quicksort,
+the average-case hero, degrade to bubble-sort pace while merge sort doesn't
+blink. Adversarial inputs are why "average case" is a bet, not a promise.
+</Intuition>
+
+<Visual id="sorting-race" />
+
+<Check id="q-sort-stable" />
+
+<Cheatsheet>
+Full lecture pending — Lomuto vs Hoare, Timsort's run detection, external
+sort, and the stable-ORDER-BY anchor land here.
+</Cheatsheet>

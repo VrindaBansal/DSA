@@ -1,0 +1,35 @@
+---
+id: heaps-intro
+module: heaps
+title: Binary heaps — the tree that lives in an array
+order: 1
+estimatedMinutes: 40
+prerequisites: [recursion-trees, deques]
+objectives:
+  - Hold the tree/array duality — children at 2i+1, 2i+2 — without translating
+  - Implement sift_down and say why heapify is O(n), not O(n log n)
+  - Deploy the two-heap median and top-K patterns
+stub: true
+tags: [heaps, priority-queue, sift, heapify]
+---
+
+<Intuition>
+A heap is a tree that gave up everything except one promise — **the parent
+is never worse than its children** — and in exchange got to live inside a
+flat array with no pointers at all. The index math IS the tree: children of
+i at 2i+1 and 2i+2. The visual shows both views side by side because the
+duality is the lesson: what looks like "swap with parent" on the tree is
+"swap two array slots" in memory. This is how your OS scheduler and Uber
+dispatch keep "most important next" one array-read away.
+</Intuition>
+
+<Visual id="heap-sift" />
+
+<Check id="q-heapify" />
+
+<Exercise id="q-siftdown-code" />
+
+<Cheatsheet>
+Full lecture pending — two-heap median, top-K streams, and the scheduler
+anchor land here.
+</Cheatsheet>

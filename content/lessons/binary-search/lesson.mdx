@@ -1,0 +1,35 @@
+---
+id: binary-search
+module: searching
+title: Binary search and its invariant
+order: 1
+estimatedMinutes: 35
+prerequisites: [big-o, dynamic-arrays]
+objectives:
+  - Write binary search from the invariant, not from memorized ± 1s
+  - Rebuild bisect_left and bisect_right from scratch
+  - Recognize "binary search on the answer" in problems with no array at all
+stub: true
+tags: [binary-search, bisect, invariant]
+---
+
+<Intuition>
+Binary search is twenty characters of code and a decade of off-by-one bugs
+— because people memorize the code instead of the **invariant**: *"if the
+target exists, it lives in a[lo..hi]."* Every line either preserves that
+sentence or shrinks the bracket; get both right and the code writes itself.
+The visual prints the invariant at every step while the search space
+collapses. And the trick that makes this module bigger than arrays:
+anything with a monotonic yes/no answer — "can we ship at capacity c?",
+"which commit broke the build?" — is binary-searchable. git bisect is this
+visual with commits instead of cells.
+</Intuition>
+
+<Visual id="binary-search" />
+
+<Check id="q-bsearch-invariant" />
+
+<Cheatsheet>
+Full lecture pending — bisect from scratch, search-on-answer worked
+examples, and quickselect land here.
+</Cheatsheet>

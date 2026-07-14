@@ -1,0 +1,242 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------ */
+/* Design tokens — see spec §10.                                       */
+/* Color encodes STATE, not decoration:                                */
+/*   active  = currently executing / current pointer / focused element */
+/*   done    = visited / settled / correct                             */
+/*   alert   = invariant violated / wrong / gotcha                     */
+/*   neutral = everything else                                         */
+/* The same encoding is used in every visual. Legend on /reference.    */
+/* ------------------------------------------------------------------ */
+
+@theme inline {
+  --font-display: var(--font-space-grotesk), "Space Grotesk", "Avenir Next",
+    system-ui, sans-serif;
+  --font-body: var(--font-source-serif), "Source Serif 4", Charter, Georgia,
+    serif;
+  --font-mono: var(--font-jetbrains-mono), "JetBrains Mono", "SF Mono",
+    "Cascadia Code", Menlo, monospace;
+
+  --color-paper: #f6f7f8;
+  --color-panel: #ffffff;
+  --color-ink: #191c21;
+  --color-ink-soft: #3f4650;
+  --color-muted: #68707c;
+  --color-faint: #9aa1ab;
+  --color-line: #e2e5e9;
+  --color-line-strong: #c6ccd4;
+
+  --color-active: #0f5bd8;
+  --color-active-wash: #ebf2fd;
+  --color-active-deep: #0a3f97;
+  --color-done: #0b7a5a;
+  --color-done-wash: #e6f4ee;
+  --color-alert: #c43125;
+  --color-alert-wash: #fbeeec;
+
+  --color-code-bg: #f1f2f4;
+}
+
+::selection {
+  background: var(--color-active-wash);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ------------------------------------------------------------------ */
+/* Lecture typography — a well-set textbook, ~68ch measure.            */
+/* ------------------------------------------------------------------ */
+
+.lesson-prose {
+  max-width: 68ch;
+}
+
+.lesson-prose :where(p):not(:where(.not-prose, .not-prose *)) {
+  margin: 0 0 1.1em 0;
+}
+
+.lesson-prose :where(h2):not(:where(.not-prose, .not-prose *)) {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.55rem;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  margin: 2.6em 0 0.7em;
+  color: var(--color-ink);
+}
+
+.lesson-prose :where(h3):not(:where(.not-prose, .not-prose *)) {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.15rem;
+  margin: 2em 0 0.5em;
+}
+
+.lesson-prose :where(h2 .anchor-hash):not(:where(.not-prose, .not-prose *)), .lesson-prose :where(h3 .anchor-hash):not(:where(.not-prose, .not-prose *)) {
+  color: var(--color-faint);
+  margin-right: 0.4ch;
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+}
+
+.lesson-prose :where(a):not(:where(.not-prose, .not-prose *)) {
+  color: var(--color-active);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--color-active) 35%, transparent);
+  text-underline-offset: 2px;
+}
+
+.lesson-prose :where(strong):not(:where(.not-prose, .not-prose *)) {
+  font-weight: 650;
+}
+
+.lesson-prose :where(ul):not(:where(.not-prose, .not-prose *)), .lesson-prose :where(ol):not(:where(.not-prose, .not-prose *)) {
+  margin: 0 0 1.1em 0;
+  padding-left: 1.4em;
+}
+
+.lesson-prose :where(ul):not(:where(.not-prose, .not-prose *)) {
+  list-style: none;
+}
+
+.lesson-prose :where(ul):not(:where(.not-prose, .not-prose *)) > li::before {
+  content: "–";
+  font-family: var(--font-mono);
+  color: var(--color-faint);
+  display: inline-block;
+  width: 1.4em;
+  margin-left: -1.4em;
+}
+
+.lesson-prose :where(ol):not(:where(.not-prose, .not-prose *)) {
+  list-style: decimal;
+}
+
+.lesson-prose :where(ol):not(:where(.not-prose, .not-prose *)) > li::marker {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  color: var(--color-muted);
+}
+
+.lesson-prose :where(li):not(:where(.not-prose, .not-prose *)) {
+  margin-bottom: 0.35em;
+}
+
+.lesson-prose :where(code):not(:where(.not-prose, .not-prose *)) {
+  font-family: var(--font-mono);
+  font-size: 0.82em;
+  background: var(--color-code-bg);
+  border: 1px solid var(--color-line);
+  border-radius: 3px;
+  padding: 0.08em 0.35em;
+  white-space: nowrap;
+}
+
+.lesson-prose :where(pre):not(:where(.not-prose, .not-prose *)) {
+  background: var(--color-code-bg);
+  border: 1px solid var(--color-line);
+  border-radius: 6px;
+  padding: 0.9rem 1.1rem;
+  margin: 0 0 1.2em 0;
+  overflow-x: auto;
+  line-height: 1.55;
+}
+
+.lesson-prose :where(pre code):not(:where(.not-prose, .not-prose *)) {
+  background: none;
+  border: none;
+  padding: 0;
+  white-space: pre;
+  font-size: 0.8rem;
+}
+
+.lesson-prose :where(table):not(:where(.not-prose, .not-prose *)) {
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  margin: 0 0 1.2em 0;
+  width: 100%;
+}
+
+.lesson-prose :where(th):not(:where(.not-prose, .not-prose *)) {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align: left;
+  color: var(--color-muted);
+  border-bottom: 1.5px solid var(--color-ink);
+  padding: 0.45em 0.9em 0.45em 0;
+}
+
+.lesson-prose :where(td):not(:where(.not-prose, .not-prose *)) {
+  border-bottom: 1px solid var(--color-line);
+  padding: 0.5em 0.9em 0.5em 0;
+  vertical-align: top;
+}
+
+.lesson-prose :where(blockquote):not(:where(.not-prose, .not-prose *)) {
+  border-left: 2px solid var(--color-line-strong);
+  padding-left: 1.1em;
+  color: var(--color-ink-soft);
+  margin: 0 0 1.1em 0;
+}
+
+.lesson-prose :where(hr):not(:where(.not-prose, .not-prose *)) {
+  border: none;
+  border-top: 1px solid var(--color-line);
+  margin: 2.2em 0;
+}
+
+/* Complexity notation — always mono, always tight. */
+.big-o {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------ */
+/* Print — every cheatsheet must print clean (spec §10).               */
+/* ------------------------------------------------------------------ */
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #ffffff;
+    font-size: 11pt;
+  }
+  .print-sheet {
+    max-width: none !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+}

@@ -1,0 +1,140 @@
+---
+id: big-o
+module: complexity
+title: Big-O, Θ, Ω — the growth lens
+order: 1
+estimatedMinutes: 30
+prerequisites: []
+objectives:
+  - State the formal meaning of O, Θ, and Ω without hand-waving
+  - Predict how running time scales when input grows 10× or 100×
+  - Count the true cost of nested and triangle loops instead of pattern-matching
+  - Explain where a logarithm physically comes from in an algorithm
+tags: [complexity, big-o, foundations]
+---
+
+<Intuition>
+Complexity analysis exists because of one brutal fact: **software gets tested
+on small inputs and dies on big ones.** The demo has 100 rows; production has
+ten million. You need a way to ask "what happens when n grows?" *before*
+production answers it for you. Big-O is that lens. It deliberately throws
+away everything a profiler measures — hardware, constants, language — and
+keeps only the shape of the curve. Shapes don't lie when n gets large.
+</Intuition>
+
+<Concept>
+## The definition, without fear
+
+**f(n) is O(g(n))** means: beyond some input size n₀, f(n) never exceeds
+c·g(n) for some fixed constant c. Two escape hatches are built in, and both
+are features:
+
+- **"beyond some n₀"** — small inputs are excused. 100n beats n² only after
+  n = 100; O ignores the warmup.
+- **"for some constant c"** — 3n and 300n are the same class. Constants are
+  the profiler's job, not the lens's.
+
+The family, in one breath: **O is a ceiling** ("grows no faster than"),
+**Ω is a floor** ("at least this fast"), **Θ is both at once** — the honest,
+tight description. When your interviewer says "what's the complexity," they
+almost always want Θ but will say O. Match their dialect; know the
+difference when pressed.
+</Concept>
+
+<Check id="q-bigo-def" />
+
+<RealWorld source="Autocomplete">
+A startup ships contact autocomplete: on every keystroke, it re-ranks
+contacts by comparing each one against every other — a tidy nested loop,
+O(n²). QA has 100 test contacts: 10,000 comparisons per keystroke, well
+under a millisecond. **Ship it.** Eighteen months later a customer imports
+their 10,000-person org directory. Same code, same laptop: 100 million
+comparisons *per keystroke*. The text field now lags by seconds; the feature
+is dead, and no profiler run on the test data would ever have caught it. The
+input grew 100× — the work grew 10,000×. That multiplication table is the
+entire reason this module exists.
+</RealWorld>
+
+<Check id="q-bigo-autocomplete" />
+
+<Concept>
+## Reading code without pattern-matching
+
+The reflex "two nested loops → n²" is usually right and occasionally
+embarrassing. The reliable method is **counting**: how many times does the
+innermost line run, as a function of n?
+
+```python
+for i in range(n):          # runs n times
+    for j in range(i):      # runs i times — not n!
+        work()              # total: 0 + 1 + ... + (n-1)
+```
+
+The sum is n(n−1)/2 ≈ n²/2. The ½ dies (constant), the n² survives:
+**Θ(n²)**. Same verdict as the reflex, but now you can also handle the loop
+that *halves*:
+
+```python
+while n > 1:
+    n = n // 2              # how many halvings until 1?
+    work()                  # log₂(n) of them
+```
+
+**A log appears exactly when each step discards a constant fraction of the
+problem.** No halving, no log. This single sentence demystifies binary
+search, balanced trees, and heaps in advance.
+</Concept>
+
+<Check id="q-nested-loop" />
+
+<Gotcha>
+Two Python costs that don't look like what they are: `x in my_list` is
+**O(n)** — a linear scan — while `x in my_set` is O(1) average. And
+`s += piece` inside a loop rebuilds the string every iteration — **O(n²)
+total** for n pieces, because strings are immutable. The fix is
+`"".join(pieces)`. Both bugs pass every unit test and melt in production;
+both are one-word fixes once you see the class.
+</Gotcha>
+
+<Concept>
+## The hierarchy, felt physically
+
+Complexity classes only mean something when you attach wall-clock time.
+At a nanosecond per step, n = 10⁶:
+</Concept>
+
+<TradeoffTable id="growth-rates" />
+
+<Concept>
+The gap to internalize is **n log n vs n²**: 20 milliseconds versus 17
+minutes on the same million-element input. That's "sortable on every
+keystroke" versus "batch job." When you pick merge sort over selection sort,
+that whole table is what you're choosing.
+
+One more distinction interviewers probe: **O/Θ/Ω is one axis; worst,
+average, and best *case* is another.** Quicksort is Θ(n log n) *average
+case* and Θ(n²) *worst case* — both statements use tight bounds, about
+different scenarios. Saying "quicksort is O(n²)" and "quicksort is
+O(n log n) on average" are both true; neither contradicts the other.
+</Concept>
+
+<Check id="q-bigo-theta" />
+
+<Aside title="Why we can be so cavalier about constants">
+Formally: if f(n) ≤ c·g(n) eventually, then 5f is O(g) too — fold the 5
+into c. The definition is *engineered* to make constants unspeakable, which
+is exactly what lets an analysis on a whiteboard in 2005 still describe your
+laptop in 2026. The price: within a class, O can't rank. Timsort and
+textbook merge sort are both Θ(n log n); Timsort wins by constants —
+adaptive runs, cache behavior, insertion-sort cutoffs. When the classes tie,
+reach for the profiler.
+</Aside>
+
+<Check id="q-bigo-short" />
+
+<Cheatsheet>
+The one-liner for interviews: **Big-O is the eventual ceiling on growth, up
+to a constant; Θ adds the matching floor. Count the innermost line, keep the
+fastest-growing term, and remember that a log only appears when something
+gets halved.**
+</Cheatsheet>

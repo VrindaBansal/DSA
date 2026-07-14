@@ -1,0 +1,107 @@
+---
+id: recursion-trees
+module: complexity
+title: Recursion trees and the Master theorem
+order: 4
+estimatedMinutes: 30
+prerequisites: [big-o]
+objectives:
+  - Turn any divide-and-conquer recurrence into a picture with per-level sums
+  - Classify the three regimes — root-heavy, balanced, leaf-heavy — on sight
+  - Apply the Master theorem as a shortcut over the picture, not a spell
+  - Explain why branching-without-shrinking is the exponential signature
+tags: [complexity, recursion, master-theorem, divide-and-conquer]
+---
+
+<Intuition>
+Recursive cost equations like T(n) = 2T(n/2) + n look like they demand
+algebra. They demand a **drawing**. Expand the recursion into a tree —
+every node stamped with the work done *locally* at that call — and the
+total cost becomes something you can literally see: the sum of the tree.
+The Master theorem, which students memorize like a incantation, is just
+three pictures with the algebra done once, in general. Learn the pictures;
+the theorem becomes obvious and unforgettable.
+</Intuition>
+
+<Concept>
+## The method
+
+For T(n) = a·T(n/b) + f(n): the root does f(n) local work and spawns a
+children of size n/b. Draw levels until size 1 — depth log_b n. Then:
+
+1. **Sum each level.** Level k has aᵏ nodes doing f(n/bᵏ) each.
+2. **Watch how level sums evolve** going down. Three regimes only:
+   - **Shrinking geometrically** → the root dominates: T(n) = Θ(f(n)).
+   - **Flat** → total = level sum × depth: Θ(f(n) · log n).
+   - **Growing geometrically** → leaves dominate: count them —
+     a^(log_b n) = n^(log_b a) leaves at O(1) each.
+
+Merge sort, drawn: level 0 does cn; level 1 has two nodes doing cn/2 each
+— cn again; every level is exactly cn, for log₂ n levels: **Θ(n log n)**.
+The "why n log n" that survives an interview isn't the theorem — it's
+*"every level costs n and there are log n levels."*
+</Concept>
+
+<Check id="q-master-mergesort" />
+
+<Concept>
+## The other two pictures
+
+**Root-heavy** — T(n) = T(n/2) + n (e.g. quickselect's lucky path). Level
+sums: n, n/2, n/4, … a geometric series ≤ 2n. The root's own work is
+already half the total: **Θ(n)**. Halving work with no branching = the top
+pays for everything.
+
+**Leaf-heavy** — T(n) = 4T(n/2) + n. Level sums: n, 2n, 4n, … — *growing*
+geometrically, so the bottom row swamps all: n^(log₂ 4) = n² leaves:
+**Θ(n²)**. Branching outruns the shrinking.
+
+The Master theorem compresses this into one comparison: race f(n) against
+n^(log_b a) — the leaf count. f wins → root dominates. Leaf count wins →
+leaves dominate. Tie → multiply by log n. That's all three cases; if you
+can draw the tree, you can re-derive the theorem in the margin.
+</Concept>
+
+<Check id="q-master-leafheavy" />
+
+<RealWorld source="Naive fib">
+The infamous `fib(n) = fib(n-1) + fib(n-2)` draws a tree that *branches
+twice but shrinks by only 1*. Depth ~n, node count ~φⁿ ≈ 1.618ⁿ —
+exponential, which is why fib(40) hangs a laptop. But stare at the drawing
+and the cure is visible: the same subtrees — fib(38), fib(37), … — appear
+over and over. Only n *distinct* subproblems exist under all that
+duplication. Cache them (memoize) and the exponential tree collapses to a
+line: O(n). This one picture is the entire pitch for dynamic programming,
+three modules early. The DP table visual in Module 12 is this tree,
+flattened.
+</RealWorld>
+
+<Check id="q-rectree-fib" />
+
+<Gotcha>
+"Two recursive calls, so it's n log n" — no. **T(n) = 2T(n−1) + 1 is
+Θ(2ⁿ).** The call *count* is irrelevant next to the shrink *rate*: n/2 per
+call gives log-depth trees; n−1 per call gives depth n, and branching on
+depth n is exponential. Always ask "how fast does the argument shrink?"
+before touching the Master theorem — which, note, doesn't even apply to
+subtract-style recurrences.
+</Gotcha>
+
+<Aside title="Master theorem, stated once for reference">
+For T(n) = a·T(n/b) + f(n), a ≥ 1, b > 1, compare f(n) with c = n^(log_b a):
+**Case 1** f(n) = O(n^(c−ε)) → T(n) = Θ(n^c) — leaves win.
+**Case 2** f(n) = Θ(n^c) → T(n) = Θ(n^c · log n) — tie, log appears.
+**Case 3** f(n) = Ω(n^(c+ε)) with regularity → T(n) = Θ(f(n)) — root wins.
+Sanity checks: binary search a=1, b=2, f=O(1) → case 2 → Θ(log n).
+Karatsuba a=3, b=2, f=n → n^1.585 beats n → case 1 → Θ(n^1.585).
+</Aside>
+
+<Check id="q-rectree-short" />
+
+<Cheatsheet>
+Whiteboard ritual: write the recurrence, draw three levels, sum each level,
+say which regime out loud. **Shrinking sums → root. Flat sums → times log.
+Growing sums → count the leaves.** You will never misremember the Master
+theorem again because you'll never be *using* the Master theorem — you'll
+be reading the tree.
+</Cheatsheet>

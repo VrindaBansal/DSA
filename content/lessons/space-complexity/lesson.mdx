@@ -1,0 +1,111 @@
+---
+id: space-complexity
+module: complexity
+title: Space complexity — the memory ledger
+order: 3
+estimatedMinutes: 20
+prerequisites: [big-o]
+objectives:
+  - Distinguish auxiliary space from total space and report the right one
+  - Count the call stack as memory — recursion depth is space
+  - State the space bills of the classic sorts and of memoization
+  - Spot hidden copies in Python (slices, reversed lists, string builds)
+tags: [complexity, space, memory, recursion]
+---
+
+<Intuition>
+Time complexity gets the fame because slowness is *felt*. Space complexity
+is the quieter constraint that ends processes: the OOM kill at 3am, the
+phone that can't hold the model, the recursion that dies at frame 1000.
+And unlike time — which you can always wait out — memory is a hard wall.
+The discipline is bookkeeping: **know where every byte of *extra* memory
+comes from, especially the bytes that don't look like allocations.**
+</Intuition>
+
+<Concept>
+## Auxiliary vs total
+
+**Total space** counts everything including the input. **Auxiliary space**
+counts only what your algorithm adds. Convention — and every interviewer —
+means *auxiliary* when they say "space." Otherwise nothing could ever beat
+O(n) and the measure would be dead on arrival.
+
+```python
+def reverse_copy(arr):        # O(n) auxiliary — new array
+    return arr[::-1]
+
+def reverse_inplace(arr):     # O(1) auxiliary — two fingers and a temp
+    i, j = 0, len(arr) - 1
+    while i < j:
+        arr[i], arr[j] = arr[j], arr[i]
+        i, j = i + 1, j - 1
+```
+
+Same output, same O(n) time. The space column is where they differ — and
+"can you do it in place?" is the follow-up question you should *expect*
+after any array problem.
+</Concept>
+
+<Check id="q-space-def" />
+
+<Concept>
+## The call stack is memory you didn't malloc
+
+Every active function call holds a **frame** — locals, argument references,
+a return address. Frames live until their call returns, so *peak
+simultaneous depth* is a memory cost, invisible in your code but fully
+visible to the OS.
+
+```python
+def length(node):                 # linked list length, recursively
+    if node is None:
+        return 0
+    return 1 + length(node.next)  # n frames deep before ANY call returns
+```
+
+Zero allocations — and **O(n) space**. The iterative version with a counter
+is the same algorithm at O(1). This is also why Python ships a ~1000-frame
+recursion limit: `RecursionError` is space complexity announcing itself.
+Depth follows the shrink rate you already know from time analysis: halving
+recursion (binary search, balanced trees) is O(log n) deep; decrement
+recursion is O(n) deep.
+</Concept>
+
+<Check id="q-space-recursion" />
+
+<Gotcha>
+Python hides copies in plain sight: **every slice is an allocation.**
+`arr[::-1]`, `arr[1:]`, even `arr[:]` each materialize a full new list —
+`sorted(arr)` too. The classic self-own is a "space-optimized" recursion
+passing `arr[1:]` down each level: n frames × n-sized copies = **O(n²)
+space** for an algorithm that thinks it's frugal. Pass indices, not slices.
+</Gotcha>
+
+<Concept>
+## The bills you should know cold
+
+The recurring interview trio:
+
+- **Merge sort: O(n) auxiliary.** Merging two sorted runs needs somewhere
+  to put the result — a linear scratch buffer. Unavoidable in practice.
+- **Quicksort: O(log n) expected.** Partitioning is in-place; the only
+  cost is the recursion stack on balanced splits (degenerate pivots → O(n)).
+- **Memoization: O(#distinct subproblems).** The whole deal of Module 12 —
+  buying exponential time down to polynomial by *paying memory*. Space is
+  the currency time is bought with.
+
+That last line generalizes into the real skill: seeing every algorithm as a
+negotiation between the two ledgers. Hash index: O(n) space for O(1)
+lookups. Streaming percentiles: give back exactness, pay O(1) space.
+</Concept>
+
+<Check id="q-space-sorts" />
+
+<Check id="q-space-short" />
+
+<Cheatsheet>
+Reflex for interviews: after stating time, state space unprompted —
+**"…and O(log n) space for the recursion stack."** Naming the stack when
+there are no allocations in sight is precisely the move that reads as
+senior.
+</Cheatsheet>

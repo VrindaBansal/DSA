@@ -1,0 +1,33 @@
+---
+id: dynamic-arrays
+module: arrays
+title: Dynamic arrays, two pointers, sliding window
+order: 1
+estimatedMinutes: 35
+prerequisites: [big-o, amortized]
+objectives:
+  - Explain Python list internals — capacity, doubling, contiguity
+  - Recognize when two pointers or a sliding window turns O(n²) into O(n)
+  - Use prefix sums to answer range queries in O(1)
+stub: true
+tags: [arrays, two-pointers, sliding-window, prefix-sums]
+---
+
+<Intuition>
+The array is the structure the hardware actually wants: contiguous memory,
+index arithmetic, cache lines full of your data. Every technique in this
+module — two pointers, sliding windows, prefix sums — is a way of touching
+that contiguous block **once** instead of once per query. Watch the window
+below maintain its sum with one add and one subtract per slide; that
+overlap-reuse move is the heart of half of all easy-to-medium interview
+problems.
+</Intuition>
+
+<Visual id="sliding-window" />
+
+<Check id="q-window-sum" />
+
+<Cheatsheet>
+Full lecture pending — image convolution as a sliding window, Python list
+internals, and the two-pointer taxonomy land here.
+</Cheatsheet>
