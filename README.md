@@ -24,6 +24,28 @@ fully client-side).
 Code exercises boot Pyodide from the jsDelivr CDN on first "run tests" —
 first run takes a few seconds, then it's cached.
 
+## The tutor
+
+A small "✦ tutor ⌘K" pill sits bottom-right on **every page** — dashboard,
+practice, review, reference, and every lesson — never in the way, gone
+entirely while the drawer is open. Toggle with the button or `Cmd+K`/`Ctrl+K`
+from anywhere.
+
+Two tabs, two persisted threads:
+- **General** — always available, aware of the whole curriculum (every
+  module and lesson) and your progress (completed lessons, review count).
+  Ask "which lesson covers X", how two topics relate, or what to study next.
+- **This lesson** — appears only while a lesson page is open; sees that
+  lesson's full source, objectives, cheatsheet, your scroll position, and
+  your last wrong answer, so its answers stay in that lesson's vocabulary.
+  Select any text in the lecture → **"explain this"** sends the selection
+  straight into this tab with surrounding context.
+
+Both tabs are specialized for this course specifically (the system prompt
+declines unrelated requests and steers back), never sycophantic, and answer
+factual questions directly before elaborating. Threads persist through the
+same progress repository as everything else (`lib/progress/repo.ts`).
+
 ## Where things live
 
 ```
