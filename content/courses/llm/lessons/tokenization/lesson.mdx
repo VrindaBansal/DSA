@@ -1,0 +1,157 @@
+---
+id: tokenization
+module: tokenization
+title: Tokenization — the model's alphabet
+order: 1
+estimatedMinutes: 35
+prerequisites: []
+objectives:
+  - Explain what a token is and why models operate on tokens, not characters or words
+  - Trace how byte-pair encoding builds a vocabulary from raw text
+  - Predict which inputs blow up token counts (and therefore cost and context)
+  - Diagnose spelling, counting, and arithmetic failures as tokenization artifacts
+tags: [llm, tokenization, bpe, context-window, cost]
+---
+
+<Intuition>
+Before a language model can be clever, it has to *read* — and it does not read
+the way you do. It cannot see letters. The very first thing that happens to
+your prompt is that it gets chopped into **tokens** — sub-word chunks — and
+turned into a list of integers. Everything the model knows, reasons about, and
+bills you for is measured in these tokens. Most of the model's weirdest
+behaviors — miscounting letters, choking on arithmetic, costing 3× more for
+Japanese than English — are not reasoning failures. They are shadows cast by
+this first, invisible step. Understand tokenization and a whole category of
+"why did it do that?" dissolves.
+</Intuition>
+
+<Concept>
+## A token is not a word
+
+A token is a chunk of bytes that the model treats as one atomic unit. It's
+usually a piece of a word: common words like `" the"` are a single token,
+while a rarer word like `"tokenization"` might split into `token` + `ization`.
+The model has a fixed **vocabulary** — typically 50,000 to 200,000 tokens —
+and every input is expressed as a sequence of IDs into that vocabulary.
+
+Three consequences follow immediately, and they explain a lot:
+
+- The model's atomic unit is the token, so it has no *direct* access to the
+  letters inside a token. "How many r's in strawberry?" asks about something
+  below its resolution.
+- Cost and context limits are counted in tokens, not characters or words.
+- The *same* string always tokenizes the same way (given a vocabulary) — the
+  splitting is deterministic, not a model decision.
+</Concept>
+
+<RealWorld source="The strawberry problem">
+The famous "how many r's are in strawberry?" failure isn't stupidity. To the
+model, `strawberry` may arrive as three tokens — something like
+`st` · `raw` · `berry`. The letters are fused inside those chunks; the model
+has to *reconstruct* the spelling from memory of how the word looks, then
+count — a genuinely awkward task for a system whose inputs are token IDs.
+The same root cause makes models unreliable at reversing strings, counting
+characters, and doing digit-by-digit arithmetic: all of these need
+character-level vision the tokenizer took away. It's why tool use (a
+calculator, a `len()` call) beats asking the model to do it in its head.
+</RealWorld>
+
+<Check id="llm-tok-strawberry" />
+
+<Concept>
+## How the vocabulary gets built: byte-pair encoding
+
+Where do the tokens come from? The dominant algorithm is **byte-pair encoding
+(BPE)**. It's greedy and beautifully simple:
+
+1. Start with the smallest possible units — individual bytes/characters — so
+   *any* text is representable (no "unknown token" holes).
+2. Scan a huge corpus and find the **most frequent adjacent pair** of units.
+3. **Merge** that pair into a new single token; add it to the vocabulary.
+4. Repeat thousands of times.
+
+Frequent sequences — `t`+`h` → `th`, then `th`+`e` → `the` — get merged early
+and become single tokens. Rare sequences never merge and stay in pieces. The
+result: common words are one token, rare words are several, and the vocabulary
+naturally allocates its "resolution" where the language actually spends its
+mass. Drive the merge process yourself below and watch a vocabulary assemble
+from raw characters.
+</Concept>
+
+<Visual id="llm-bpe" />
+
+<Check id="llm-tok-cost" />
+
+<Concept>
+## Why token counts explode (and your bill with them)
+
+Because BPE learns its merges from a (mostly English) training corpus, the
+"~4 characters per token" rule of thumb only holds for ordinary English prose.
+Everything else pays a tax:
+
+- **Code** is punctuation-dense and full of rare identifiers, so it fragments
+  into many tokens.
+- **Non-English / non-Latin scripts** whose byte sequences the tokenizer rarely
+  merged can hit 1 character ≈ 1+ tokens — a 2–3× penalty versus English for
+  the same *meaning*.
+- **Numbers** tokenize erratically (`1000` vs `1 000` vs `1,000` split
+  differently), which is one reason raw arithmetic is unreliable.
+
+The context window — "128k tokens" — is a *token* budget, so the same wall
+holds less Japanese text than English text. When you estimate cost or "will
+this fit," count tokens, not characters.
+</Concept>
+
+<CodeWalk
+  title="counting tokens the right way"
+  lines={[
+    { code: "import tiktoken" },
+    { code: "" },
+    { code: "enc = tiktoken.get_encoding('cl100k_base')", note: "Load the exact vocabulary/merges your target model uses — token counts are tokenizer-specific." },
+    { code: "" },
+    { code: "text = 'Gmail queues your message.'" },
+    { code: "ids = enc.encode(text)", note: "Encode returns the list of integer token IDs — this is literally what the model receives." },
+    { code: "print(len(ids))          # the real token count", note: "Bill and context are counted here, not in len(text). This is your cost estimator." },
+    { code: "print([enc.decode([i]) for i in ids])", note: "Decode each ID back to its chunk to SEE the splits — great for debugging 'why is this so many tokens?'" },
+  ]}
+/>
+
+<Gotcha>
+Whitespace and capitalization change token IDs. `" dog"` (with a leading
+space) and `"dog"` are **different tokens**, and `"Dog"` is different again.
+This is why a stray leading space or trailing newline in a prompt template can
+subtly shift behavior, and why few-shot examples should match the exact
+spacing you'll use at inference. The model is reacting to token IDs, and those
+IDs are whitespace- and case-sensitive.
+</Gotcha>
+
+<Aside title="Why not just use characters as tokens? (or whole words?)">
+Two failed extremes explain why BPE won. **Character tokens** make every
+sequence enormous — attention is quadratic in sequence length (Module 3), so
+character-level models are brutally expensive for the same text. **Word
+tokens** can't handle words they never saw (names, typos, new slang, code) —
+you get "unknown token" holes and a vocabulary that must be impossibly large
+to cover everything. BPE is the pragmatic middle: start from bytes so
+*nothing* is unrepresentable, then merge up to word-ish chunks so common text
+stays short. Subword tokenization is the compromise that made large
+vocabularies and long context affordable at once.
+</Aside>
+
+<Concept>
+## Build it: one BPE merge step
+
+The whole algorithm is "find the most frequent adjacent pair, merge it,
+repeat." Implement a single merge step — given a sequence of tokens and the
+pair to merge, produce the new sequence — and you understand BPE. The tests
+check that every occurrence of the pair is fused and everything else is left
+alone.
+</Concept>
+
+<Exercise id="llm-bpe-code" />
+
+<Cheatsheet>
+The one line to keep: **the model reads token IDs, not letters — so cost,
+context limits, and a whole family of spelling/counting/math failures are
+tokenization artifacts, not reasoning ones.** When something weird happens
+with characters or numbers, suspect the tokenizer first, and reach for a tool.
+</Cheatsheet>

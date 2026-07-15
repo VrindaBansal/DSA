@@ -1,0 +1,36 @@
+---
+id: evaluation
+module: evaluation
+title: Evaluation
+order: 1
+estimatedMinutes: 35
+prerequisites: [prompting, rag]
+objectives:
+  - Build a golden set and treat every prompt change as a diff against it
+  - Use LLM-as-judge while controlling for its biases
+  - Measure RAG's retrieval and generation halves separately
+stub: true
+tags: [llm, evaluation, llm-as-judge, ragas, metrics]
+---
+
+<Intuition>
+"It seems better" is not a measurement, and vibes don't survive contact with
+production. Evaluation is what turns LLM development from guesswork into
+engineering: a **golden set** of input→expected pairs is your regression suite,
+and every prompt tweak, model swap, or retrieval change becomes a diff against
+it. Two ideas do most of the work. **LLM-as-judge** scales human grading — a
+model scores outputs against a rubric — but it inherits real biases (it favors
+longer answers, the first option shown, and its own family's style), so you
+calibrate it against human labels. And for RAG you must measure retrieval and
+generation *separately* — faithfulness, context precision/recall — or you'll
+spend a week "fixing the prompt" when the bug was retrieval. Quality is nothing
+without cost and latency next to it.
+</Intuition>
+
+<Check id="llm-eval-judge" />
+
+<Cheatsheet>
+Full lecture pending — golden-set construction, judge calibration, RAG metrics
+(Ragas), offline vs online/A-B testing, and cost/latency budgets land here. The
+cheatsheet below is exam-ready now.
+</Cheatsheet>

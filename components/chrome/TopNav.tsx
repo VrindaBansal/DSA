@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useProgress } from '@/lib/progress/provider';
 
 const LINKS = [
-  { href: '/', label: 'Dashboard' },
+  { href: '/', label: 'Courses' },
   { href: '/practice', label: 'Practice' },
   { href: '/review', label: 'Review' },
   { href: '/reference', label: 'Reference' },
@@ -26,7 +26,7 @@ export function TopNav() {
             Invariant
           </span>
           <span className="hidden font-mono text-[10px] uppercase tracking-[0.14em] text-faint sm:inline">
-            dsa portal
+            learn
           </span>
         </Link>
         <nav className="flex items-center gap-1 font-mono text-[12px]">

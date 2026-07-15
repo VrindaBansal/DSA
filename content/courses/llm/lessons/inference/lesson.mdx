@@ -1,0 +1,38 @@
+---
+id: inference
+module: inference
+title: Inference & serving
+order: 1
+estimatedMinutes: 40
+prerequisites: [attention, tokenization]
+objectives:
+  - Separate prefill from decode and map each to TTFT and throughput
+  - Explain continuous batching and why the KV cache is the capacity limit
+  - Reason about quantization, streaming, and the token bill
+stub: true
+tags: [llm, inference, serving, kv-cache, quantization]
+---
+
+<Intuition>
+The same model can cost cents or dollars, answer in 200ms or 20s, depending
+entirely on how it's *served*. Two phases govern everything: **prefill** reads
+your whole prompt in parallel to produce the first token (this sets
+time-to-first-token — long prompts hurt here), and **decode** generates tokens
+one at a time using the KV cache (this sets throughput — long outputs hurt
+here). The big serving win, **continuous batching**, keeps the GPU saturated by
+swapping requests in and out per token instead of waiting for a fixed batch.
+And the real capacity limit usually isn't compute — it's the KV cache's memory,
+which grows with every token of context. Understand this and the token bill,
+the latency numbers, and "why does long context cost so much?" all stop being
+mysterious.
+</Intuition>
+
+<Check id="llm-inf-ttft" />
+
+<Check id="llm-inf-batching" />
+
+<Cheatsheet>
+Full lecture pending — prefill/decode economics, continuous batching internals,
+quantization (int8/int4), prompt caching, and the cost math land here. The
+cheatsheet below is exam-ready now.
+</Cheatsheet>

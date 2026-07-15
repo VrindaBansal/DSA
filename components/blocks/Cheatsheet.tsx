@@ -60,7 +60,7 @@ export function CheatsheetBody({ data }: { data: CheatsheetData }) {
       <table className="w-full border-collapse text-[13px]">
         <thead>
           <tr>
-            {['Operation', 'Complexity', 'Note'].map((h) => (
+            {(data.opsHeaders ?? ['Operation', 'Complexity', 'Note']).map((h) => (
               <th
                 key={h}
                 className="border-b-[1.5px] border-ink py-1.5 pr-4 text-left font-mono text-[10px] uppercase tracking-wider text-muted"
@@ -104,7 +104,7 @@ export function CheatsheetBody({ data }: { data: CheatsheetData }) {
 
       <div className="rounded border border-line bg-paper px-3 py-2">
         <span className="mr-2 font-mono text-[10px] uppercase tracking-wider text-muted">
-          Python stdlib
+          {data.stdlibLabel ?? 'Python stdlib'}
         </span>
         <code className="font-mono text-[12.5px]">{data.stdlib}</code>
       </div>

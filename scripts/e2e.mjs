@@ -36,11 +36,19 @@ const pass = (msg) => {
 };
 const section = (name) => console.log(`\n■ ${name}`);
 
-// --- discover routes from content ------------------------------------------
-const lessonIds = fs
-  .readdirSync(path.join(root, 'content', 'lessons'), { withFileTypes: true })
+// --- discover routes from content (multi-course) ---------------------------
+const coursesDir = path.join(root, 'content', 'courses');
+const courseIds = fs
+  .readdirSync(coursesDir, { withFileTypes: true })
   .filter((d) => d.isDirectory())
   .map((d) => d.name);
+const lessonIds = [];
+for (const c of courseIds) {
+  const ld = path.join(coursesDir, c, 'lessons');
+  if (!fs.existsSync(ld)) continue;
+  for (const d of fs.readdirSync(ld, { withFileTypes: true }))
+    if (d.isDirectory()) lessonIds.push(d.name);
+}
 const moduleSlugs = [
   ...fs.readFileSync(path.join(root, 'lib', 'modules.ts'), 'utf8').matchAll(/slug: '([^']+)'/g),
 ].map((m) => m[1]);
@@ -50,6 +58,7 @@ const routes = [
   '/practice/code',
   '/review',
   '/reference',
+  ...courseIds.map((c) => `/course/${c}`),
   ...moduleSlugs.map((s) => `/module/${s}`),
   ...lessonIds.map((l) => `/lesson/${l}`),
   ...lessonIds.map((l) => `/lesson/${l}/cheatsheet`),

@@ -3,6 +3,7 @@ import { OPENAI_MODEL, OPENAI_API_URL } from '@/lib/config';
 import { rateLimited } from '@/lib/rate-guard';
 import { getAllLessons } from '@/lib/content';
 import { MODULES } from '@/lib/modules';
+import { COURSES } from '@/lib/courses';
 
 // The AI tutor (spec §8, extended with a course-wide "General" mode). The
 // OpenAI key lives server-side only — .env.local, never NEXT_PUBLIC_, never
@@ -36,16 +37,16 @@ type ChatBody = LessonChatBody | GeneralChatBody;
 const SHARED_RULES = `RULES OF ENGAGEMENT
 - Prefer the Socratic move for conceptual confusion (e.g. "what would happen if the tail wrapped past the head?"). ONE guiding question, not an interrogation.
 - For factual questions, give the answer IMMEDIATELY and directly, then the why. If she asks "what's the complexity of heapify", the first words are "O(n)" — never withhold a fact to be pedagogical.
-- Anchor explanations in real systems (Gmail's send queue, Kafka, CDN LRU caches, OS schedulers, git bisect), consistent with this course's own anchors.
+- Anchor explanations in real systems (Gmail's send queue, Kafka, CDN LRU caches, git bisect; Gmail search / RAG, coding agents, the token bill), consistent with the courses' own anchors.
 - Never be sycophantic. No "great question!". If her answer or assumption is wrong, say plainly that it is wrong and show why. Praise only genuinely sharp observations, briefly.
-- Be concise. Use short paragraphs, minimal markdown (bold, inline code, fenced code blocks in Python only). No headers, no bullet-list padding.
-- Scope: you are specialized for THIS curriculum — data structures and algorithms as taught here. Politely decline unrelated requests (essay writing, other subjects, general chit-chat) and steer back.`;
+- Be concise. Use short paragraphs, minimal markdown (bold, inline code, fenced code blocks — Python by default). No headers, no bullet-list padding.
+- Scope: you are specialized for THESE courses — data structures & algorithms, and large language models, as taught here. Politely decline unrelated requests (essay writing, other subjects, general chit-chat) and steer back.`;
 
 function lessonSystemPrompt(b: LessonChatBody): string {
-  return `You are the resident tutor inside "Invariant", Vrinda's personal data-structures-and-algorithms learning portal. You are embedded in the lesson "${b.lessonTitle}" (id: ${b.lessonId}) — this is the "This lesson" tab.
+  return `You are the resident tutor inside "Invariant", Vrinda's personal learning portal. You are embedded in the lesson "${b.lessonTitle}" (id: ${b.lessonId}) — this is the "This lesson" tab.
 
 ${SHARED_RULES}
-- Answer in the vocabulary of THIS lesson specifically. If the lesson is about queues, do not reach for graph solutions or material from later modules unless she explicitly asks.
+- Answer in the vocabulary of THIS lesson specifically. Stay with this lesson's material and don't reach for other modules unless she explicitly asks.
 
 CURRENT LESSON SOURCE (MDX):
 ${b.lessonSource}
@@ -70,23 +71,28 @@ ${
 
 function curriculumManifest(): string {
   const lessons = getAllLessons();
-  return MODULES.map((m) => {
-    const ls = lessons.filter((l) => l.meta.module === m.slug);
-    const lessonLines = ls
-      .map((l) => `    - ${l.meta.title} (id: ${l.meta.id}): ${l.meta.objectives[0] ?? ''}`)
+  return COURSES.map((course) => {
+    const mods = MODULES.filter((m) => m.courseId === course.id)
+      .map((m) => {
+        const ls = lessons.filter((l) => l.meta.module === m.slug);
+        const lessonLines = ls
+          .map((l) => `    - ${l.meta.title} (id: ${l.meta.id}): ${l.meta.objectives[0] ?? ''}`)
+          .join('\n');
+        return `  ${m.number}. ${m.title} — ${m.blurb}\n${lessonLines}`;
+      })
       .join('\n');
-    return `  ${m.number}. ${m.title} — ${m.blurb}\n${lessonLines}`;
-  }).join('\n');
+    return `### COURSE: ${course.title} (id: ${course.id})\n${mods}`;
+  }).join('\n\n');
 }
 
 function generalSystemPrompt(b: GeneralChatBody): string {
-  return `You are the resident tutor inside "Invariant", Vrinda's personal data-structures-and-algorithms learning portal. This is the "General" tab — not scoped to one lesson. She may ask about anything anywhere in the curriculum below, ask which lesson covers something, or ask you to help her decide what to study next.
+  return `You are the resident tutor inside "Invariant", Vrinda's personal learning portal. It hosts multiple courses (data structures & algorithms, and large language models). This is the "General" tab — not scoped to one lesson. She may ask about anything anywhere in the curriculum below, ask which course/lesson covers something, or ask you to help her decide what to study next.
 
 ${SHARED_RULES}
-- You may draw on vocabulary and patterns from ANY module below — this tab is not restricted to one lesson's material.
-- If a question is really about a specific lesson's content in depth, you can say so and suggest she open that lesson (naming it) so the "This lesson" tab can see its full source — but still give a real, direct answer here first; don't just punt.
+- You may draw on any course or module below — this tab is not restricted to one lesson's material — but keep answers within what these courses teach.
+- If a question is really about a specific lesson's content in depth, you can say so and suggest she open that lesson (naming it and its course) so the "This lesson" tab can see its full source — but still give a real, direct answer here first; don't just punt.
 
-FULL CURRICULUM (module — lessons — one objective each):
+FULL CURRICULUM (courses → modules → lessons, one objective each):
 ${curriculumManifest()}
 
 HER PROGRESS: ${b.completedLessonIds.length} lesson(s) completed${

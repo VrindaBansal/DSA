@@ -1,0 +1,46 @@
+---
+id: prompting
+module: prompting
+title: Prompting
+order: 1
+estimatedMinutes: 35
+prerequisites: [tokenization, decoding]
+objectives:
+  - Use system vs user roles, few-shot examples, and chain-of-thought deliberately
+  - Choose the cheapest lever — prompt before RAG before fine-tune
+  - Recognize prompt injection as the core trust-boundary problem
+stub: true
+tags: [llm, prompting, few-shot, chain-of-thought, injection]
+---
+
+<Intuition>
+Prompting is the cheapest, fastest, most-underrated lever you have — and the
+first one to exhaust before reaching for RAG or fine-tuning. A prompt isn't
+"asking nicely"; it's *runtime programming*. The system prompt sets the
+standing rules and role. Few-shot examples configure behavior by demonstration
+— two or three well-chosen examples routinely beat paragraphs of adjectives.
+Chain-of-thought ("think step by step") trades tokens for accuracy on genuine
+reasoning. And the dark side you must respect from day one: anything that lands
+in the context — user text, retrieved docs, tool output — is *untrusted* and
+can try to hijack your instructions. Prompt injection is the security problem
+that never goes away.
+</Intuition>
+
+<Check id="llm-prompt-order" />
+
+<Check id="llm-prompt-injection" />
+
+<Concept>
+## The lever ladder
+
+Match the tool to the failure: prompting shapes behavior and format, RAG adds
+facts, fine-tuning bakes in style at scale. Try them cheapest-first.
+</Concept>
+
+<TradeoffTable id="llm-adaptation-ladder" />
+
+<Cheatsheet>
+Full lecture pending — role design, few-shot selection, CoT tradeoffs,
+structured output, and injection defenses land here. The cheatsheet below is
+exam-ready now.
+</Cheatsheet>

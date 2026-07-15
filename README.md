@@ -1,13 +1,28 @@
-# Invariant — personal DSA learning portal
+# Invariant — personal learning portal
 
-learning data structures and algorithms with my own personal
-coursera/duolingo/khan academy.
+my own personal coursera/duolingo/khan academy.
 
-Single-user web app that teaches DSA through interactive text lectures,
-lockstep code-and-animation visuals, inline comprehension checks, in-browser
-Python exercises, an AI tutor, and a spaced repetition queue. Built to
-`dsa-portal-spec.md` — codename "Grok" in the spec, renamed **Invariant**
-(the spec said rename freely).
+Single-user web app that teaches technical subjects through interactive text
+lectures, lockstep code-and-animation visuals, inline comprehension checks,
+in-browser Python exercises, an AI tutor, and a spaced repetition queue.
+Started from `dsa-portal-spec.md` (codename "Grok", renamed **Invariant**) and
+grew into a **multi-course** platform.
+
+## Courses
+
+Two courses ship today, both built the same way (concept-first, real-world
+anchors, tested constantly):
+
+- **Data structures & algorithms** — 12 modules, 16 lessons, fully authored.
+- **Large language models** — 12 modules, 12 lessons. Tokenization → embeddings
+  → attention → decoding → prompting → RAG → tools → agents → agentic workflows
+  → evaluation → fine-tuning → inference. Three lessons fully authored
+  (tokenization, RAG, agents) with five interactive visuals; the other nine are
+  strong stubs (framing prose + a check + a genuinely exam-ready cheatsheet).
+
+Adding a course = drop a folder under `content/courses/<id>/` and register it in
+`lib/courses.ts`. Adding a lesson = drop a directory under that course's
+`lessons/`. The `courseId` is derived from the folder path.
 
 ## Run it
 
@@ -49,21 +64,30 @@ same progress repository as everything else (`lib/progress/repo.ts`).
 ## Where things live
 
 ```
-content/lessons/<id>/lesson.mdx    the lecture (frontmatter + block components)
-content/lessons/<id>/questions.ts  that lesson's question bank
-content/lessons/<id>/cheatsheet.ts structured cheatsheet data
-content/questions/index.ts         one-line registration per bank
-content/cheatsheets.ts             one-line registration per cheatsheet
-content/tradeoffs.ts               normalized tradeoff tables (aggregated on /reference)
-components/blocks/                 the 10 authoring primitives (§5.1)
-components/visuals/                the 11 interactive visuals + shared engine
-lib/progress/repo.ts               THE persistence swap point (see below)
-lib/config.ts                      model name, rate limit, persistence mode
+lib/courses.ts                       the course registry (add a course here)
+lib/modules.ts                       every module (each tagged with courseId)
+content/courses/<course>/lessons/<id>/lesson.mdx    a lecture (MDX + blocks)
+content/courses/<course>/lessons/<id>/questions.ts  per-lesson question bank (DSA)
+content/courses/<course>/lessons/<id>/cheatsheet.ts per-lesson cheatsheet (DSA)
+content/courses/<course>/questions.ts   course-level question bank (LLM)
+content/courses/<course>/cheatsheets.ts course-level cheatsheets (LLM)
+content/courses/<course>/tradeoffs.ts   course tradeoff tables
+content/questions/index.ts           GLOBAL aggregator of every course's banks
+content/cheatsheets.ts               GLOBAL aggregator of every cheatsheet
+content/tradeoffs.ts                 GLOBAL aggregator of every tradeoff table
+components/blocks/                   the authoring primitives
+components/visuals/                  DSA visuals + shared engine
+components/visuals/llm/              LLM visuals (BPE, cosine, attention, RAG, agent loop)
+lib/progress/repo.ts                 THE persistence swap point (see below)
 ```
 
-Adding a lesson = drop a directory under `content/lessons/` with a
-`lesson.mdx`, plus (optionally) `questions.ts` + `cheatsheet.ts` and two
-one-line imports in the registries. No app code changes.
+Routes: `/` is the **course picker**; `/course/[courseId]` is a course
+dashboard; `/module/[slug]` and `/lesson/[slug]` use globally-unique slugs;
+`/practice`, `/review`, and `/reference` span all courses with a course filter.
+
+Adding a lesson = drop a directory under a course's `lessons/` with a
+`lesson.mdx`, plus its cheatsheet/questions and a one-line import in the
+relevant registry. No routing changes — the course is derived from the path.
 
 ## Curriculum state
 

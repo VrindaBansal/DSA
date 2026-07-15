@@ -21,6 +21,11 @@ export function ModuleClient({
 
   return (
     <div className="mx-auto max-w-3xl px-5 pb-20 pt-10">
+      <div className="mb-1 font-mono text-[11px]">
+        <Link href={`/course/${mod.courseId}`} className="text-muted hover:text-ink">
+          ← course
+        </Link>
+      </div>
       <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted">
         Module {String(mod.number).padStart(2, '0')}
       </div>

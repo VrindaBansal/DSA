@@ -1,0 +1,44 @@
+---
+id: agentic-workflows
+module: agentic-workflows
+title: Agentic workflows
+order: 1
+estimatedMinutes: 40
+prerequisites: [agents, tools]
+objectives:
+  - Distinguish workflows (fixed code paths) from agents (model-directed)
+  - Apply the five patterns — chaining, routing, parallelization, orchestrator-worker, evaluator-optimizer
+  - Choose the least autonomy that reliably solves the task
+stub: true
+tags: [llm, workflows, orchestration, multi-agent]
+---
+
+<Intuition>
+Most production "AI agents" aren't agents at all — they're **workflows**:
+systems where LLM calls are composed through control flow *you* wrote. That
+distinction (Anthropic's framing) is the most clarifying idea in the whole
+agentic space. Workflows are predictable, testable, cheap, and debuggable
+because the path is fixed in code; agents hand that control to the model,
+buying flexibility at the cost of all four. The craft is composing a handful of
+reliable patterns — chaining, routing, parallelization, orchestrator-worker,
+evaluator-optimizer — and adding genuine autonomy *only* at the steps where the
+path truly can't be known ahead of time. Determinism is a feature; spend
+autonomy like money.
+</Intuition>
+
+<Check id="llm-workflow-patterns" />
+
+<Concept>
+## Workflow vs agent, side by side
+
+The decision table you'll reach for constantly: fix the control flow in code
+until the task genuinely branches in ways you can't predict.
+</Concept>
+
+<TradeoffTable id="llm-workflow-vs-agent" />
+
+<Cheatsheet>
+Full lecture pending — each of the five patterns worked end to end, multi-agent
+coordination, and the determinism/autonomy tradeoff land here. The cheatsheet
+below is exam-ready now.
+</Cheatsheet>

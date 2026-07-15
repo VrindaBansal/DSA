@@ -7,42 +7,50 @@ import { CHEATSHEETS } from '@/content/cheatsheets';
 import { TRADEOFFS } from '@/content/tradeoffs';
 import { CheatsheetBody } from '@/components/blocks/Cheatsheet';
 import { TradeoffTableView } from '@/components/blocks/TradeoffTable';
+import { COURSES } from '@/lib/courses';
 
 // Global searchable reference (spec §4): every cheatsheet, every complexity
-// table, one page — plus the color-encoding legend (§10).
+// table, one page — plus the color-encoding legend (§10). Filterable by course.
 
 export function ReferenceClient({ lessons }: { lessons: LessonMeta[] }) {
   const [query, setQuery] = useState('');
+  const [course, setCourse] = useState<string>('all');
   const lessonById = useMemo(
     () => Object.fromEntries(lessons.map((l) => [l.id, l])),
     [lessons],
   );
+  const courseOf = (lessonId: string) => lessonById[lessonId]?.courseId ?? 'dsa';
 
   const q = query.trim().toLowerCase();
   const matches = (text: string) => q === '' || text.toLowerCase().includes(q);
+  const inCourse = (lessonId: string) => course === 'all' || courseOf(lessonId) === course;
 
-  const sheets = CHEATSHEETS.filter((c) =>
-    matches(
-      [
-        lessonById[c.lessonId]?.title ?? c.lessonId,
-        c.useWhen,
-        c.dontUseWhen,
-        c.stdlib,
-        ...c.opsTable.map((o) => `${o.op} ${o.complexity} ${o.note ?? ''}`),
-        ...(c.bullets ?? []),
-        ...(c.gotchas ?? []),
-      ].join(' '),
-    ),
+  const sheets = CHEATSHEETS.filter(
+    (c) =>
+      inCourse(c.lessonId) &&
+      matches(
+        [
+          lessonById[c.lessonId]?.title ?? c.lessonId,
+          c.useWhen,
+          c.dontUseWhen,
+          c.stdlib,
+          ...c.opsTable.map((o) => `${o.op} ${o.complexity} ${o.note ?? ''}`),
+          ...(c.bullets ?? []),
+          ...(c.gotchas ?? []),
+        ].join(' '),
+      ),
   );
 
-  const tables = TRADEOFFS.filter((t) =>
-    matches(
-      [
-        t.title,
-        ...t.columns,
-        ...t.rows.map((r) => `${r.label} ${r.cells.join(' ')}`),
-      ].join(' '),
-    ),
+  const tables = TRADEOFFS.filter(
+    (t) =>
+      inCourse(t.lessonId) &&
+      matches(
+        [
+          t.title,
+          ...t.columns,
+          ...t.rows.map((r) => `${r.label} ${r.cells.join(' ')}`),
+        ].join(' '),
+      ),
   );
 
   return (
@@ -59,10 +67,28 @@ export function ReferenceClient({ lessons }: { lessons: LessonMeta[] }) {
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="search: O(1), heap, popleft…"
+          placeholder="search: O(1), heap, RAG, temperature…"
           className="w-64 rounded border border-line-strong bg-panel px-3 py-2 font-mono text-[12.5px] outline-none focus:border-active"
           aria-label="search reference"
         />
+      </div>
+
+      <div className="mt-4 flex items-center gap-1.5 font-mono text-[11px]">
+        {[{ id: 'all', label: 'all courses' }, ...COURSES.map((c) => ({ id: c.id, label: c.title }))].map(
+          (opt) => (
+            <button
+              key={opt.id}
+              onClick={() => setCourse(opt.id)}
+              className={`rounded px-2.5 py-1 transition-colors ${
+                course === opt.id
+                  ? 'bg-active-wash text-active-deep'
+                  : 'text-muted hover:text-ink'
+              }`}
+            >
+              {opt.label}
+            </button>
+          ),
+        )}
       </div>
 
       {/* the color language, used by every visual in the app */}
