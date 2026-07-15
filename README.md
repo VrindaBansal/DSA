@@ -122,10 +122,11 @@ Vercel as-is:
    framework preset auto-detects Next.js; no build settings to change.
    (Or from the CLI: `npx vercel`, then `npx vercel --prod`.)
 2. **Set one environment variable** in Project → Settings → Environment
-   Variables: `OPENAI_API_KEY`. That's the only secret; it is read
+   Variables: `OPENAI_API_KEY`. That's the only required secret; it is read
    exclusively inside the `/api/chat` and `/api/grade` route handlers and
    never reaches a client bundle. Optionally set `OPENAI_MODEL` to override
-   the default in `lib/config.ts`.
+   the default in `lib/config.ts`, and `SITE_PASSWORD` to change the site
+   password from its default (see below).
 3. **Leave persistence on the default (localStorage).** Do NOT set
    `NEXT_PUBLIC_PERSIST=sqlite` on Vercel — serverless filesystems are
    ephemeral, so the SQLite file would vanish between invocations.
@@ -144,6 +145,27 @@ Notes that make this work (already wired):
 - Pyodide loads client-side from the jsDelivr CDN — nothing to configure.
 - The in-process rate guard on the OpenAI routes works per serverless
   instance; for a single-user app that is plenty.
+
+### Password gate
+
+Once deployed, anyone with the URL could otherwise hit `/api/chat` or
+`/api/grade` directly and spend your OpenAI credits — a client-only check
+(e.g. something read from localStorage) can't stop that, since nothing
+prevents a request from reaching those routes without ever loading the page.
+So the whole site sits behind one shared password, enforced in
+**`middleware.ts`**, which runs before any page or API route:
+
+- Default password: **`Hello227`**. Override it by setting `SITE_PASSWORD`
+  in Vercel's environment variables (or `.env.local` locally) — no code
+  change needed.
+- Enter it once at `/unlock`; a long-lived (~6 month) `httpOnly` cookie
+  remembers you after that, so there's no repeated login. There's no
+  account system, no session store — just one password compared server-side
+  in `lib/site-lock.ts`, and the same in-process rate guard used by the
+  OpenAI routes applies to unlock attempts too.
+- This is a deterrent, not a security boundary against a determined
+  attacker — there's no email/2FA/rotation. For a single-user personal tool
+  behind an unlisted URL, that trade is intentional.
 
 ## Decisions on the spec's open questions (§14)
 

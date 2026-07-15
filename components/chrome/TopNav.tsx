@@ -16,6 +16,8 @@ export function TopNav() {
   const { dueReview, ready } = useProgress();
   const due = ready ? dueReview().length : 0;
 
+  if (pathname === '/unlock') return null;
+
   return (
     <header className="no-print sticky top-0 z-40 border-b border-line bg-panel/95 backdrop-blur-sm">
       <div className="mx-auto flex h-12 max-w-6xl items-center gap-8 px-5">
