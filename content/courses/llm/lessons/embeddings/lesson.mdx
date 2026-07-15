@@ -1,0 +1,47 @@
+---
+id: embeddings
+module: embeddings
+title: Embeddings & vector search
+order: 1
+estimatedMinutes: 35
+prerequisites: [tokenization]
+objectives:
+  - Explain embeddings as meaning encoded into direction in a vector space
+  - Use cosine similarity to rank relevance, and know why magnitude drops out
+  - Reason about chunking and approximate nearest neighbor search for retrieval
+stub: true
+tags: [llm, embeddings, cosine, vector-search, ann]
+---
+
+<Intuition>
+If tokenization is how a model *reads*, embeddings are how it (and your search
+system) *measures meaning*. An embedding turns a piece of text into a vector —
+a point in a few-hundred-dimensional space — arranged so that texts about the
+same thing land near each other, regardless of the exact words. "How do I
+cancel?" and "unsubscribe me" end up as neighbors. That geometric trick —
+meaning as *direction* — is the entire foundation of semantic search, dedup,
+clustering, recommendations, and the retrieval half of RAG. Compare two vectors
+by the angle between them (cosine similarity) and you have a relevance score
+that ignores length and fixates on topic.
+</Intuition>
+
+<Visual id="llm-cosine" />
+
+<Check id="llm-emb-cosine" />
+
+<Check id="llm-emb-ann" />
+
+<Concept>
+## Build it: cosine similarity from scratch
+
+The scoring function behind every vector search is three lines. Implement it
+and you'll never be mystified by "similarity" again.
+</Concept>
+
+<Exercise id="llm-cosine-code" />
+
+<Cheatsheet>
+Full lecture pending — contextual vs static embeddings, chunking strategy, the
+HNSW graph, and hybrid search land here. The cheatsheet below is exam-ready
+now.
+</Cheatsheet>

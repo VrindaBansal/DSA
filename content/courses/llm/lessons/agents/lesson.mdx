@@ -1,0 +1,119 @@
+---
+id: agents
+module: agents
+title: Agents — the loop that decides for itself
+order: 1
+estimatedMinutes: 45
+prerequisites: [prompting, tools]
+objectives:
+  - Describe the perceive→decide→act loop and what makes something an agent
+  - Explain ReAct and why interleaving reasoning with actions works
+  - Set the guardrails every agent needs — stop conditions, budgets, memory
+  - Decide when an agent beats a fixed workflow, and when it's overkill
+tags: [llm, agents, react, tool-use, autonomy]
+---
+
+<Intuition>
+Everything so far has been a single request and a single response. An **agent**
+breaks that frame: it's a *loop* wrapped around a model that can call tools,
+where the model itself decides what to do next, does it, looks at the result,
+and decides again — until the task is done. That autonomy is the entire point
+and the entire danger. A chain follows steps you wrote; an agent writes its own
+steps at runtime. Used where the path genuinely can't be known in advance, it's
+transformative. Used where a simple script would do, it's a slower, pricier,
+less predictable way to get the same answer. The skill is knowing which
+situation you're in — and bounding the loop so it can't hurt you.
+</Intuition>
+
+<Concept>
+## What actually makes something an agent
+
+Strip away the hype and an agent is a loop with four beats:
+
+1. **Perceive** — take in the current state: the goal, what's happened so far,
+   the last tool result.
+2. **Decide** — the model chooses the next action (call this tool with these
+   arguments, or "I'm done, here's the answer").
+3. **Act** — *your code* executes the chosen tool and captures the result
+   (the model never runs anything itself — Module 7).
+4. **Repeat** — feed the result back in and loop, until a stop condition fires.
+
+The defining property is step 2: **the model chooses the steps.** A workflow
+has its control flow written in your code; an agent delegates that control flow
+to the model. Everything else — tools, memory, prompts — is shared machinery.
+Watch the loop turn below.
+</Concept>
+
+<Visual id="llm-agent-loop" />
+
+<Concept>
+## ReAct: reasoning and acting, interleaved
+
+The workhorse pattern is **ReAct** — *Reason + Act*. Instead of picking a tool
+blindly, the model alternates: a **thought** ("I need the user's current plan
+before I can answer"), an **action** (call `get_subscription(user)`), an
+**observation** (the tool result), then another thought, and so on. Writing the
+reasoning down before acting measurably improves tool choice and lets the model
+course-correct when a result surprises it. It also gives *you* a readable trace
+— every decision the agent made is on the record, which is most of how you
+debug agents at all.
+</Concept>
+
+<RealWorld source="A coding agent">
+This session is running inside one. A coding agent is handed a goal ("fix this
+failing test"), and it loops: read the error (perceive), decide to open a file
+(act), read it (observe), decide to edit a function, run the tests, see them
+still fail, form a new hypothesis, edit again — until green or out of budget.
+Nobody wrote "open file X, edit line Y"; the agent chose each step from the
+results of the last. That's why an agent — not a fixed script — fits: the exact
+sequence of edits genuinely can't be known in advance. It's also why the loop
+*must* be bounded, or a confused agent will thrash forever burning tokens.
+</RealWorld>
+
+<Check id="llm-agents-vs-workflow" />
+
+<Concept>
+## The guardrails every agent needs
+
+Autonomy without bounds is how agents rack up bills and wander off. Non-
+negotiables:
+
+- **Stop conditions.** The loop must end. Set a max step count, a token/dollar
+  budget, a wall-clock timeout, and a clear success signal (e.g. a
+  `final_answer` tool). The model may never spontaneously say "done."
+- **Memory.** The context window is finite and fills with tool chatter.
+  Long-running agents need external memory — a scratchpad, a store they can
+  write to and retrieve from — because context ≠ memory.
+- **Least privilege.** Every tool an agent can call is an action it might take
+  wrongly, or be *tricked* into taking via prompt injection (Module 5). Give it
+  the smallest toolset, validate arguments, and put a human in the loop before
+  anything irreversible (spending money, deleting data, emailing the world).
+- **Reflection.** Errors compound — a wrong early step poisons everything after
+  it. A verify/critique step ("does this actually satisfy the goal?") catches
+  drift before it snowballs.
+</Concept>
+
+<Check id="llm-agents-stop" />
+
+<Concept>
+## When an agent beats a workflow — and when it doesn't
+
+The honest rule from the field: **use the least autonomy that solves the
+task.** If you can enumerate the steps, write them as a workflow (Module 9) —
+it's cheaper, faster, testable, and debuggable. Reach for an agent only when
+the sequence of steps genuinely depends on intermediate results in ways you
+can't predetermine: open-ended research, debugging, "figure out how to do X."
+Even then, most robust systems are *mostly* fixed workflow with one or two
+agentic steps where the branching really is unpredictable. Autonomy is a cost
+you pay for flexibility — buy only as much as the task demands.
+</Concept>
+
+<TradeoffTable id="llm-workflow-vs-agent" />
+
+<Cheatsheet>
+The posture that reads as senior: **"An agent is a bounded loop where the model
+picks the steps and my code runs the tools. I reach for one only when the steps
+can't be known in advance — otherwise a workflow wins — and I never ship one
+without stop conditions, least-privilege tools, and a human gate on
+irreversible actions."**
+</Cheatsheet>

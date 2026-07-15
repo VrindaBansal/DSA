@@ -8,6 +8,7 @@ import { useProgress } from '@/lib/progress/provider';
 import { McqCard } from '@/components/quiz/McqCard';
 import { ShortCard } from '@/components/quiz/ShortCard';
 import { getModule } from '@/lib/modules';
+import { COURSES } from '@/lib/courses';
 
 function shuffle<T>(arr: T[], seed: number): T[] {
   const a = [...arr];
@@ -35,6 +36,7 @@ export function PracticeClient({
   const [seed, setSeed] = useState(() => Date.now() & 0x7fffffff);
   const [idx, setIdx] = useState(0);
   const [answeredCurrent, setAnsweredCurrent] = useState(false);
+  const [courseFilter, setCourseFilter] = useState<string>('all');
   const [results, setResults] = useState<{ q: Question; correct: boolean }[]>(
     [],
   );
@@ -50,10 +52,13 @@ export function PracticeClient({
     if (moduleFilter) {
       eligible = lessons.filter((l) => l.module === moduleFilter).map((l) => l.id);
     } else {
-      const completed = lessons
+      const inCourse = (l: LessonMeta) =>
+        courseFilter === 'all' || l.courseId === courseFilter;
+      const scoped = lessons.filter(inCourse);
+      const completed = scoped
         .filter((l) => state.lessons[l.id]?.completed)
         .map((l) => l.id);
-      const touched = lessons
+      const touched = scoped
         .filter((l) => (state.lessons[l.id]?.blocksSeen.length ?? 0) > 0)
         .map((l) => l.id);
       eligible =
@@ -61,13 +66,13 @@ export function PracticeClient({
           ? completed
           : touched.length > 0
             ? touched
-            : lessons.map((l) => l.id);
+            : scoped.map((l) => l.id);
     }
     const qs = ALL_QUESTIONS.filter(
       (q) => q.kind !== 'code' && eligible.includes(q.lessonId),
     );
     return shuffle(qs, seed);
-  }, [ready, moduleFilter, lessons, state.lessons, seed]);
+  }, [ready, moduleFilter, lessons, state.lessons, seed, courseFilter]);
 
   const restart = () => {
     setSeed(Date.now() & 0x7fffffff);
@@ -113,6 +118,29 @@ export function PracticeClient({
           </span>
         )}
       </div>
+
+      {!moduleFilter && (
+        <div className="mb-6 flex items-center gap-1.5 font-mono text-[11px]">
+          {[{ id: 'all', label: 'all courses' }, ...COURSES.map((c) => ({ id: c.id, label: c.title }))].map(
+            (opt) => (
+              <button
+                key={opt.id}
+                onClick={() => {
+                  setCourseFilter(opt.id);
+                  restart();
+                }}
+                className={`rounded px-2.5 py-1 transition-colors ${
+                  courseFilter === opt.id
+                    ? 'bg-active-wash text-active-deep'
+                    : 'text-muted hover:text-ink'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ),
+          )}
+        </div>
+      )}
 
       {pool.length === 0 && (
         <div className="rounded-md border border-dashed border-line-strong bg-paper px-5 py-6 text-center">

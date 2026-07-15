@@ -8,6 +8,8 @@ export type Difficulty = 1 | 2 | 3;
 export interface LessonMeta {
   id: string;
   module: string;
+  /** Which course this lesson belongs to (derived from its folder). */
+  courseId: string;
   title: string;
   order: number;
   estimatedMinutes: number;
@@ -20,6 +22,8 @@ export interface LessonMeta {
 
 export interface ModuleMeta {
   slug: string;
+  /** Which course this module belongs to. */
+  courseId: string;
   number: number;
   title: string;
   blurb: string;
@@ -84,12 +88,16 @@ export interface OpsRow {
 
 export interface CheatsheetData {
   lessonId: string;
-  /** Operations table with complexities. */
+  /** The 3-column quick-reference table. */
   opsTable: OpsRow[];
+  /** Column headers; defaults to Operation / Complexity / Note (DSA). */
+  opsHeaders?: [string, string, string];
   useWhen: string;
   dontUseWhen: string;
-  /** Python stdlib equivalent. */
+  /** Python stdlib equivalent (DSA) or key tools/libraries (LLM). */
   stdlib: string;
+  /** Label for the stdlib row; defaults to "Python stdlib". */
+  stdlibLabel?: string;
   bullets?: string[];
   gotchas?: string[];
 }

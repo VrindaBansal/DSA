@@ -1,0 +1,47 @@
+---
+id: fine-tuning
+module: fine-tuning
+title: Fine-tuning & adaptation
+order: 1
+estimatedMinutes: 40
+prerequisites: [prompting, rag]
+objectives:
+  - Decide when to fine-tune versus prompt or RAG
+  - Explain LoRA/PEFT as training small adapters over frozen base weights
+  - Separate what fine-tuning can teach (behavior) from what it can't (facts)
+stub: true
+tags: [llm, fine-tuning, lora, peft, rlhf]
+---
+
+<Intuition>
+Fine-tuning is the most powerful and most *over-reached-for* lever in the
+toolkit. The instinct — "the model doesn't know our stuff, let's fine-tune it
+on our docs" — is usually wrong, because fine-tuning teaches *behavior* (tone,
+format, a narrow skill), not *facts* (which go stale the moment you freeze them
+and can't be cited — that's RAG's job). The decision order is
+prompt → few-shot → RAG → fine-tune, cheapest first. When you do fine-tune,
+**LoRA** is the trick that made it affordable: freeze the giant base model and
+train tiny low-rank adapter matrices — most of the benefit for a fraction of
+the compute, and swappable per task. The right mental model: fine-tune HOW the
+model responds, retrieve WHAT it says, and prompt for everything you can get
+away with.
+</Intuition>
+
+<Check id="llm-ft-lora" />
+
+<Check id="llm-ft-vs-rag" />
+
+<Concept>
+## RAG vs fine-tuning for "make it know X"
+
+The comparison that settles most arguments: changing/citable knowledge is RAG;
+consistent behavior/format is fine-tuning. They compose.
+</Concept>
+
+<TradeoffTable id="llm-rag-vs-finetune" />
+
+<Cheatsheet>
+Full lecture pending — SFT data curation, LoRA/QLoRA mechanics, RLHF/DPO
+conceptually, distillation, and catastrophic forgetting land here. The
+cheatsheet below is exam-ready now.
+</Cheatsheet>

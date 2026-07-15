@@ -19,9 +19,11 @@ FIELD = r"{name}: `((?:[^`\\]|\\.)*)`"
 
 
 def extract_exercises():
-    files = sorted(glob.glob("content/lessons/*/questions.ts")) + [
-        "content/questions/anchor-questions.ts"
-    ]
+    files = (
+        sorted(glob.glob("content/courses/*/lessons/*/questions.ts"))
+        + sorted(glob.glob("content/courses/*/questions.ts"))
+        + ["content/questions/anchor-questions.ts"]
+    )
     exercises = []
     for f in files:
         src = open(f).read()

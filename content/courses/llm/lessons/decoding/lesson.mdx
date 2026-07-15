@@ -1,0 +1,37 @@
+---
+id: decoding
+module: decoding
+title: Sampling & decoding
+order: 1
+estimatedMinutes: 30
+prerequisites: [tokenization]
+objectives:
+  - Trace logits → probabilities → a chosen token
+  - Tune temperature, top-k, and top-p for reliability vs creativity
+  - Explain hallucination as sampling from a confident-but-wrong distribution
+stub: true
+tags: [llm, decoding, temperature, top-p, hallucination]
+---
+
+<Intuition>
+A model doesn't "write an answer" — it predicts a probability distribution over
+the *next token*, you pick one, append it, and repeat. Every knob you've heard
+of — temperature, top-k, top-p — is just a policy for turning that distribution
+into a choice. Temperature 0 always takes the single most likely token
+(reproducible, ideal for extraction and tool calls); higher temperature
+flattens the distribution so lower-probability tokens get a chance (diversity,
+ideal for brainstorming). Understanding decoding also demystifies
+hallucination: the sampler has no truth oracle: when the distribution is
+confidently wrong, you get fluent, plausible falsehood. That's the mechanism
+working as designed, not a bug you can turn off with a lower temperature.
+</Intuition>
+
+<Check id="llm-dec-temp" />
+
+<Check id="llm-dec-halluc" />
+
+<Cheatsheet>
+Full lecture pending — the softmax, repetition penalties, constrained/JSON
+decoding, and reproducibility caveats land here. The cheatsheet below is
+exam-ready now.
+</Cheatsheet>

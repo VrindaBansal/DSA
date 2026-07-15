@@ -1,0 +1,37 @@
+---
+id: attention
+module: attention
+title: Attention & transformers
+order: 1
+estimatedMinutes: 40
+prerequisites: [tokenization, embeddings]
+objectives:
+  - Explain self-attention as every token weighing every other token
+  - Read the Q/K/V mechanism and why context cost is quadratic
+  - Say what the KV cache stores and why it makes generation O(n) per token
+stub: true
+tags: [llm, attention, transformers, kv-cache]
+---
+
+<Intuition>
+The transformer's one big idea is **attention**: to build a representation of a
+word, look at every other word in the context and take a weighted average of
+them, where the weights say "how relevant is this word to that one?" That's
+how "it" figures out what it refers to, and how "bank" learns whether it's a
+river or a vault — from the company each token keeps. Everything downstream of a
+language model is stacks of this operation. Its two most consequential
+properties fall straight out of the mechanism: context cost grows with the
+*square* of length (every token looks at every token), and generation stays
+affordable only because of a cache. Below: attention weights as a live heatmap.
+</Intuition>
+
+<Visual id="llm-attention" />
+
+<Check id="llm-attn-quadratic" />
+
+<Check id="llm-attn-kvcache" />
+
+<Cheatsheet>
+Full lecture pending — Q/K/V derivation, multi-head, positional encodings, and
+the transformer block land here. The cheatsheet below is exam-ready now.
+</Cheatsheet>

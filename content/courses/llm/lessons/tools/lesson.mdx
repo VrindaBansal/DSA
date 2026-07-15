@@ -1,0 +1,35 @@
+---
+id: tools
+module: tools
+title: Tool use & function calling
+order: 1
+estimatedMinutes: 35
+prerequisites: [prompting]
+objectives:
+  - Describe the tool-call loop — the model emits calls, your code executes them
+  - Write tool schemas the model can actually select and fill correctly
+  - Validate and authorize tool calls as a security boundary
+stub: true
+tags: [llm, tools, function-calling, json, mcp]
+---
+
+<Intuition>
+A raw model can only produce text. Tool use is what lets it *reach into the
+world* — look something up, do real math, query a database, send a request.
+The mechanism is more mundane than it sounds and worth burning into memory: the
+model never runs anything. It emits a **structured request** — a tool name and
+JSON arguments — and *your* code executes the tool, then hands the result back
+for the model to continue. It's a loop you orchestrate, which is exactly where
+you enforce validation and authorization. Tool descriptions are prompt
+engineering (the model picks tools by their names and docstrings), and every
+tool that touches money or data is an injection target. This is the bridge from
+"chatbot" to "software that acts."
+</Intuition>
+
+<Check id="llm-tools-loop" />
+
+<Cheatsheet>
+Full lecture pending — schema design, JSON mode, parallel tool calls, error
+handling as tool results, and MCP land here. The cheatsheet below is exam-ready
+now.
+</Cheatsheet>

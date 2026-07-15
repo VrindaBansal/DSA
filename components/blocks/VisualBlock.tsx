@@ -58,6 +58,28 @@ const REGISTRY: Record<string, React.ComponentType> = {
     ssr: false,
     loading: skeleton,
   }),
+
+  // --- LLM course --------------------------------------------------------
+  'llm-bpe': dynamic(() => import('@/components/visuals/llm/BpeMerge'), {
+    ssr: false,
+    loading: skeleton,
+  }),
+  'llm-cosine': dynamic(() => import('@/components/visuals/llm/CosineSim'), {
+    ssr: false,
+    loading: skeleton,
+  }),
+  'llm-attention': dynamic(() => import('@/components/visuals/llm/Attention'), {
+    ssr: false,
+    loading: skeleton,
+  }),
+  'llm-rag-pipeline': dynamic(() => import('@/components/visuals/llm/RagPipeline'), {
+    ssr: false,
+    loading: skeleton,
+  }),
+  'llm-agent-loop': dynamic(() => import('@/components/visuals/llm/AgentLoop'), {
+    ssr: false,
+    loading: skeleton,
+  }),
 };
 
 export function VisualBlock({

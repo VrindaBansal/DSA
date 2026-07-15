@@ -1,0 +1,147 @@
+---
+id: rag
+module: rag
+title: Retrieval-augmented generation
+order: 1
+estimatedMinutes: 45
+prerequisites: [tokenization, embeddings, prompting]
+objectives:
+  - Explain the full RAG pipeline and locate each stage's failure mode
+  - Diagnose whether a wrong answer is a retrieval bug or a generation bug
+  - Apply chunking, hybrid search, and reranking as the top quality levers
+  - Ground generation to cut hallucination, and know when RAG is the wrong tool
+tags: [llm, rag, retrieval, grounding, hybrid-search]
+---
+
+<Intuition>
+A base model knows only what was in its training data, frozen at a point in
+time, with no citations and no access to your private files. RAG —
+retrieval-augmented generation — is the fix, and the idea is almost
+insultingly simple: **before you ask the model to answer, go find the relevant
+text and paste it into the prompt.** The model then answers *from* that text
+instead of from memory. That one move buys you current information, private
+knowledge, and citations — the three things a raw model can't give you. The
+entire craft of RAG is making the "go find the relevant text" step actually
+work, because when RAG fails, it almost always fails there.
+</Intuition>
+
+<Concept>
+## The pipeline, stage by stage
+
+RAG is a small assembly line, and each station has its own way of breaking:
+
+1. **Chunk** — split your documents into passages. Too big and a chunk mixes
+   topics (diluting relevance); too small and it loses the context that makes
+   it answerable.
+2. **Embed** — turn each chunk into a vector (Module 2) and store it in a
+   vector database.
+3. **Retrieve** — embed the user's query, find the nearest chunks by cosine
+   similarity. *This is where most RAG bugs live.*
+4. **Rerank** — optionally re-score the top-N candidates with a stronger
+   cross-encoder model that reads query and chunk together. A big precision
+   win.
+5. **Generate** — stuff the surviving chunks into the prompt and ask the model
+   to answer, grounded in them.
+
+The load-bearing insight: **RAG is retrieval first, generation second.** If
+the answer-bearing chunk never makes it into step 5, no prompt engineering can
+save you. Watch the whole pipeline run below, then we'll pull apart the two
+halves.
+</Concept>
+
+<Visual id="llm-rag-pipeline" />
+
+<RealWorld source="Docs Q&A">
+The canonical RAG app is "chat with your docs": a support bot over a product
+manual, a legal assistant over contracts, this very portal's tutor over its
+own lessons. When it answers "I couldn't find that" for something that's
+plainly in the manual, the instinct is to blame the model — but the log almost
+always shows the right passage was never retrieved. The chunk was split
+badly, or the user phrased it in words the embedding didn't match, or ten
+mediocre chunks crowded out the one good one. Fixing the generation prompt
+does nothing; fixing retrieval fixes the bug. This is the single most
+important reflex in production RAG.
+</RealWorld>
+
+<Check id="llm-rag-retrieval-first" />
+
+<Concept>
+## The three highest-leverage knobs
+
+When retrieval underperforms, reach for these in order:
+
+- **Chunking.** The highest-leverage and most-neglected knob. Respect
+  structure (headings, paragraphs), keep chunks self-contained, and use modest
+  overlap so a sentence split across a boundary isn't lost. Bad chunking caps
+  the quality of everything downstream.
+- **Hybrid search.** Pure vector search is semantic — great for "how do I
+  cancel" matching "unsubscribe," but it *misses exact tokens*: SKUs, error
+  codes, function names, people's names. Combine it with lexical search
+  (BM25) so exact identifiers still hit. Hybrid catches what each half misses.
+- **Reranking.** Vector top-k is fast but coarse. A cross-encoder reranker
+  reads the query and each candidate *together* and re-scores — turning "top
+  20 roughly-relevant" into "top 3 actually-relevant." It's often the biggest
+  single-step precision jump.
+</Concept>
+
+<Concept>
+## Lost in the middle, and grounding
+
+Two more effects separate working RAG from a demo:
+
+**Lost in the middle.** Models attend most reliably to the *start* and *end*
+of their context and least to the middle. So stuffing in more chunks can
+backfire — the answer gets buried in the low-attention middle. Retrieve
+*fewer, better* chunks (that's what reranking is for) and place the strongest
+ones at the edges.
+
+**Grounding.** Even with the right chunk in context, a model will sometimes
+answer from its own memory instead. Instruct it explicitly: *"Answer only using
+the provided context. If the answer isn't there, say you don't know. Cite the
+source."* Grounding is the main lever that converts RAG from "confident guesses
+with extra steps" into "citable, checkable answers."
+</Concept>
+
+<CodeWalk
+  title="the grounded generation prompt"
+  lines={[
+    { code: "SYSTEM = '''You answer strictly from the CONTEXT below.", note: "The grounding instruction is the hallucination lever — 'strictly from the context' is doing real work." },
+    { code: "If the context doesn't contain the answer, say" },
+    { code: "\"I don't know based on the provided documents.\"", note: "An explicit escape hatch: permission to abstain is what stops confident fabrication." },
+    { code: "Cite the source id in brackets after each claim.'''", note: "Citations make the answer checkable and turn retrieval failures into visible gaps." },
+    { code: "" },
+    { code: "context = '\\n\\n'.join(", note: "The retrieved (and reranked) chunks — put the strongest at the start and end to dodge lost-in-the-middle." },
+    { code: "    f'[{c.id}] {c.text}' for c in top_chunks)" },
+    { code: "" },
+    { code: "answer = chat(system=SYSTEM," },
+    { code: "              user=f'CONTEXT:\\n{context}\\n\\nQ: {query}')", note: "Generation is the LAST step. If the answer is wrong, check whether top_chunks even contained it before touching this prompt." },
+  ]}
+/>
+
+<Check id="llm-rag-lostmiddle" />
+
+<Concept>
+## When RAG is the wrong tool
+
+RAG is not a hammer for every nail. Skip it when:
+
+- The knowledge is already in-weights and stable (general reasoning, common
+  facts) — retrieval just adds latency and failure surface.
+- The task is pure transformation (summarize *this* text, rewrite *this*
+  email) — there's nothing to retrieve.
+- A precise lookup would do — if the answer is "the current balance," call the
+  database, don't embed it.
+
+And remember RAG's relationship to fine-tuning: **RAG supplies *what* to say
+(facts); fine-tuning shapes *how* to say it (behavior/format).** They're
+complementary, not competing.
+</Concept>
+
+<TradeoffTable id="llm-rag-vs-finetune" />
+
+<Cheatsheet>
+Say it like a practitioner: **"RAG is retrieval first — chunk, hybrid-retrieve,
+rerank, then ground the generation. When it's wrong, I check whether the right
+chunk was even retrieved before I touch the prompt."** That reflex, plus
+grounding to allow "I don't know," is 80% of production RAG quality.
+</Cheatsheet>

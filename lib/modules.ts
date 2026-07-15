@@ -4,6 +4,7 @@ import type { ModuleMeta } from './types';
 export const MODULES: ModuleMeta[] = [
   {
     slug: 'complexity',
+    courseId: 'dsa',
     number: 1,
     title: 'Complexity',
     blurb: 'Big-O, Θ, Ω · amortized analysis · space complexity · recursion trees + Master theorem',
@@ -11,6 +12,7 @@ export const MODULES: ModuleMeta[] = [
   },
   {
     slug: 'arrays',
+    courseId: 'dsa',
     number: 2,
     title: 'Arrays and dynamic arrays',
     blurb: 'Static vs dynamic · amortized doubling · two pointers · sliding window · prefix sums',
@@ -18,6 +20,7 @@ export const MODULES: ModuleMeta[] = [
   },
   {
     slug: 'hashing',
+    courseId: 'dsa',
     number: 3,
     title: 'Hashing',
     blurb: 'Hash functions · collisions (chaining vs open addressing) · load factor · when dict is not O(1)',
@@ -25,6 +28,7 @@ export const MODULES: ModuleMeta[] = [
   },
   {
     slug: 'linked-structures',
+    courseId: 'dsa',
     number: 4,
     title: 'Linked structures',
     blurb: 'Singly/doubly linked · fast–slow pointers · LRU cache',
@@ -32,6 +36,7 @@ export const MODULES: ModuleMeta[] = [
   },
   {
     slug: 'stacks',
+    courseId: 'dsa',
     number: 5,
     title: 'Stacks',
     blurb: 'Array vs linked backing · monotonic stack · the call stack',
@@ -39,6 +44,7 @@ export const MODULES: ModuleMeta[] = [
   },
   {
     slug: 'queues',
+    courseId: 'dsa',
     number: 6,
     title: 'Queues and deques',
     blurb: 'FIFO · ring buffer · deque · priority queue preview',
@@ -46,6 +52,7 @@ export const MODULES: ModuleMeta[] = [
   },
   {
     slug: 'heaps',
+    courseId: 'dsa',
     number: 7,
     title: 'Heaps and priority queues',
     blurb: 'Binary heap · sift up/down · heapify · two-heap median · top-K',
@@ -53,6 +60,7 @@ export const MODULES: ModuleMeta[] = [
   },
   {
     slug: 'trees',
+    courseId: 'dsa',
     number: 8,
     title: 'Trees',
     blurb: 'Binary trees · traversals · BST · balancing (conceptual) · tries',
@@ -60,6 +68,7 @@ export const MODULES: ModuleMeta[] = [
   },
   {
     slug: 'graphs',
+    courseId: 'dsa',
     number: 9,
     title: 'Graphs',
     blurb: 'Representations · BFS/DFS · topological sort · union-find · Dijkstra',
@@ -67,6 +76,7 @@ export const MODULES: ModuleMeta[] = [
   },
   {
     slug: 'sorting',
+    courseId: 'dsa',
     number: 10,
     title: 'Sorting',
     blurb: 'Merge · quick (Lomuto + Hoare) · heap · counting/radix · Timsort · stability',
@@ -74,6 +84,7 @@ export const MODULES: ModuleMeta[] = [
   },
   {
     slug: 'searching',
+    courseId: 'dsa',
     number: 11,
     title: 'Searching',
     blurb: 'Binary search · bisect from scratch · binary search on the answer · quickselect',
@@ -81,12 +92,119 @@ export const MODULES: ModuleMeta[] = [
   },
   {
     slug: 'dp',
+    courseId: 'dsa',
     number: 12,
     title: 'Recursion, backtracking, DP, greedy',
     blurb: 'Memo → tabulate → space-optimize · knapsack/LIS/edit distance · when greedy is provably safe',
     anchors: ['Diff algorithms (edit distance)', 'Autocomplete ranking', 'Cache eviction heuristics'],
   },
+
+  // ----- Large language models -------------------------------------------
+  {
+    slug: 'tokenization',
+    courseId: 'llm',
+    number: 1,
+    title: 'Tokenization',
+    blurb: 'Bytes → tokens · BPE merges · vocab & context windows · why token boundaries leak into behavior',
+    anchors: ['Why an LLM miscounts the r’s in “strawberry”', 'The token bill', 'Non-English text costs more'],
+  },
+  {
+    slug: 'embeddings',
+    courseId: 'llm',
+    number: 2,
+    title: 'Embeddings & vector search',
+    blurb: 'Vectors as meaning · cosine similarity · chunking · vector DBs · approximate nearest neighbors (HNSW)',
+    anchors: ['Semantic search', 'Dedup & clustering', 'The retrieval half of RAG'],
+  },
+  {
+    slug: 'attention',
+    courseId: 'llm',
+    number: 3,
+    title: 'Attention & transformers',
+    blurb: 'Self-attention · Q/K/V · multi-head · positional encoding · the block · the KV cache',
+    anchors: ['Why context length is quadratic', 'What the KV cache actually caches'],
+  },
+  {
+    slug: 'decoding',
+    courseId: 'llm',
+    number: 4,
+    title: 'Sampling & decoding',
+    blurb: 'Logits → probabilities · temperature · top-k / top-p · greedy vs sampling · why it’s confidently wrong',
+    anchors: ['The temperature knob', 'Structured/JSON decoding', 'Reproducibility vs creativity'],
+  },
+  {
+    slug: 'prompting',
+    courseId: 'llm',
+    number: 5,
+    title: 'Prompting',
+    blurb: 'Zero/few-shot · system vs user · chain-of-thought · structured output · prompt injection',
+    anchors: ['The system prompt', 'Few-shot as runtime programming', 'This app’s own tutor prompt'],
+  },
+  {
+    slug: 'rag',
+    courseId: 'llm',
+    number: 6,
+    title: 'Retrieval-augmented generation',
+    blurb: 'Chunk → embed → retrieve → rerank → stuff → generate · failure modes · hybrid search · grounding',
+    anchors: ['Docs Q&A', 'Lost-in-the-middle', 'Grounding to cut hallucination'],
+  },
+  {
+    slug: 'tools',
+    courseId: 'llm',
+    number: 7,
+    title: 'Tool use & function calling',
+    blurb: 'Tool schemas · the call loop · JSON mode · parallel tools · grounding actions in the world',
+    anchors: ['The weather/DB tool', 'Structured outputs as an API', 'Letting the model take actions'],
+  },
+  {
+    slug: 'agents',
+    courseId: 'llm',
+    number: 8,
+    title: 'Agents',
+    blurb: 'The perceive→decide→act loop · ReAct · memory · planning · when an agent beats a fixed chain',
+    anchors: ['A coding agent', 'The task loop', 'Autonomy vs control'],
+  },
+  {
+    slug: 'agentic-workflows',
+    courseId: 'llm',
+    number: 9,
+    title: 'Agentic workflows',
+    blurb: 'Chaining · routing · parallelization · orchestrator-worker · evaluator-optimizer · reflection · multi-agent',
+    anchors: ['Workflows vs agents (Anthropic’s split)', 'Orchestrator-worker', 'When determinism wins'],
+  },
+  {
+    slug: 'evaluation',
+    courseId: 'llm',
+    number: 10,
+    title: 'Evaluation',
+    blurb: 'Offline vs online · LLM-as-judge · golden sets · RAG metrics · regression · cost & latency',
+    anchors: ['“How do you know it got better?”', 'LLM-as-judge pitfalls', 'Faithfulness & context recall'],
+  },
+  {
+    slug: 'fine-tuning',
+    courseId: 'llm',
+    number: 11,
+    title: 'Fine-tuning & adaptation',
+    blurb: 'When NOT to · SFT · LoRA/PEFT · RLHF/DPO (conceptual) · distillation · data curation',
+    anchors: ['Style/format adaptation', 'LoRA’s low-rank trick', 'Prompt vs fine-tune vs RAG'],
+  },
+  {
+    slug: 'inference',
+    courseId: 'llm',
+    number: 12,
+    title: 'Inference & serving',
+    blurb: 'Latency vs throughput · KV cache · continuous batching · quantization · context cost · streaming',
+    anchors: ['The token bill, again', 'Time-to-first-token', 'Quantization tradeoffs'],
+  },
 ];
 
 export const getModule = (slug: string): ModuleMeta | undefined =>
   MODULES.find((m) => m.slug === slug);
+
+export const getModulesForCourse = (courseId: string): ModuleMeta[] =>
+  MODULES.filter((m) => m.courseId === courseId);
+
+/** Client-safe module slug → courseId lookup (used to scope nav/practice). */
+export const MODULE_COURSE: Record<string, string> = Object.fromEntries(
+  MODULES.map((m) => [m.slug, m.courseId]),
+);
