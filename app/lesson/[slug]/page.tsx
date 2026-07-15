@@ -104,7 +104,13 @@ export default async function LessonPage({
           <MDXRemote
             source={source}
             components={makeMdxComponents(meta.id)}
-            options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }}
+            options={{
+              mdxOptions: { remarkPlugins: [remarkGfm] },
+              // Lessons are trusted, repository-owned content and use JS
+              // expressions for structured component props (for example,
+              // CodeWalk's lines array). Keep dangerous globals blocked.
+              blockJS: false,
+            }}
           />
         </article>
 
