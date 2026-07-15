@@ -1,0 +1,103 @@
+---
+id: lc-linked-list
+module: lc-linked-list
+title: Linked-list techniques
+order: 1
+estimatedMinutes: 25
+prerequisites: [lc-method]
+objectives:
+  - Use a dummy head to erase the special case at the front of a list
+  - Reverse a list in place with the three-pointer walk
+  - Apply fast/slow pointers for midpoint and cycle detection
+tags: [leetcode, linked-list, pointers, fast-slow]
+---
+
+<Intuition>
+Linked-list problems scare people because there's no index to grab — you can
+only follow `.next` from wherever you're standing, and one careless assignment
+loses half the list forever. But the interview versions really come down to a
+few reusable moves: a **dummy head** to kill the front-of-list special case,
+the **three-pointer reversal**, and **fast/slow pointers** for anything about
+the middle or a cycle. Learn those three and most linked-list questions become
+routine pointer bookkeeping. (If "reference" vs "pointer" is fuzzy, the DSA
+course's linked-lists lesson has the Python-specific primer.)
+</Intuition>
+
+<Concept>
+## The dummy head trick
+
+Half the bugs in list code come from the *head* being special: inserting or
+deleting at the front has no previous node to update. The fix is a **sentinel**:
+create a throwaway `dummy` node whose `.next` points at the real head, build off
+it, and return `dummy.next` at the end.
+
+```
+dummy = ListNode(0, head)
+prev = dummy
+# ... now "delete/insert at front" is just prev.next = ...
+return dummy.next
+```
+
+Now every position — including the first — has a node before it whose `.next`
+you can set. No branching for the head. Reach for a dummy whenever the front of
+the list might change (merging, deleting, partitioning).
+</Concept>
+
+<Concept>
+## In-place reversal: three pointers, one rule
+
+Reversing is the canonical "pointer surgery." Walk the list flipping each
+`.next` to point backward. The one rule that separates working code from a lost
+tail: **save `curr.next` before you overwrite it.**
+
+```
+prev, curr = None, head
+while curr:
+    nxt = curr.next     # SAVE before you clobber
+    curr.next = prev    # flip
+    prev = curr         # advance the trailing pointer
+    curr = nxt          # advance the leading pointer
+return prev             # new head
+```
+</Concept>
+
+<Check id="lc-ll-dummy" />
+
+<Exercise id="lc-ll-reverse" />
+
+<Concept>
+## Fast/slow pointers: the middle and the cycle
+
+Two pointers again, same direction, different speeds. Advance `slow` by one and
+`fast` by two:
+
+- When `fast` reaches the end, `slow` sits at the **middle** — in one pass, no
+  length count.
+- If the list has a **cycle**, `fast` eventually laps `slow` and they collide
+  (Floyd's algorithm): inside a loop the gap between them shrinks by one each
+  step, so a meeting is guaranteed. This detects a cycle in O(1) space, versus
+  an O(n) visited-set.
+
+The loop guard is the whole game: `while fast and fast.next:` — you must verify
+`fast.next` exists *before* you step `fast.next.next`, or you'll dereference
+`None`.
+</Concept>
+
+<Exercise id="lc-ll-cycle" />
+
+<Gotcha>
+`None.next` is Python's version of a null-pointer crash — it shows up as
+`AttributeError: 'NoneType' object has no attribute 'next'`, and it's almost
+always the loop condition. Check the pointer *before* you follow it one step
+further than you've verified: `while fast and fast.next:`, not `while fast:`.
+And test the two tiny cases first, every time — the **empty list** and the
+**single node** — because that's where linked-list code dies.
+</Gotcha>
+
+<Cheatsheet>
+Three reusable moves. **Dummy head** — a sentinel before the real head kills the
+front-of-list special case; return `dummy.next`. **Reversal** — three pointers,
+and save `nxt = curr.next` before flipping. **Fast/slow** — one-and-two speed
+finds the midpoint in one pass and detects a cycle in O(1) space; guard with
+`while fast and fast.next`. Always test empty + single-node inputs.
+</Cheatsheet>

@@ -1,0 +1,111 @@
+---
+id: lc-binary-search
+module: lc-binary-search
+title: Binary search
+order: 1
+estimatedMinutes: 30
+prerequisites: [lc-constraints]
+objectives:
+  - Write the bug-free lo/hi template without off-by-one or infinite loops
+  - Recognize "binary search on the answer" via a monotonic yes/no test
+  - Apply it to non-obvious problems like minimum feasible speed/capacity
+tags: [leetcode, binary-search, monotonic, on-the-answer]
+---
+
+<Intuition>
+Binary search is what a `10⁹` constraint is usually begging for: you can't touch
+every element, so you must **throw away half the possibilities with each step.**
+Everyone "knows" binary search on a sorted array, and yet it's one of the
+buggiest things to write from memory — off-by-ones and infinite loops lurk in
+the boundary updates. So we'll lock in one template that always works. Then
+comes the real unlock, the thing that turns binary search from a party trick
+into a superpower: **you can binary-search the answer itself**, even when
+there's no sorted array in sight.
+</Intuition>
+
+<Concept>
+## The template that doesn't have bugs
+
+Memorize this exact shape and stop improvising:
+
+```
+lo, hi = 0, len(nums) - 1      # inclusive on both ends
+while lo <= hi:                # <= because hi is a valid index
+    mid = (lo + hi) // 2
+    if nums[mid] == target:
+        return mid
+    if nums[mid] < target:
+        lo = mid + 1           # mid is ruled out, so +1
+    else:
+        hi = mid - 1           # mid is ruled out, so -1
+return -1
+```
+
+Two rules prevent the classic bugs. **`lo <= hi`** (not `<`) because `hi` is a
+real index you must still check. **`mid ± 1`** on every update, so `mid` never
+stays inside the range — that's what guarantees the range strictly shrinks and
+the loop can't spin forever when `lo` and `hi` are adjacent.
+</Concept>
+
+<Exercise id="lc-bs-classic" />
+
+<Concept>
+## The unlock: binary search on the answer
+
+Here's the leap. Forget searching an array — search the **space of possible
+answers**. This works whenever the problem has a **monotonic feasibility test**:
+a yes/no question `works(x)` where, once it becomes true, it stays true for all
+bigger `x` (or all smaller). Then "the smallest x that works" is a boundary you
+can binary-search, in O(log(range)) checks.
+
+The tell in the wording: "**minimum** capacity / speed / size such that
+[something is possible]," or "**maximum** value such that [a limit holds]."
+You're not given a sorted list — but the answers themselves form a sorted
+yes/no line, and you binary-search where it flips:
+
+```
+lo, hi = smallest_possible, largest_possible
+while lo < hi:
+    mid = (lo + hi) // 2
+    if works(mid):
+        hi = mid          # mid might be the answer — keep it
+    else:
+        lo = mid + 1      # mid fails — the answer is bigger
+return lo
+```
+
+Note the different template — `lo < hi`, and `hi = mid` (not `mid - 1`) —
+because we're finding a *boundary*, not an exact match, and `mid` itself could
+be the answer.
+</Concept>
+
+<Check id="lc-bs-answer" />
+
+<Concept>
+## Your turn: Koko eating bananas
+
+The canonical "search the answer" problem. The speed `k` is the answer; the
+monotonic test is "can she finish within h hours at speed k?" — clearly, faster
+never hurts, so feasibility is monotonic in k. Binary-search the smallest
+feasible speed over `[1, max(pile)]`. Write the feasibility check first (it's
+just a sum), then wrap the boundary template around it.
+</Concept>
+
+<Exercise id="lc-bs-koko" />
+
+<Gotcha>
+Compute `mid = (lo + hi) // 2` and, in the boundary version, be deliberate about
+`hi = mid` vs `hi = mid - 1`. Using `mid - 1` when `mid` itself might be the
+answer *skips the real answer*; using `hi = mid` in a loop with `lo <= hi` can
+*infinite-loop*. The pairing matters: **exact match →** `lo <= hi` with `mid ±
+1`; **find-the-boundary →** `lo < hi` with `hi = mid` / `lo = mid + 1`. Pick the
+template to match the question and don't mix them.
+</Gotcha>
+
+<Cheatsheet>
+Two templates, never improvise. **Exact match** in a sorted array: `lo, hi =
+0, n-1; while lo <= hi; mid ± 1`. **Boundary / on-the-answer**: `while lo < hi;
+if works(mid): hi = mid else lo = mid + 1; return lo`. Reach for the second
+whenever you see "minimum/maximum X such that [a monotonic condition] holds" —
+you're searching answers, not the array. O(log(range)) checks.
+</Cheatsheet>

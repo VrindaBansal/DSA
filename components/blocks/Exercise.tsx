@@ -6,7 +6,7 @@ import { BlockShell } from './BlockShell';
 import { McqCard } from '@/components/quiz/McqCard';
 import { QUESTION_BY_ID } from '@/content/questions';
 import { useProgress, useLessonProgress } from '@/lib/progress/provider';
-import { runTests, type RunOutcome } from '@/lib/pyodide';
+import { runTests, runScript, type RunOutcome, type ScriptOutcome } from '@/lib/pyodide';
 import type { CodeQuestion } from '@/lib/types';
 
 const CodeMirror = dynamic(() => import('@uiw/react-codemirror'), {
@@ -66,6 +66,8 @@ export function ExerciseCard({
   const [running, setRunning] = useState(false);
   const [outcome, setOutcome] = useState<RunOutcome | null>(null);
   const [runError, setRunError] = useState<string | null>(null);
+  const [scratch, setScratch] = useState<ScriptOutcome | null>(null);
+  const [scratchRunning, setScratchRunning] = useState(false);
   const [hintsShown, setHintsShown] = useState(cp?.hintsUsed ?? 0);
   const [showSolution, setShowSolution] = useState(false);
 
@@ -102,6 +104,24 @@ export function ExerciseCard({
       setRunError(e instanceof Error ? e.message : String(e));
     } finally {
       setRunning(false);
+    }
+  };
+
+  const runScratch = async () => {
+    if (scratchRunning || running) return;
+    setScratchRunning(true);
+    setScratch(null);
+    try {
+      const res = await runScript(code);
+      setScratch(res);
+    } catch (e) {
+      setScratch({
+        stdout: '',
+        error: e instanceof Error ? e.message : String(e),
+        ok: false,
+      });
+    } finally {
+      setScratchRunning(false);
     }
   };
 
@@ -171,6 +191,14 @@ export function ExerciseCard({
           {booting ? 'booting Python…' : running ? 'running…' : '▶ run tests'}
         </button>
         <button
+          onClick={runScratch}
+          disabled={scratchRunning || running}
+          title="Run your code and see printed output — for debugging"
+          className="rounded border border-line-strong bg-panel px-3 py-1.5 font-mono text-[11px] text-ink hover:border-ink disabled:opacity-40"
+        >
+          {scratchRunning ? 'running…' : '▶ run (print-debug)'}
+        </button>
+        <button
           onClick={showHint}
           disabled={hintsShown >= q.hints.length}
           className="rounded border border-line-strong bg-panel px-3 py-1.5 font-mono text-[11px] text-ink hover:border-ink disabled:opacity-35"
@@ -190,6 +218,30 @@ export function ExerciseCard({
           reset to starter
         </button>
       </div>
+
+      {scratch && (
+        <div className="border-t border-line bg-paper px-4 py-3">
+          <div className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+            your output (print-debug — tests not run)
+          </div>
+          {scratch.stdout ? (
+            <pre className="overflow-x-auto whitespace-pre-wrap font-mono text-[12px] leading-relaxed text-ink">
+              {scratch.stdout}
+            </pre>
+          ) : (
+            !scratch.error && (
+              <p className="font-mono text-[11.5px] text-faint">
+                Ran with no output — add print(...) to inspect values.
+              </p>
+            )
+          )}
+          {scratch.error && (
+            <pre className="mt-2 overflow-x-auto whitespace-pre-wrap rounded border border-alert bg-alert-wash/60 p-3 font-mono text-[11.5px] leading-relaxed text-alert">
+              {scratch.error}
+            </pre>
+          )}
+        </div>
+      )}
 
       {hintsShown > 0 && (
         <div className="space-y-1.5 border-t border-dashed border-line px-4 py-3">

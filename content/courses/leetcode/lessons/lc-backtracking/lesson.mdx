@@ -1,0 +1,110 @@
+---
+id: lc-backtracking
+module: lc-backtracking
+title: Backtracking
+order: 1
+estimatedMinutes: 30
+prerequisites: [lc-trees, lc-constraints]
+objectives:
+  - Apply the choose → explore → un-choose template to generate all solutions
+  - See backtracking as DFS over a tree of decisions
+  - Prune dead branches early, and use a start index to avoid duplicates
+tags: [leetcode, backtracking, recursion, subsets, permutations]
+---
+
+<Intuition>
+Backtracking is how you **explore every possibility without writing a loop for
+each decision.** Subsets, permutations, combinations, "place N queens," "does a
+word exist in this grid" — all of them are really the same thing: a tree of
+decisions where each node is "make one more choice," and you want to walk every
+path. The template is three beats — **choose, explore, un-choose** — and the
+un-choose is the one people forget and the one that makes it work. And here's
+the reassuring part from the constraints lesson: backtracking is *exponential*,
+so it only shows up when n is small (≤ ~20). The tiny bound is your permission
+to brute-force the whole decision tree.
+</Intuition>
+
+<Concept>
+## The template: choose, explore, un-choose
+
+Every backtracking solution is this skeleton. You keep one mutable `path` (the
+choices made so far) and one recursive function that, at each step, tries each
+available choice, recurses, then *undoes* the choice before trying the next:
+
+```
+res = []
+def backtrack(path, choices):
+    if is_complete(path):
+        res.append(path[:])       # COPY — path keeps mutating
+        return
+    for choice in choices:
+        path.append(choice)       # 1. choose
+        backtrack(path, remaining_choices)   # 2. explore
+        path.pop()                # 3. un-choose
+backtrack([], all_choices)
+```
+
+Two lines carry all the weight. `res.append(path[:])` stores a **copy** — append
+`path` itself and every result becomes the same list, later emptied. And
+`path.pop()` **un-chooses**, restoring the state so the next sibling branch
+starts clean. Skip it and choices bleed between branches.
+</Concept>
+
+<Check id="lc-bt-unchoose" />
+
+<Concept>
+## It's just DFS over a decision tree
+
+Backtracking isn't a new algorithm — it's DFS (last lesson) on an *implicit*
+tree where the nodes are partial solutions and the edges are choices. That
+reframing tells you where to optimize: **prune**. If a partial path can't
+possibly lead to a valid answer (the running sum already exceeds the target,
+the board position is already illegal), return immediately instead of exploring
+its whole subtree. Good pruning is often the difference between "passes" and
+"times out."
+
+For problems where order doesn't matter (subsets, combinations), pass a **start
+index** so each recursion only considers choices from the current position
+onward — that's what stops you from generating `[2,3]` and `[3,2]` as different
+answers.
+</Concept>
+
+<Concept>
+## Your turn: all subsets
+
+The gentlest backtracking problem, and a perfect template drill. At each call,
+record the current path (every node is a valid subset), then try adding each
+later element. Watch the choose/recurse/un-choose rhythm — if you print `path`
+at the top of each call, you'll literally see the decision tree unfold.
+</Concept>
+
+<Exercise id="lc-bt-subsets" />
+
+<Concept>
+## Level up: combination sum
+
+Now with a target and a real prune. Numbers can be reused, so you recurse with
+the *same* index (not the next). Sort the candidates so that once one exceeds
+the remaining target you can `break` — every later candidate is even bigger.
+That prune is what keeps the search fast.
+</Concept>
+
+<Exercise id="lc-bt-combination-sum" />
+
+<Gotcha>
+The two silent killers. **Forgetting to copy** — `res.append(path)` stores a
+reference, so when `path` mutates later, *every* stored answer changes with it;
+use `path[:]` or `list(path)`. **Forgetting to un-choose** — leave off
+`path.pop()` and the next branch inherits a dirty state, producing garbage.
+When your backtracking gives bizarre results, check these two first; they're the
+cause 90% of the time.
+</Gotcha>
+
+<Cheatsheet>
+Signal: "generate **all** subsets / permutations / combinations," or search
+"does any arrangement work" — usually with small n (≤ ~20). Template:
+**choose → explore → un-choose**, storing `path[:]` copies at complete states.
+It's **DFS over a decision tree**; prune impossible branches early, and pass a
+**start index** to avoid permuted duplicates. Cost is exponential — which the
+tiny constraint already told you was fine.
+</Cheatsheet>

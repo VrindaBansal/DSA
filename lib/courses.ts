@@ -32,6 +32,15 @@ export const COURSES: CourseMeta[] = [
     outcome:
       'Finish it and you can design, build, debug, and evaluate LLM systems — RAG pipelines, agents, and agentic workflows — and reason about the tradeoffs like an expert.',
   },
+  {
+    id: 'leetcode',
+    title: 'Cracking LeetCode',
+    tagline: 'Not 3,000 problems — ~15 patterns. Learn to see which one a problem wants.',
+    blurb:
+      'A confidence-first path from “I freeze on these” to solving LeetCode Hard, all in Python. Built around the handful of patterns that unlock the interview — two pointers, sliding window, binary search, backtracking, graphs, DP — each taught as a trigger you can recognize, a template you can reuse, and real problems you solve in a built-in editor that ramp from Easy to Hard.',
+    outcome:
+      'Finish it and you can read an unseen problem, name the pattern it wants, implement it cleanly in Python, argue its complexity — and decompose a LeetCode Hard into pieces you already know.',
+  },
 ];
 
 export const DEFAULT_COURSE_ID = 'dsa';

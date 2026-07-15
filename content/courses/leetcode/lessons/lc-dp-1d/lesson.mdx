@@ -1,0 +1,98 @@
+---
+id: lc-dp-1d
+module: lc-dp-1d
+title: Dynamic programming I — 1D
+order: 1
+estimatedMinutes: 35
+prerequisites: [lc-constraints, lc-trees]
+objectives:
+  - Turn a problem into DP by naming a state and a transition
+  - Move from memoized recursion to tabulation to space-optimized
+  - Recognize the 1-D DP shape — a decision made at each step
+tags: [leetcode, dynamic-programming, memoization, tabulation]
+---
+
+<Intuition>
+Dynamic programming is the topic that makes people feel like they're missing a
+gene. They're not — DP just has bad PR. Strip the mystique and it's two
+questions: **"what does the answer to a smaller version depend on?" (the state)**
+and **"how do I build a bigger answer from smaller ones?" (the transition).**
+That's it. If subproblems *overlap* — the same smaller question comes up again
+and again — you cache the answers so you solve each once. Climbing stairs, house
+robber, coin change, longest increasing subsequence: all the same move, applied
+to different "decision at each step." This lesson gives you a repeatable recipe
+so DP stops feeling like a flash of genius and starts feeling like a checklist.
+</Intuition>
+
+<Concept>
+## The recipe: state, transition, base case
+
+Every DP is built in the same four moves — this is UMPIRE's "Plan" step,
+specialized:
+
+1. **Define the state.** Let `dp[i]` be the answer to the subproblem ending at
+   / using the first `i` things. Naming this precisely is 80% of the work.
+2. **Write the transition.** Express `dp[i]` in terms of smaller states —
+   `dp[i-1]`, `dp[i-2]`, `dp[i - coin]`… This is the recurrence.
+3. **Set the base cases.** The smallest states you know outright (`dp[0]`).
+4. **Pick a direction.** Fill from small to large.
+
+Get the state and transition right and the code is mechanical. Get them wrong
+and no amount of code fixes it — so write them in words *before* typing.
+</Concept>
+
+<Check id="lc-dp-what" />
+
+<Concept>
+## Three forms of the same DP
+
+The same recurrence can be written three ways — start with whichever is easiest
+to get correct, then optimize only if asked:
+
+- **Top-down (memoized recursion).** Write the recurrence literally as a
+  recursive function and cache results (`@lru_cache` or a dict). Easiest to
+  derive because it mirrors the transition one-to-one.
+- **Bottom-up (tabulation).** Fill a table from the base cases up in dependency
+  order. No recursion-depth risk, often clearer to reason about.
+- **Space-optimized.** When `dp[i]` only reads the last one or two entries, throw
+  the array away and keep just those — dropping O(n) space to O(1).
+
+Climbing stairs shows all three: the recurrence is Fibonacci
+(`ways(i) = ways(i-1) + ways(i-2)`), and because each state needs only the
+previous two, you can collapse it to two rolling variables.
+</Concept>
+
+<TradeoffTable id="lc-dp-forms" />
+
+<Exercise id="lc-dp-climb" />
+
+<Concept>
+## Level up: coin change
+
+A step past Fibonacci: at each amount you *choose* which coin to use, and take
+the best over those choices. `dp[a]` = fewest coins to make amount `a`;
+transition `dp[a] = min(dp[a - c] + 1 for each coin c ≤ a)`. This "min/max over a
+set of choices" is the 1-D DP workhorse — and note it defeats greedy, which
+would fail on coins like `[1, 3, 4]` making `6`.
+</Concept>
+
+<Exercise id="lc-dp-coin-change" />
+
+<Gotcha>
+The failure mode isn't the code — it's a **wrong or vague state**. "`dp[i]` is
+the answer so far" is not precise enough; you need "`dp[i]` is the max sum of a
+subarray *ending exactly at* i" or "using coins to make *exactly* amount i."
+Ambiguity in the state produces a transition that's subtly wrong on edge cases.
+Also watch base cases and off-by-ones in the table size (`n + 1` for a state
+indexed 0..n). Write the state in one sentence and check the transition on a
+tiny example by hand before trusting it.
+</Gotcha>
+
+<Cheatsheet>
+DP = **state** (precisely: the answer to which subproblem?) + **transition**
+(build it from smaller states) + **base cases**. Recognize it by "count the
+ways / min / max over choices with overlapping subproblems." Write it
+top-down (memoized) first, tabulate if you like, space-optimize only when a
+state reads just the last few entries. A vague state is the #1 bug — pin it in
+one sentence.
+</Cheatsheet>

@@ -7,6 +7,7 @@ import { useProgress } from '@/lib/progress/provider';
 const LINKS = [
   { href: '/', label: 'Courses' },
   { href: '/practice', label: 'Practice' },
+  { href: '/playground', label: 'IDE' },
   { href: '/review', label: 'Review' },
   { href: '/reference', label: 'Reference' },
 ];

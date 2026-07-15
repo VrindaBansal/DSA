@@ -1,0 +1,109 @@
+---
+id: lc-two-pointers
+module: lc-two-pointers
+title: Two pointers
+order: 1
+estimatedMinutes: 25
+prerequisites: [lc-method, lc-constraints]
+objectives:
+  - Recognize the two-pointer signal — sorted input, pairs, or "from both ends"
+  - Use the opposite-ends template to replace an O(n²) pair search with O(n)
+  - Argue why moving one specific pointer is a safe greedy choice
+tags: [leetcode, two-pointers, arrays, palindrome]
+---
+
+<Intuition>
+Two pointers is the first pattern to reach for because it's the cheapest: no
+extra data structure, O(1) space, one pass. The idea is that instead of a
+nested loop trying every pair, you keep **two indices that only ever move
+toward each other (or in the same direction) and never backtrack.** Each step,
+the values under the pointers tell you which one to move. It works whenever the
+input has *structure you can exploit* — usually because it's sorted, or because
+the answer lives at the two ends and squeezes inward.
+</Intuition>
+
+<Concept>
+## Two shapes of the same idea
+
+**Opposite ends.** Start `left` at 0 and `right` at the end; move them toward
+each other. This is the shape for sorted-array pair problems and palindromes.
+
+```
+left, right = 0, len(arr) - 1
+while left < right:
+    # look at arr[left] and arr[right], decide which to move
+    ...
+```
+
+**Same direction (fast/slow).** Both start at the left; one moves faster or
+only advances on a condition. This is the shape for in-place filtering,
+removing duplicates, and (in the linked-list lesson) cycle detection.
+
+The whole skill is the decision inside the loop: *given the two values, which
+pointer moves?* Get that rule right and the O(n²) brute force collapses to O(n).
+</Concept>
+
+<CodeWalk
+  title="two-sum on a SORTED array"
+  lines={[
+    { code: "def two_sum_sorted(nums, target):", note: "nums is sorted ascending — that's the structure two pointers needs." },
+    { code: "    left, right = 0, len(nums) - 1", note: "Opposite ends: smallest candidate on the left, largest on the right." },
+    { code: "    while left < right:", note: "Stop when they meet — every pair has been ruled in or out by then." },
+    { code: "        s = nums[left] + nums[right]", note: "The current pair's sum." },
+    { code: "        if s == target:", note: "Found it." },
+    { code: "            return [left, right]" },
+    { code: "        if s < target:", note: "Sum too small — the ONLY way to grow it is a bigger left value." },
+    { code: "            left += 1", note: "Moving right would shrink the sum, so left is the safe move." },
+    { code: "        else:", note: "Sum too big — shrink it by pulling the right end down." },
+    { code: "            right -= 1" },
+    { code: "    return []" },
+  ]}
+/>
+
+<Concept>
+That decision rule is the heart of it: because the array is sorted, a sum
+that's *too small* can only be fixed by increasing the left value, and a sum
+that's *too big* only by decreasing the right value. Each pointer moves at most
+n times, so the whole search is O(n) — versus O(n²) for checking every pair,
+and with none of the O(n) extra space a hash set would use.
+</Concept>
+
+<Check id="lc-tp-when" />
+
+<Concept>
+## Your turn: palindrome check
+
+The palindrome is the purest opposite-ends problem: compare the ends, step
+inward, and the first mismatch means "no." The twist here is skipping
+characters that don't count. Use **▶ run (print-debug)** if you want to watch
+`i` and `j` move.
+</Concept>
+
+<Exercise id="lc-tp-palindrome" />
+
+<Concept>
+## Level up: container with most water
+
+This one teaches the *greedy* half of two pointers. You start with the widest
+possible container and move inward — but which wall do you move? The answer
+(move the shorter one) has a clean proof, and getting that proof is what makes
+the O(n) sweep trustworthy rather than lucky.
+</Concept>
+
+<Exercise id="lc-tp-container" />
+
+<Gotcha>
+Two pointers needs the structure to be *real*. If you reach for it on an
+unsorted array expecting sorted-array behavior, you'll get wrong answers — sort
+first (and remember sorting is O(n log n) and destroys original indices, which
+is why Two Sum on an *unsorted* array with index output uses a hash map
+instead, next lesson). Always ask: "what structure am I exploiting?" If you
+can't name it, two pointers probably isn't the move.
+</Gotcha>
+
+<Cheatsheet>
+Reach for two pointers when the input is **sorted**, asks about **pairs**, or
+works **from both ends** (palindromes). Opposite-ends template: `left, right =
+0, n-1; while left < right:` and move the pointer whose value is "wrong."
+It's O(n) time, O(1) space — the cheapest tool in the box, so try it first.
+</Cheatsheet>
