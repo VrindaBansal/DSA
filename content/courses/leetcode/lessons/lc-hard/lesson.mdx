@@ -1,0 +1,134 @@
+---
+id: lc-hard
+module: lc-hard
+title: "Composing patterns: cracking Hard"
+order: 1
+estimatedMinutes: 45
+prerequisites: [lc-two-pointers, lc-sliding-window, lc-hashing, lc-graphs]
+objectives:
+  - Decompose a LeetCode Hard into 2–3 patterns you already know
+  - Solve trapping rain water, minimum window substring, and word ladder
+  - Trust the method (UMPIRE) under pressure instead of hunting for magic
+tags: [leetcode, hard, composition, capstone]
+---
+
+<Intuition>
+This is the capstone, and it exists to retire one belief: that "Hard" means a
+brilliant algorithm you've never seen. Almost always, **a Hard is two or three
+patterns from this course stacked together, or one pattern with a twist.** The
+skill that separates people who solve Hards from people who freeze at them isn't
+raw cleverness — it's *decomposition*: run UMPIRE, brute-force it, and ask
+"which pieces is this made of?" You already own the pieces. Let's prove it on
+three genuine Hards, each of which is just patterns you've drilled.
+</Intuition>
+
+<Concept>
+## Hard #1: Trapping rain water = two-pointer bookkeeping
+
+Given bar heights, how much water is trapped? The insight that dissolves it: the
+water sitting *above any single bar* is `min(tallest bar to its left, tallest to
+its right) − its own height`. The naive version computes those two maxima for
+every bar (O(n) space in two arrays). But you've met the optimization — it's the
+**two-pointer** move from Phase 1: walk in from both ends tracking `left_max` and
+`right_max`, and always advance the side whose max is smaller, because that
+smaller max is the true bound on the water there.
+</Concept>
+
+<CodeWalk
+  title="trapping rain water, two pointers"
+  lines={[
+    { code: "l, r = 0, len(height) - 1", note: "Opposite-ends two pointers — the exact shape from the two-pointers lesson." },
+    { code: "left_max, right_max = height[l], height[r]", note: "Best wall seen from each side so far." },
+    { code: "total = 0" },
+    { code: "while l < r:" },
+    { code: "    if left_max < right_max:", note: "The SMALLER max bounds the water — so this side is safe to finalize." },
+    { code: "        l += 1", note: "Move the shorter side inward (same greedy as container-with-most-water)." },
+    { code: "        left_max = max(left_max, height[l])" },
+    { code: "        total += left_max - height[l]", note: "Water above this bar = its bounding max minus its own height." },
+    { code: "    else:", note: "Mirror image on the right side." },
+    { code: "        r -= 1" },
+    { code: "        right_max = max(right_max, height[r])" },
+    { code: "        total += right_max - height[r]" },
+    { code: "return total", note: "O(n) time, O(1) space — the array version's O(n) space collapsed to two variables." },
+  ]}
+/>
+
+<Check id="lc-hard-decompose" />
+
+<Exercise id="lc-hard-trap" />
+
+<Concept>
+## Hard #2: Minimum window substring = sliding window + a frequency map
+
+Find the shortest substring of `s` containing every character of `t` (with
+multiplicity). Two patterns, composed: a **variable sliding window** (grow right,
+shrink left while valid) plus a **frequency map** (hashing) to know when the
+window contains all of `t`. The elegant bit is a single `missing` counter: seed
+it to `len(t)`, decrement when you consume a still-needed character, and the
+window is valid exactly when `missing == 0`. Then shrink from the left, recording
+the best window, until it's no longer valid — pure grow-then-shrink from the
+sliding-window lesson, with a counting map bolted on.
+</Concept>
+
+<CodeWalk
+  title="minimum window substring, window + counts"
+  lines={[
+    { code: "need = Counter(t); missing = len(t)", note: "Frequency map (hashing) + how many needed chars are still unmatched." },
+    { code: "left = 0; best = ''" },
+    { code: "for right, c in enumerate(s):", note: "Grow the window one char at a time (sliding window)." },
+    { code: "    if need[c] > 0: missing -= 1", note: "This char was actually needed — one fewer missing." },
+    { code: "    need[c] -= 1", note: "Counts go negative for surplus chars; that's fine and intentional." },
+    { code: "    while missing == 0:", note: "Window is valid — now shrink from the left to minimize it." },
+    { code: "        if best == '' or right-left+1 < len(best):", note: "Record the shortest valid window so far." },
+    { code: "            best = s[left:right+1]" },
+    { code: "        need[s[left]] += 1", note: "Releasing the left char..." },
+    { code: "        if need[s[left]] > 0: missing += 1", note: "...if it was essential, the window breaks — stop shrinking." },
+    { code: "        left += 1" },
+    { code: "return best", note: "O(n + m) — each char enters and leaves the window once." },
+  ]}
+/>
+
+<Exercise id="lc-hard-min-window" />
+
+<Concept>
+## Hard #3: Word ladder = BFS in disguise
+
+Transform `beginWord` into `endWord` one letter at a time, each intermediate a
+real word, in the fewest steps. The disguise: **words are nodes, and two words
+are neighbors if they differ by exactly one letter.** "Fewest steps in an
+unweighted graph" is precisely **BFS** from the graphs lesson — first arrival at
+`endWord` is the shortest ladder. The only wrinkle is generating neighbors: for
+each position, try all 26 letters and keep the candidates that are in the word
+set. No new algorithm — just BFS with a clever neighbor function.
+</Concept>
+
+<Exercise id="lc-hard-word-ladder" />
+
+<RealWorld source="The interview itself">
+When a Hard lands in front of you, the move is not to summon genius — it's to
+run the method out loud. "Let me restate it… brute force is X, which is O(?)…
+the constraint says n ≤ 10⁵ so I need better… this smells like a window and a
+count / a graph and BFS / two pointers…" That narration *is* the skill. Every
+Hard you just solved yielded to decomposition, not to a trick. That's the whole
+thesis of the course: you were never one missing algorithm away — you were one
+method away from using the pieces you already had.
+</RealWorld>
+
+<Gotcha>
+The trap at the Hard tier is **skipping the brute force because the problem feels
+too big for one.** Do it anyway — even an exponential brute force clarifies the
+contract and often reveals the redundant work the real solution removes (trapping
+rain water's O(1)-space trick is literally "stop recomputing the maxes"). The
+other trap is reaching for something exotic when a stack of two familiar patterns
+would do. Decompose first; exotic later, and only if decomposition genuinely
+fails.
+</Gotcha>
+
+<Cheatsheet>
+A Hard is **2–3 known patterns stacked** — decompose, don't despair. Trapping
+rain water = **two pointers**; minimum window = **sliding window + frequency
+map**; word ladder = **BFS**. Run UMPIRE out loud, brute-force first, read the
+constraints for your target complexity, then name the pieces. You finished the
+course: you can read an unseen Hard, recognize its patterns, and build the
+solution from parts you already own.
+</Cheatsheet>

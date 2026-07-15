@@ -1,0 +1,100 @@
+---
+id: lc-stacks
+module: lc-stacks
+title: Stacks & monotonic stacks
+order: 1
+estimatedMinutes: 25
+prerequisites: [lc-method]
+objectives:
+  - Use a stack for matching, nesting, and parsing problems
+  - Recognize the monotonic-stack signal — "next greater/smaller element"
+  - Explain why a monotonic stack is O(n) despite its nested loop
+tags: [leetcode, stacks, monotonic, parsing]
+---
+
+<Intuition>
+A stack is just a list you only touch at one end — push and pop from the top,
+last-in-first-out. That tiny discipline turns out to be exactly the right memory
+for any problem about **the most recent unfinished thing.** Matching brackets?
+The last opener is the one a closer must match. Parsing nested structure? The
+innermost context is on top. And the killer application, the **monotonic
+stack**, answers "for each element, what's the next bigger (or smaller) one?" —
+a question whose brute force is O(n²) but which a stack cracks in O(n) by keeping
+around only the candidates that could still matter.
+</Intuition>
+
+<Concept>
+## Plain stack: the most-recent-thing memory
+
+The everyday use is matching and nesting. Push things you're waiting to resolve;
+when a resolver arrives, the thing it resolves is on top:
+
+- **Balanced brackets** — push openers; on a closer, the top must be the
+  matching opener or it's invalid.
+- **Undo / backspace** — the last action is the first undone.
+- **Expression evaluation** — operators and operands stack up as you parse.
+
+The invariant is always: *the top of the stack is the most recent unresolved
+item.* If that sentence describes your problem, a stack is the tool.
+</Concept>
+
+<Exercise id="lc-stack-valid-parens" />
+
+<Concept>
+## Monotonic stack: "next greater element"
+
+Now the pattern worth its own name. Many problems ask, for each element, about
+the **nearest larger or smaller neighbor** — next warmer day, next taller
+building, the span until a bigger value. The brute force compares each element
+to everything after it: O(n²). A monotonic stack does it in O(n).
+
+The trick: keep a stack of **indices whose answer you haven't found yet**, kept
+in *decreasing* value order. When a new element is bigger than the value at the
+top, you've just found that top index's "next greater" — pop it and record the
+answer. Keep popping while the new element beats the top, then push the new
+index.
+
+```
+stack = []                         # indices, values decreasing
+for i, x in enumerate(arr):
+    while stack and arr[stack[-1]] < x:
+        j = stack.pop()            # x is j's next-greater
+        answer[j] = i - j
+    stack.append(i)
+```
+
+Each index is pushed once and popped at most once, so the total work across all
+those inner pops is O(n) — a great example of why a nested loop is *not*
+automatically O(n²) (amortized analysis, as the DSA course's stacks lesson
+covers).
+</Concept>
+
+<Check id="lc-stack-monotonic" />
+
+<Concept>
+## Your turn: daily temperatures
+
+The cleanest monotonic-stack problem. For each day, how many days until a warmer
+one? Keep a stack of day indices with decreasing temperatures; when today beats
+the top, that day's wait is resolved. Days left on the stack at the end never
+get a warmer day, so their answer stays 0.
+</Concept>
+
+<Exercise id="lc-stack-daily-temps" />
+
+<Gotcha>
+Decide up front whether your stack holds **values or indices** — monotonic-stack
+problems almost always need indices (so you can compute distances like `i - j`),
+and mixing the two up is the usual bug. Also nail the ordering direction:
+"next greater" wants a stack that's *decreasing* from bottom to top, so you pop
+when a bigger value arrives. Write down which you need before you code, or you'll
+silently compute "next smaller" instead.
+</Gotcha>
+
+<Cheatsheet>
+Plain stack = memory for the **most recent unresolved thing** (brackets,
+nesting, undo). Monotonic stack = **next greater/smaller element** in O(n): keep
+indices in monotonic order, pop when the new element resolves the top. Nested
+loop but O(n) amortized — each index is pushed and popped once. Store indices,
+not values, when you need distances.
+</Cheatsheet>

@@ -1,0 +1,103 @@
+---
+id: lc-graphs
+module: lc-graphs
+title: Graphs for interviews
+order: 1
+estimatedMinutes: 35
+prerequisites: [lc-trees]
+objectives:
+  - See a grid as a graph and solve island/flood-fill problems with DFS/BFS
+  - Use BFS for shortest path in an unweighted graph
+  - Apply topological sort (Kahn's algorithm) to detect cycles and order tasks
+tags: [leetcode, graphs, bfs, dfs, topological-sort]
+---
+
+<Intuition>
+Graphs feel like a big scary topic, but interview graph problems reuse a tiny
+toolkit — and half of them don't even *look* like graphs. The key unlock: **a
+2-D grid is a graph.** Each cell is a node; its up/down/left/right neighbors are
+its edges. Once you see that, "number of islands," "shortest path through a
+maze," and "rotting oranges" are just DFS/BFS with `(row, col)` as the node.
+Trees were graphs without cycles or reconvergence; general graphs add those, so
+the one new thing you must always carry is a **`visited` set** so you don't loop
+forever. Master three moves — flood fill, BFS shortest path, and topological
+sort — and interview graphs are handled.
+</Intuition>
+
+<Concept>
+## Representation, and the grid-as-graph trick
+
+A graph is usually stored as an **adjacency list**: `graph[node]` is the list of
+its neighbors. But for grid problems you don't build anything — the neighbors of
+`(r, c)` are computed on the fly:
+
+```
+for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+    nr, nc = r + dr, c + dc
+    if 0 <= nr < rows and 0 <= nc < cols:
+        # (nr, nc) is a neighbor
+```
+
+That bounds check *is* your edge set. The rest is ordinary traversal: DFS to
+explore a connected blob, BFS to find shortest distances. And always mark nodes
+visited — for grids you can either use a `visited` set or (when allowed) mutate
+the cell itself, e.g. sinking land to water.
+</Concept>
+
+<Check id="lc-graph-bfs" />
+
+<Concept>
+## Flood fill: counting connected regions
+
+"Number of islands" is the archetype. Scan every cell; each time you find
+unvisited land, that's a new region — increment the count and **flood-fill** the
+whole connected blob (DFS or BFS) so you don't count any of it again. This is
+just "connected components" wearing a grid costume, and the same shape solves
+"max area of island," "surrounded regions," and "flood fill" itself.
+</Concept>
+
+<Exercise id="lc-graph-islands" />
+
+<Concept>
+## BFS = shortest path in an unweighted graph
+
+When every edge counts the same (one step), BFS finds the fewest-steps path,
+because it explores in distance layers: the first time it reaches a node, it did
+so by the shortest route. That's "rotting oranges" (minutes = layers),
+"word ladder" (next lesson's Hard uses this), and any maze. Use a queue of
+`(node, distance)` and a `visited` set; the moment you dequeue the target,
+return its distance. (For *weighted* edges you'd need Dijkstra — a min-heap
+frontier — which the DSA course's graphs lesson covers.)
+</Concept>
+
+<Concept>
+## Topological sort: ordering under dependencies
+
+Some problems are about **doing things in a valid order** when some tasks depend
+on others: course prerequisites, build systems, package installs. That's a
+**topological sort**, and **Kahn's algorithm** is the BFS version: count each
+node's in-degree (how many prerequisites it has), queue everything with
+in-degree 0, and repeatedly "finish" a node and decrement its dependents,
+enqueuing any that hit 0. If you finish all n nodes, you found a valid order; if
+the queue starves early, the leftovers form a **cycle** — which is exactly how
+you detect "impossible / circular dependency."
+</Concept>
+
+<Exercise id="lc-graph-course-schedule" />
+
+<Gotcha>
+The number-one graph bug: **mark nodes visited when you *enqueue* them, not when
+you dequeue them.** If you wait until dequeue, the same node can be added to the
+frontier by several neighbors before its first pop, so it's processed multiple
+times — the queue bloats and shortest-path bookkeeping breaks. Put
+`visited.add(nbr)` right next to `queue.append(nbr)`. And never forget *some*
+visited tracking on a general graph — without it, a cycle loops forever.
+</Gotcha>
+
+<Cheatsheet>
+Reach for graphs on **grids** (cell = node, 4 neighbors = edges), **connectivity**
+("islands"/components → flood fill), **shortest unweighted path** (→ BFS, first
+arrival wins), and **ordering under dependencies** (→ topological sort; queue
+starves = cycle). Always keep a **`visited` set, marked at enqueue time**.
+Weighted shortest path → Dijkstra (min-heap). Grid traversal is O(rows·cols).
+</Cheatsheet>

@@ -10,15 +10,23 @@ grew into a **multi-course** platform.
 
 ## Courses
 
-Two courses ship today, both built the same way (concept-first, real-world
+Three courses ship today, all built the same way (concept-first, real-world
 anchors, tested constantly):
 
 - **Data structures & algorithms** — 12 modules, 16 lessons, fully authored.
-- **Large language models** — 12 modules, 12 lessons. Tokenization → embeddings
-  → attention → decoding → prompting → RAG → tools → agents → agentic workflows
-  → evaluation → fine-tuning → inference. Three lessons fully authored
-  (tokenization, RAG, agents) with five interactive visuals; the other nine are
-  strong stubs (framing prose + a check + a genuinely exam-ready cheatsheet).
+- **Large language models** — 12 modules, 13 lessons. Foundations → tokenization
+  → embeddings → attention → decoding → prompting → RAG → tools → agents →
+  agentic workflows → evaluation → fine-tuning → inference. Flagship lessons
+  fully authored with five interactive visuals; the rest are strong stubs
+  (framing prose + concept fills + a check + an exam-ready cheatsheet).
+- **Cracking LeetCode** — 15 modules, 15 lessons, fully authored, all Python. A
+  confidence-first, pattern-based path from the problem-solving method →
+  reading constraints → the core patterns (two pointers, sliding window,
+  hashing, binary search, stacks, linked lists, trees, heaps) → the heavy
+  hitters (backtracking, graphs, DP) → a Hard capstone that decomposes real
+  LeetCode-Hard problems into patterns you already know. ~28 in-browser coding
+  exercises ramping Easy → Hard, each with hidden tests, hints, a gated
+  solution, and a complexity self-check.
 
 Adding a course = drop a folder under `content/courses/<id>/` and register it in
 `lib/courses.ts`. Adding a lesson = drop a directory under that course's
@@ -83,7 +91,12 @@ lib/progress/repo.ts                 THE persistence swap point (see below)
 
 Routes: `/` is the **course picker**; `/course/[courseId]` is a course
 dashboard; `/module/[slug]` and `/lesson/[slug]` use globally-unique slugs;
-`/practice`, `/review`, and `/reference` span all courses with a course filter.
+`/practice`, `/review`, and `/reference` span all courses with a course filter;
+`/playground` is a standalone Python **IDE** (CodeMirror + Pyodide) for testing
+any idea, with real stdout/stderr. Every coding exercise also has an in-place
+**▶ run (print-debug)** button next to "run tests" so you can `print()` and
+inspect a failing attempt — same in-browser Python engine, nothing leaves your
+machine.
 
 Adding a lesson = drop a directory under a course's `lessons/` with a
 `lesson.mdx`, plus its cheatsheet/questions and a one-line import in the

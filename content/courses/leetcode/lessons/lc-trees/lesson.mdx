@@ -1,0 +1,97 @@
+---
+id: lc-trees
+module: lc-trees
+title: "Trees: DFS & BFS templates"
+order: 1
+estimatedMinutes: 30
+prerequisites: [lc-method]
+objectives:
+  - Write recursive DFS as "return the info the parent needs"
+  - Use a queue for level-order BFS, draining one level at a time
+  - Choose DFS vs BFS from what the problem asks
+tags: [leetcode, trees, dfs, bfs, recursion]
+---
+
+<Intuition>
+Trees look intimidating and are secretly the friendliest topic here, because
+almost every tree problem is one of two templates. **DFS** (depth-first, usually
+recursion) dives to the bottom of a branch and comes back up — perfect for
+"compute something about each subtree." **BFS** (breadth-first, a queue) sweeps
+level by level — perfect for "shortest path" and "process by depth." The mental
+shift that makes recursion click: **don't trace the whole tree in your head.
+Trust the recursion on the children, and just decide what to do with their
+answers.** That's the "return info up" mindset, and it collapses scary problems
+into three lines.
+</Intuition>
+
+<Concept>
+## DFS: trust the recursion, return info up
+
+The recursive DFS template is always the same shape: handle the empty case,
+recurse on both children, and combine their results into *this* node's answer.
+
+```
+def dfs(node):
+    if not node:
+        return base_case          # e.g. 0, None, True
+    left = dfs(node.left)         # trust it
+    right = dfs(node.right)       # trust it
+    return combine(node, left, right)
+```
+
+You never think about grandchildren. You assume `dfs(node.left)` correctly
+returns whatever you defined it to return, and you just say how to merge the two
+children's answers with the current node. Max depth? `1 + max(left, right)`. Sum
+of all values? `node.val + left + right`. Is it balanced? Return the height *and*
+a validity flag. Define what each call returns, and the rest writes itself.
+</Concept>
+
+<Check id="lc-tree-bfsdfs" />
+
+<Exercise id="lc-tree-maxdepth" />
+
+<Concept>
+## BFS: level order with a queue
+
+When a problem cares about **depth or shortest distance** — "level-order
+traversal," "minimum depth," "right-side view," "steps to reach X" — use a queue
+and process one whole level per outer iteration. The trick is to **snapshot the
+queue length** at the start of each level so children you enqueue land in the
+*next* level, not the current one:
+
+```
+from collections import deque
+q = deque([root])
+while q:
+    for _ in range(len(q)):        # exactly this level
+        node = q.popleft()
+        # ... use node ...
+        if node.left:  q.append(node.left)
+        if node.right: q.append(node.right)
+    # one level finished here
+```
+
+Because BFS reaches nodes in order of distance, the *first* time it arrives at a
+target it did so in the fewest steps — that's why BFS gives shortest paths in
+unweighted graphs and trees.
+</Concept>
+
+<Exercise id="lc-tree-levelorder" />
+
+<Gotcha>
+Recursive DFS uses the call stack, and its depth equals the tree's **height** —
+fine for a balanced tree (O(log n)), but a degenerate "linked-list" tree of
+10⁵ nodes will blow Python's recursion limit (~1000) before your logic runs.
+For deep or adversarial inputs, convert DFS to an explicit stack (the DSA
+course's graphs lesson shows the conversion). Also: always handle the **empty
+tree** (`root is None`) as the very first line — forgetting it is the most
+common tree bug.
+</Gotcha>
+
+<Cheatsheet>
+Two templates. **DFS (recursion):** `if not node: return base; left = dfs(left);
+right = dfs(right); return combine(...)` — trust the children, return the info
+the parent needs. **BFS (queue):** `deque`, and drain `for _ in range(len(q))`
+per level so children fall into the next level. **DFS** for subtree info / "all
+paths / exists"; **BFS** for shortest steps / level order. Handle `None` first.
+</Cheatsheet>

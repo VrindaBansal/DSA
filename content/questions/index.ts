@@ -17,6 +17,7 @@ import { QUESTIONS as searching } from '../courses/dsa/lessons/binary-search/que
 import { QUESTIONS as dp } from '../courses/dsa/lessons/dp-foundations/questions';
 import { QUESTIONS as anchors } from './anchor-questions';
 import { QUESTIONS as llm } from '../courses/llm/questions';
+import { QUESTIONS as leetcode } from '../courses/leetcode/questions';
 
 // One line per lesson bank — the practice engine and the spaced-repetition
 // engine both consume this, independently of the MDX (spec §5.2).
@@ -39,6 +40,7 @@ export const ALL_QUESTIONS: Question[] = [
   ...dp,
   ...anchors,
   ...llm,
+  ...leetcode,
 ];
 
 export const QUESTION_BY_ID: Record<string, Question> = Object.fromEntries(

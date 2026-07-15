@@ -1,0 +1,98 @@
+---
+id: lc-dp-2d
+module: lc-dp-2d
+title: Dynamic programming II — 2D & sequences
+order: 1
+estimatedMinutes: 35
+prerequisites: [lc-dp-1d]
+objectives:
+  - Set up a 2-D table and fill it in dependency order
+  - Recognize the two-sequence DP shape (LCS, edit distance)
+  - Reduce a 2-D table to one rolling row when transitions allow
+tags: [leetcode, dynamic-programming, 2d, sequences, edit-distance]
+---
+
+<Intuition>
+Once a problem has **two things that vary** — a position in a grid (row *and*
+column), or a prefix of string A *and* a prefix of string B — the state needs
+two indices, and `dp` becomes a 2-D table. This is the tier where LeetCode
+Hard lives: edit distance, longest common subsequence, knapsack, grid paths.
+But it's the exact same recipe as 1-D DP with one more dimension. The only new
+skill is **getting the fill order right** so that every cell you read has
+already been computed. Nail that and the Hard problems in this family become
+approachable — you're just filling a grid, one cell at a time.
+</Intuition>
+
+<Concept>
+## Grid DP: paths and the fill order
+
+The gateway 2-D DP is counting paths through a grid where you move only right or
+down. `dp[i][j]` = number of ways to reach cell `(i, j)`. A cell is reached from
+above or from the left, so:
+
+```
+dp[i][j] = dp[i-1][j] + dp[i][j-1]
+```
+
+with the top row and left column all `1` (one straight-line way to reach them).
+The **fill order** is the crux: because each cell depends on the ones *above* and
+*to the left*, you must iterate rows top-to-bottom and columns left-to-right, so
+those dependencies are ready when you need them. Get the order wrong and you read
+uninitialized cells.
+</Concept>
+
+<Check id="lc-dp2d-fill" />
+
+<Exercise id="lc-dp-unique-paths" />
+
+<Concept>
+## Two-sequence DP: the Hard-tier engine
+
+The most valuable 2-D pattern compares **two sequences**. Let `dp[i][j]` be the
+answer for the first `i` characters of A and the first `j` of B. The transition
+almost always splits on whether the current characters match:
+
+```
+if A[i-1] == B[j-1]:
+    dp[i][j] = dp[i-1][j-1] + (1 or 0)        # extend the diagonal
+else:
+    dp[i][j] = best(dp[i-1][j], dp[i][j-1], ...)   # skip in A or in B
+```
+
+That single shape, with small tweaks, solves **longest common subsequence**,
+**edit distance** (the min insert/delete/replace to turn A into B — a genuine
+LeetCode Hard), **shortest common supersequence**, and string interleaving. The
+extra row and column (index 0) encode the empty-prefix base cases. Learn this one
+template and a whole cluster of Hards opens up.
+</Concept>
+
+<Exercise id="lc-dp-lcs" />
+
+<Concept>
+## Rolling the table down to one row
+
+The same space trick from unique-paths generalizes: if `dp[i][j]` only reads the
+previous row (`dp[i-1][*]`) and the current row to its left, you don't need the
+whole 2-D table — keep one row (or two) and update in place. That takes O(m·n)
+space down to O(n). Do this when the interviewer asks for it or when the table
+would be too big; otherwise the full table is easier to reason about and debug,
+and "correct and clear" beats "clever and wrong."
+</Concept>
+
+<Gotcha>
+The recurring 2-D bugs: **table dimensions** — a state over prefixes 0..m needs a
+table of size `(m+1) × (n+1)`, and the extra row/column are the base cases, not
+off-by-one padding to ignore. **Index alignment** — `dp[i][j]` refers to
+`A[i-1]` and `B[j-1]` when the table is 1-indexed over prefixes; mixing 0- and
+1-indexing here is the classic mistake. Draw the tiny 3×3 table on paper and
+fill it by hand once — it makes the indices click faster than staring at code.
+</Gotcha>
+
+<Cheatsheet>
+Two indices vary → 2-D table `dp[i][j]`. **Grid paths:** `dp[i][j] = dp[i-1][j]
++ dp[i][j-1]`, fill top-to-bottom, left-to-right. **Two sequences (LCS / edit
+distance):** split on `A[i-1] == B[j-1]` — extend the diagonal on a match, else
+take the best of skipping in A or B; the extra row/col are empty-prefix base
+cases. Both are **O(m·n)** time, reducible to **O(n)** space with a rolling row.
+This tier is where Hard DP lives.
+</Cheatsheet>

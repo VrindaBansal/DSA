@@ -1,0 +1,84 @@
+---
+id: lc-constraints
+module: lc-constraints
+title: Reading the constraints
+order: 1
+estimatedMinutes: 20
+prerequisites: [lc-method]
+objectives:
+  - Convert an input-size bound into an operations budget (~10⁸/second)
+  - Read n to rule complexity classes in and out before writing code
+  - Recognize a tiny n as permission to go exponential
+tags: [leetcode, constraints, complexity, budget]
+---
+
+<Intuition>
+Most beginners skip straight past the "Constraints" section of a problem. It's
+actually a **cheat sheet the problem-setter left for you.** The size of the
+input quietly tells you which complexity your solution must hit — and therefore
+which family of algorithms is even on the table. A bound of `n ≤ 20` and a
+bound of `n ≤ 10⁵` are asking for completely different solutions, and you can
+know that *before you have any idea how to solve it.* Learning to read the
+number is one of the highest-leverage habits in competitive-style problem
+solving.
+</Intuition>
+
+<Concept>
+## Turn the bound into a budget
+
+Judges (and interviews) roughly allow **about 10⁸ simple operations per
+second.** So take the biggest input size, plug it into candidate complexities,
+and see what fits inside ~10⁸ (a couple hundred million, to be safe):
+
+| If n is up to… | You can afford | Which means |
+|---|---|---|
+| 10–12 | O(n!) | permutations, brute over all orderings |
+| ≤ 20–25 | O(2ⁿ) | subsets, bitmask DP, backtracking over choices |
+| ≤ 500 | O(n³) | triple loops, some 2-D DP with an inner scan |
+| ≤ 5,000 | O(n²) | nested loops, most 2-D DP |
+| ≤ 10⁵–10⁶ | O(n log n) or O(n) | sort, heap, two pointers, sliding window, hashing |
+| ≥ 10⁷–10⁸ | O(n) or O(log n) | a single pass, or binary search |
+
+The move: read n, find the row, and now you know the shape of the answer. If
+you *think* of an O(n²) idea but n is 10⁵, don't even write it — it will time
+out, and the constraint just told you to keep looking.
+</Concept>
+
+<Check id="lc-constraints-target" />
+
+<Concept>
+## A tiny n is a gift, not a trap
+
+When you see a suspiciously small bound — `n ≤ 18`, `n ≤ 22` — next to language
+like "try all combinations," "assign each item," or "visit every subset,"
+that's the setter telling you **an exponential solution is intended and will
+pass.** 2²⁰ is about a million; 2²⁵ is 33 million — both trivial. So instead of
+straining for a polynomial trick that may not exist, reach confidently for
+backtracking or bitmask DP. The small number is permission.
+
+The reverse is also true: a *huge* bound (10⁹, or "up to 10¹⁸") usually means
+the answer is O(log n) or even O(1) math — you can't even afford to *look* at
+every element, so the intended solution must skip most of them (binary search,
+a closed-form formula, or number theory).
+</Concept>
+
+<Check id="lc-constraints-exp" />
+
+<Check id="lc-constraints-short" />
+
+<Aside title="What about the 10⁸/second number?">
+It's a rule of thumb, not a law — real throughput depends on the constant
+factor (Python is slower than C++; dictionary ops cost more than integer adds).
+For estimating, round hard: treat anything over ~10⁹ total operations as "too
+slow," anything under ~10⁷ as "definitely fine," and be thoughtful in between.
+The point isn't precision; it's ruling out the double loop before you waste ten
+minutes on it.
+</Aside>
+
+<Cheatsheet>
+Before you code, read n and pick your ceiling: **n ≤ 20 → exponential is fine
+(backtracking); n ≤ 5,000 → O(n²) ok; n ≥ 10⁵ → you need O(n log n) or O(n);
+n ≥ 10⁸ → O(log n) or math.** Convert the bound to ~10⁸ ops/second and let it
+delete whole families of algorithms for you. The constraint is a hint, not
+decoration.
+</Cheatsheet>

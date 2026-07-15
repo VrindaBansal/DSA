@@ -1,0 +1,102 @@
+---
+id: lc-sliding-window
+module: lc-sliding-window
+title: Sliding window
+order: 1
+estimatedMinutes: 30
+prerequisites: [lc-two-pointers]
+objectives:
+  - Spot the sliding-window signal — contiguous subarray/substring with "longest/shortest/at most k"
+  - Slide a fixed window in O(1) per step instead of re-summing
+  - Grow-then-shrink a variable window while keeping it valid
+tags: [leetcode, sliding-window, substring, subarray]
+---
+
+<Intuition>
+Sliding window is two pointers' specialized cousin, tuned for one job:
+**questions about a *contiguous* chunk of an array or string.** Whenever you
+see "longest substring that…", "smallest subarray with…", "maximum sum of k
+consecutive…", the brute force is to examine every possible chunk — O(n²) or
+worse. The window trick is to realize consecutive chunks *overlap almost
+entirely*, so instead of rebuilding each one from scratch, you slide a window:
+add what enters on the right, remove what leaves on the left, and reuse
+everything in between. Overlapping work, done once.
+</Intuition>
+
+<Concept>
+## Fixed window: slide, don't re-sum
+
+When the window size k is given, the pattern is mechanical. Compute the first
+window, then for each step add the entering element and subtract the leaving
+one:
+
+```
+window = sum(nums[:k])
+best = window
+for i in range(k, len(nums)):
+    window += nums[i] - nums[i - k]   # +enter, -leave, O(1)
+    best = max(best, window)
+```
+
+Re-summing each window is O(n·k); this reuse makes each slide O(1), so the
+whole scan is O(n). That "+enter −leave" line is the entire idea of a fixed
+window.
+</Concept>
+
+<Exercise id="lc-sw-maxsum" />
+
+<Concept>
+## Variable window: grow, then shrink to stay valid
+
+The harder, more common version: the window size isn't given — you're
+maximizing (or minimizing) it subject to a rule. The template is **grow the
+right edge every step; whenever the window breaks its rule, shrink the left
+edge until it's valid again**:
+
+```
+left = 0
+for right in range(len(s)):
+    add s[right] to the window
+    while window is INVALID:
+        remove s[left]; left += 1
+    update the answer with the now-valid window
+```
+
+Both edges only move forward, so even with the inner `while`, total movement is
+at most 2n → O(n). The art is defining "invalid" and what to track (a running
+sum, a character-count map, a set of seen items). Notice this is exactly UMPIRE
+step 3 in action: the *plan* is the four lines above; implementing is filling in
+"add," "invalid," and "remove."
+</Concept>
+
+<Check id="lc-sw-shrink" />
+
+<Concept>
+## Your turn: longest substring without repeats
+
+The classic variable window. "Invalid" = a character repeated inside the
+window; the fix = advance `left` past the previous occurrence. Track each
+character's last index so you can jump the left edge in one move instead of
+crawling.
+</Concept>
+
+<Exercise id="lc-sw-longest-unique" />
+
+<Gotcha>
+Sliding window quietly assumes **monotonicity**: extending the window makes the
+tracked quantity move one way (sum up, count up), and shrinking moves it back.
+That's why it works for "longest substring without repeats" but *not* for
+"subarray summing to k when values can be negative" — a negative number breaks
+the "extending only increases the sum" assumption, so shrinking logic lies.
+When negatives sneak in, switch to prefix sums + a hash map (next lesson). If
+your window solution gives wrong answers on negative inputs, this is almost
+always why.
+</Gotcha>
+
+<Cheatsheet>
+Signal: **contiguous** subarray/substring with **longest / shortest / at most
+k**. Fixed window → slide with "+enter −leave," O(1) per step. Variable window
+→ **grow right, shrink left while invalid,** both pointers forward-only → O(n).
+Watch for negatives, which break the window's monotonicity — use prefix sums
+instead.
+</Cheatsheet>

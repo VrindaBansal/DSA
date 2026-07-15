@@ -1,0 +1,128 @@
+---
+id: lc-method
+module: lc-method
+title: How to crack any problem
+order: 1
+estimatedMinutes: 25
+prerequisites: []
+objectives:
+  - Replace panic with a repeatable 6-step method (UMPIRE) you run on every problem
+  - Treat a correct brute force as a real first answer, then optimize from it
+  - Recognize that the whole game is ~15 patterns, not thousands of problems
+  - Use the built-in editor to run tests and print-debug as you go
+tags: [leetcode, method, mindset, umpire, editor]
+---
+
+<Intuition>
+Here is the secret that makes the rest of this course work: **you are not
+trying to memorize 3,000 problems. You are learning about fifteen patterns and
+how to recognize which one a problem is asking for.** The people who look
+fluent at this aren't smarter in the moment — they've just seen the shapes
+before and have a *method* they run every single time, so a blank problem never
+turns into a blank mind. That method is what this lesson installs. Once you
+have it, "I don't know where to start" stops being a feeling and becomes a
+checklist you work through.
+</Intuition>
+
+<Concept>
+## UMPIRE — the loop you run on every problem
+
+When you open a problem, don't hunt for the clever trick. Run these six steps
+in order. They turn a scary blank into a series of small, answerable questions.
+
+1. **Understand.** Restate the problem in your own words. What exactly are the
+   inputs and outputs? Ask about edge cases *out loud*: empty input, one
+   element, duplicates, negatives, already-sorted.
+2. **Match.** Which pattern does this smell like? (Sorted + pair → two pointers;
+   contiguous subarray → sliding window; "have I seen this" → hashing; …) The
+   signal→pattern table below is your map. This is the step that gets fast with
+   practice.
+3. **Plan.** Sketch the approach in plain words or pseudocode *before* typing.
+   Name the data structure and the loop.
+4. **Implement.** Now write it. Small steps, real variable names.
+5. **Review.** Re-read your code as if it were someone else's. Trace one small
+   example by hand. Check the edge cases you named in step 1.
+6. **Evaluate.** State the time and space complexity, and whether it meets the
+   constraints (next lesson). If it's too slow, that's information — go back to
+   Match/Plan.
+
+The magic isn't any single step; it's that **you always have a next step.**
+Stuck on Match? Do Understand harder. Stuck on Plan? Write the brute force.
+</Concept>
+
+<Concept>
+## Brute force is a valid first answer
+
+The most common way to freeze is believing you must produce the optimal
+solution immediately. You don't. **A correct-but-slow solution is a real
+answer** — and it's the fastest route to the fast one, for three reasons:
+
+- It pins down the input/output contract, so you stop misunderstanding the
+  problem.
+- It gives you something that *works* to test against and to optimize.
+- The optimization is very often just "notice the redundant work the brute
+  force does, and remove it." Two Sum's O(n) hash solution is literally the
+  O(n²) double loop with the inner search replaced by an O(1) lookup.
+
+Say it out loud in an interview: "The brute force is to check every pair, which
+is O(n²). Let me get that correct first, then improve it." That sentence buys
+you calm and credit.
+</Concept>
+
+<Check id="lc-method-first-move" />
+
+<Aside title="Think out loud — even alone">
+Narrating your reasoning ("the input is sorted, so maybe two pointers…") isn't
+just interview theater. Externalizing your thoughts is how you catch a wrong
+assumption before it becomes fifteen minutes of wrong code. When you practice,
+mutter the plan before you type. It feels silly and it works.
+</Aside>
+
+<Concept>
+## Your workshop: the built-in editor
+
+You don't have to imagine your code running — this app runs Python right in the
+browser (nothing leaves your machine). Two places to work:
+
+- **Inside every problem**, you get an editor with two buttons. **▶ run tests**
+  checks your solution against hidden tests. **▶ run (print-debug)** just runs
+  your code and shows whatever you `print()` — this is how you inspect a wrong
+  answer instead of guessing. Use hints if you're stuck; the solution unlocks
+  after two honest attempts.
+- **The [IDE / playground](/playground)** is a blank scratchpad for testing any
+  idea — trace an example, try an approach, time a loop. Same Python engine, so
+  if it runs there it runs in the problems.
+
+Print-debugging is a real skill: when tests fail, add `print(...)` inside your
+loop, run, and *watch* the values move. Let's warm up.
+</Concept>
+
+<Exercise id="lc-method-fizzbuzz" />
+
+<Concept>
+## The map: signal → pattern
+
+You'll build this table into muscle memory over the course, but meet it now —
+it's the answer to "which pattern?" in step 2. Each row is a phrase that shows
+up in problems and the tool it points to. Don't memorize it cold; you'll learn
+each row by *doing* its module.
+</Concept>
+
+<TradeoffTable id="lc-pattern-signals" />
+
+<Gotcha>
+The three classic panic-moves, and their fixes: **(1)** Reading the problem
+once and diving in — instead, restate it and name the edge cases first.
+**(2)** Chasing the optimal solution before you have *any* solution — write the
+brute force. **(3)** Debugging by staring — instead, print the intermediate
+values and read what the code actually does. None of these are about
+intelligence; they're about method.
+</Gotcha>
+
+<Cheatsheet>
+The whole course in one breath: **run UMPIRE every time (Understand, Match,
+Plan, Implement, Review, Evaluate); a correct brute force is a valid first
+answer; and the optimization is usually just deleting the brute force's
+redundant work.** You're learning ~15 patterns, not 3,000 problems — and you
+have an editor to test every idea.
+</Cheatsheet>

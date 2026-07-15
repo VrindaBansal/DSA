@@ -1,0 +1,102 @@
+---
+id: lc-heaps
+module: lc-heaps
+title: Heaps & top-K
+order: 1
+estimatedMinutes: 25
+prerequisites: [lc-method, lc-constraints]
+objectives:
+  - Recognize the heap signal — "k largest/smallest/most frequent" or a stream
+  - Use a size-k min-heap for top-K in O(n log k)
+  - Use heapq idiomatically, including the max-heap negation trick
+tags: [leetcode, heaps, priority-queue, top-k]
+---
+
+<Intuition>
+A heap is the tool for when you care about **the best (or worst) item, over and
+over, as data keeps arriving** — but you *don't* need everything sorted. Sorting
+the whole input to grab the top few is overkill: it's O(n log n) and it assumes
+you can hold all n at once. A heap keeps just the extreme element one cheap pop
+away and lets the rest stay in "comfortable disorder." The signal to reach for
+one is unmistakable once you see it: **"k largest / k smallest / k most
+frequent," "median of a stream," "merge k sorted things."** Any time the answer
+is *the top few* rather than *the whole order*, think heap.
+</Intuition>
+
+<Concept>
+## heapq is a min-heap over a list
+
+Python's `heapq` doesn't give you a class — it's functions operating on a plain
+list, and it's a **min-heap only** (smallest at the root):
+
+```
+import heapq
+h = []
+heapq.heappush(h, x)     # add, O(log n)
+smallest = heapq.heappop(h)   # remove & return the min, O(log n)
+h[0]                     # peek the min, O(1)
+```
+
+Two idioms you'll use constantly:
+- **Max-heap:** push the *negatives* (`heappush(h, -x)`) and negate on the way
+  out — heapq has no max-heap.
+- **Priority + payload:** push tuples `(priority, tiebreak, item)`; they compare
+  element-wise, so include a tiebreak counter to avoid comparing un-orderable
+  payloads.
+</Concept>
+
+<Concept>
+## Top-K: the counter-intuitive min-heap
+
+To keep the **k largest** elements of a huge stream, hold a **size-k min-heap**.
+That feels backwards — a min-heap for the largest? — but it's exactly right: the
+root is the *weakest* of your current champions, the only one a newcomer needs
+to beat. Push each element; whenever the heap exceeds size k, pop the smallest.
+What survives is the top k.
+
+```
+h = []
+for x in stream:
+    heapq.heappush(h, x)
+    if len(h) > k:
+        heapq.heappop(h)     # evict the current weakest
+# h now holds the k largest; h[0] is the k-th largest
+```
+
+Each element costs O(log k), so the whole pass is **O(n log k)** with **O(k)**
+memory — a clear win over sorting's O(n log n)/O(n) when k is small, and it works
+on a stream you can't fully store. (The DSA course's heaps lesson proves the
+"why min-heap" argument in depth.)
+</Concept>
+
+<Check id="lc-heap-whymin" />
+
+<Exercise id="lc-heap-kth-largest" />
+
+<Concept>
+## Frequencies + a heap
+
+"Top k *frequent*" composes two patterns: count with a `Counter` (hashing), then
+select the k highest counts with a heap. `Counter(nums).most_common(k)` does
+exactly this under the hood — a size-k selection over the distinct values. Reach
+for the combo whenever the ranking key is "how often it appears."
+</Concept>
+
+<Exercise id="lc-heap-topk-frequent" />
+
+<Gotcha>
+`heapq` is **min-only**, and forgetting that is the top heap bug — you'll get the
+k *smallest* when you wanted the largest. Negate for a max-heap. Also, a heap is
+*not* sorted below the root: `h[1]` is **not** the second smallest — the only
+ordered element is `h[0]`. If you need the whole thing in order, that's what
+sorting (or repeated pops) is for; the heap deliberately keeps everything else
+vague, which is why each operation is only O(log n).
+</Gotcha>
+
+<Cheatsheet>
+Signal: **k largest/smallest/most-frequent**, **median of a stream**, or
+**merge k sorted**. Keep a **size-k min-heap for top-K-largest** (root = weakest
+champion) → O(n log k), O(k) space. `heapq` is **min-only** on a list — negate
+for max, push `(priority, tiebreak, item)` tuples for custom order. Below the
+root a heap is unsorted; only `h[0]` is meaningful.
+</Cheatsheet>

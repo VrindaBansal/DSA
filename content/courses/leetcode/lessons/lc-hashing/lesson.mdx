@@ -1,0 +1,90 @@
+---
+id: lc-hashing
+module: lc-hashing
+title: Hashing & the "seen" trick
+order: 1
+estimatedMinutes: 25
+prerequisites: [lc-two-pointers]
+objectives:
+  - Reach for a set/dict the moment the question is "have I seen this?"
+  - Trade O(n) space for O(1) lookups to turn O(n²) scans into O(n)
+  - Combine prefix sums with a hash map for subarray-sum problems
+tags: [leetcode, hashing, set, dict, prefix-sum]
+---
+
+<Intuition>
+If two pointers is the pattern for *ordered* data, hashing is the pattern for
+everything else. A Python `set` or `dict` gives you **O(1) "is this here?" and
+"what's paired with this?"** — and an astonishing number of problems are secretly
+just that question. "Have I seen this value before?" "What index held this?"
+"How many times does each thing appear?" The move is almost reflexive: whenever
+a brute force is doing an inner loop to *search* for something, ask whether a
+hash map could answer that search in one step. That single swap collapses O(n²)
+to O(n).
+</Intuition>
+
+<Concept>
+## Three flavors of the trick
+
+- **Seen-set** — "has this appeared / is there a duplicate?" Keep a `set`; check
+  membership before adding. (Contains-duplicate, first repeated value.)
+- **Complement / index map** — "does the partner I need already exist?" Keep a
+  `dict` from value → index (or value → count). For each element compute the
+  thing you're looking for and check the map. (Two Sum is the archetype: look
+  for `target - n`.)
+- **Frequency map** — "how many of each?" `collections.Counter` counts in one
+  pass; then compare counts, find the mode, or group by a canonical key. (Group
+  anagrams keys each word by its sorted letters.)
+
+All three are the same insight: **memory buys lookup speed.** You spend O(n)
+space to store what you've seen so future questions about it are O(1).
+</Concept>
+
+<Check id="lc-hash-when" />
+
+<Concept>
+## The archetype: Two Sum in one pass
+
+Two Sum on an *unsorted* array (return the indices) is where hashing beats two
+pointers: sorting would cost O(n log n) and scramble the indices you have to
+report. Instead, walk once, and for each number ask the map "have I already
+seen your complement?" — building the map as you go so you never look ahead at
+an index you can't use yet.
+</Concept>
+
+<Exercise id="lc-hash-twosum" />
+
+<Concept>
+## Prefix sums + a hash map: the power combo
+
+Here's the technique that unlocks a whole tier of "count/find subarrays that
+sum to k" problems, *including with negative numbers* where sliding windows
+fail. Keep a **running prefix sum**, and note that the subarray between two
+positions sums to `k` exactly when their prefix sums differ by `k`. So store how
+many times each prefix sum has occurred in a map, and for each new prefix ask:
+"how many earlier prefixes equal `prefix - k`?" Each such earlier position marks
+a subarray ending here that sums to k.
+
+This is the two-flavor combo — a frequency map *of prefix sums* — and it's worth
+internalizing because it recurs constantly.
+</Concept>
+
+<Exercise id="lc-hash-subarray-sum" />
+
+<Gotcha>
+`dict` and `set` are O(1) *on average*, not worst case, and they cost real
+memory and constant-factor time — a hash of a big object isn't free. For small
+inputs a "clever" hash map can be slower than a plain loop. And order isn't
+guaranteed to help you: a set throws away position, so if the problem needs
+*where* something was, store the index in a dict, not just membership in a set.
+Reach for hashing for lookups, not when you actually need ordering (that's
+sorting or a heap).
+</Gotcha>
+
+<Cheatsheet>
+The reflex: an inner loop that **searches** → replace it with a hash lookup.
+Set for "seen it?", dict for "what's paired / which index?", Counter for "how
+many of each?". Prefix-sum + hashmap counts subarrays summing to k, even with
+negatives. You're spending **O(n) space to make lookups O(1)**, turning O(n²)
+into O(n).
+</Cheatsheet>
