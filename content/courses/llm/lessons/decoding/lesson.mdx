@@ -26,6 +26,28 @@ confidently wrong, you get fluent, plausible falsehood. That's the mechanism
 working as designed, not a bug you can turn off with a lower temperature.
 </Intuition>
 
+<Concept>
+## From logits to probabilities: the softmax
+
+The model's very last step outputs one raw score per token in its vocabulary —
+tens of thousands of numbers called **logits**. A logit isn't a probability;
+it's just "how much the model favors this token," and it can be negative or
+huge. To turn the whole vector of logits into a probability distribution (all
+positive, summing to 1), you run it through the **softmax**: exponentiate every
+logit and divide each by the total. Exponentiating makes everything positive and
+stretches the gaps, so a token that was a little ahead in logits becomes a lot
+ahead in probability; dividing by the sum normalizes it. Softmax is the exact
+same function attention uses (Module 3) — worth learning once.
+
+**Temperature** slots in right here: before softmax, every logit is divided by
+the temperature T. T = 1 leaves the distribution as-is. T below 1 makes the
+logits more spread out, so softmax sharpens toward the top token — at T → 0 it
+becomes "always pick the single highest," which is greedy decoding. T above 1
+squashes the logits together, flattening the distribution so unlikely tokens get
+a real chance. So temperature isn't a creativity dial bolted on the side; it's
+one number scaling the logits before the same softmax runs.
+</Concept>
+
 <Check id="llm-dec-temp" />
 
 <Check id="llm-dec-halluc" />

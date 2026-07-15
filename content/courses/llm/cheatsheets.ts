@@ -8,6 +8,33 @@ const H: [string, string, string] = ['Concept', 'What it is', 'Why it bites'];
 
 export const LLM_CHEATSHEETS: CheatsheetData[] = [
   {
+    lessonId: 'llm-foundations',
+    opsHeaders: H,
+    opsTable: [
+      { op: 'the one function', complexity: 'tokens → P(next token)', note: 'everything else is a zoom-in on this' },
+      { op: 'autoregressive', complexity: 'predict, append, repeat', note: 'why output streams token by token' },
+      { op: 'parameters (weights)', complexity: 'the billions of learned numbers', note: '“70B” = 70B of them; they ARE the model' },
+      { op: 'context window', complexity: 'max tokens it can condition on', note: 'its only working memory' },
+      { op: 'training vs inference', complexity: 'learn once, frozen forever', note: 'chats never change the weights' },
+      { op: 'base vs instruct', complexity: 'continuer vs assistant', note: 'chatting is a learned layer on top' },
+    ],
+    useWhen: 'Any time model behavior surprises you — trace it back to one clause of “frozen weights turn a context window of tokens into a distribution over the next token.”',
+    dontUseWhen: 'You expect it to look facts up, remember past sessions, or know anything after its knowledge cutoff — none of that is in the mechanism.',
+    stdlib: 'the transformer (Module 3) · pretraining + RLHF (Module 11) · scaling laws',
+    stdlibLabel: 'See also',
+    bullets: [
+      'An LLM predicts the next token; generation is that prediction looped, each token conditioned on all prior ones.',
+      'Training learns the weights once, then freezes them; every conversation is inference and changes nothing.',
+      'It has no knowledge after its cutoff and no memory across sessions — apps fake memory by re-sending history in the context window.',
+      'Base models only continue text; instruction tuning + RLHF turn that into the helpful assistant you chat with.',
+      'It’s not a database: it outputs the most plausible-sounding continuation, so it states wrong facts as fluently as right ones.',
+    ],
+    gotchas: [
+      'Confident tone is not a confidence score — plausibility is learned from text, not checked against truth.',
+      'This one idea predicts the whole field: RAG (sources), tools (ground truth), and evals (measuring the damage) all exist because of it.',
+    ],
+  },
+  {
     lessonId: 'tokenization',
     opsHeaders: H,
     opsTable: [

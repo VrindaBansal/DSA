@@ -25,6 +25,30 @@ by the angle between them (cosine similarity) and you have a relevance score
 that ignores length and fixates on topic.
 </Intuition>
 
+<Concept>
+## Where the vector actually comes from
+
+"Turns text into a vector" sounds like magic, so pin down the mechanism. An
+**embedding model** — usually a transformer, a cousin of the one in Module 3 —
+reads your text and emits a fixed-length list of numbers (say 768 or 1536 of
+them). It isn't hand-designed; it's *trained*. During training the model is
+shown pairs of texts that belong together (a question and its answer, a
+sentence and its paraphrase) and pairs that don't, and its weights are nudged
+until "belongs together" pairs land close in the space and unrelated pairs land
+far apart. This is called **contrastive training**, and it's the whole reason
+the geometry means anything: closeness in the space *was optimized to* mean
+closeness in meaning.
+
+Two consequences you'll rely on all course:
+
+- The vector for a piece of text is **deterministic** given the model — same
+  text in, same vector out — which is why you can compute a document's vectors
+  once and store them.
+- The space is **model-specific**. Vectors from two different embedding models
+  are not comparable — never mix them in one index (that's the gotcha in the
+  cheatsheet).
+</Concept>
+
 <Visual id="llm-cosine" />
 
 <Check id="llm-emb-cosine" />

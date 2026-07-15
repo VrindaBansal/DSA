@@ -104,9 +104,9 @@ export const MODULES: ModuleMeta[] = [
     slug: 'tokenization',
     courseId: 'llm',
     number: 1,
-    title: 'Tokenization',
-    blurb: 'Bytes → tokens · BPE merges · vocab & context windows · why token boundaries leak into behavior',
-    anchors: ['Why an LLM miscounts the r’s in “strawberry”', 'The token bill', 'Non-English text costs more'],
+    title: 'Foundations & tokenization',
+    blurb: 'What an LLM actually is (next-token prediction) · training vs inference · bytes → tokens · BPE merges · vocab & context windows',
+    anchors: ['“It’s just autocomplete” — and why that’s the whole story', 'Why an LLM miscounts the r’s in “strawberry”', 'The token bill'],
   },
   {
     slug: 'embeddings',

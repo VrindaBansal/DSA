@@ -25,6 +25,21 @@ work per operation: O(log n) instead of O(n).
 </Intuition>
 
 <Concept>
+## A handful of tree words first
+
+This heap is a kind of *binary tree*, and we lean on a few tree words before
+the Trees module makes them formal — so here they are, just enough to read the
+rest. A **node** is one stored item. Nodes connect downward: a **parent** node
+has up to two **children** (left and right); the one node with no parent is the
+**root** (we draw trees upside down, root on top); a node with no children is a
+**leaf**; a non-leaf is an **internal** node. A node's **height** is the number
+of steps down to its deepest leaf. A **binary tree** just means "≤ 2 children
+per node"; a **complete** binary tree adds a shape rule — every level is full
+except possibly the last, which is packed to the left with no gaps. That
+gap-free shape is the whole trick that lets the tree live in a flat array, next.
+</Concept>
+
+<Concept>
 ## The duality: a tree with no pointers
 
 A heap is a *complete* binary tree — every level full, last level packed

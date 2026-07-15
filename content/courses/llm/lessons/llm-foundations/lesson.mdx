@@ -1,0 +1,134 @@
+---
+id: llm-foundations
+module: tokenization
+title: What an LLM actually is
+order: 1
+estimatedMinutes: 25
+prerequisites: []
+objectives:
+  - State what an LLM fundamentally computes — a probability distribution over the next token
+  - Separate training (weights learned once) from inference (frozen weights, every request)
+  - Explain base vs instruction-tuned models and why chat works at all
+  - Stop treating the model like a database — and know what that predicts about its failures
+tags: [llm, foundations, next-token, training, inference]
+---
+
+<Intuition>
+Strip away the product, the chat window, and the hype, and a large language
+model is one function: **given some text, predict what token comes next.**
+That's it. It doesn't "look things up," it doesn't "run logic," it doesn't
+have a plan. It has billions of numbers — *weights* — tuned so that its
+next-token guesses match the patterns of an enormous amount of human text.
+Everything that amazes you (fluent essays, working code) and everything that
+burns you (confident nonsense, stale facts) falls out of that single sentence.
+This lesson installs the mental model; every other lesson in this course is a
+zoom-in on one part of it.
+</Intuition>
+
+<Concept>
+## The one function, precisely
+
+An LLM takes a sequence of **tokens** (chunks of text — the next lesson is all
+about them) and outputs a **probability for every token in its vocabulary**
+being the next one. After "The capital of France is", it might put 92% on
+" Paris", 3% on " the", a sliver on everything else. Generation is just this
+function in a loop: pick a next token, append it, run the function again —
+one token at a time, each conditioned on everything so far. That loop is
+called **autoregressive generation**, and it's why responses stream word by
+word: the model literally doesn't know its second sentence until it has
+committed to its first.
+
+Two vocabulary words you now own:
+
+- **Parameters (weights):** the billions of learned numbers inside the model.
+  "A 70B model" means 70 billion of them. They ARE the model.
+- **Context window:** the maximum number of tokens the model can condition on
+  at once — its working memory. Nothing outside the window exists, as far as
+  the model is concerned.
+</Concept>
+
+<Check id="llm-found-next-token" />
+
+<Concept>
+## Training vs inference — two different lives
+
+A model lives twice, and confusing the two lives causes most misconceptions:
+
+**Training** happens once, before you ever meet the model. The weights start
+random; the model is shown trillions of tokens of text and, for each one,
+asked to predict the next. Every miss nudges the weights. Months of compute
+later, the weights encode an absurdly good statistical portrait of language —
+and of the facts, styles, and reasoning patterns embedded in it. Then the
+weights are **frozen**.
+
+**Inference** is every conversation after that. Your prompt runs through the
+frozen weights; nothing you say changes them. The model doesn't remember
+yesterday's chat, doesn't learn your name between sessions, and knows nothing
+after its **knowledge cutoff** — the date its training data ended. When a
+chat app "remembers," that's the *application* stuffing history back into the
+context window, not the model learning.
+</Concept>
+
+<Check id="llm-found-training-short" />
+
+<RealWorld source="Autocomplete on steroids">
+Your phone keyboard predicts the next word from the last few. An LLM is the
+same *shape* of machine scaled beyond recognition: instead of two words of
+context, up to hundreds of thousands of tokens; instead of frequency tables,
+billions of weights arranged in a transformer (Module 3). The punchline is
+that at this scale, "predict the next token" stops looking like autocomplete —
+to guess the next token of a half-written proof or program, the model is
+forced to internalize a working model of proofs and programs. Capability
+emerges from prediction. Keep both halves: it is *just* autocomplete, and
+that's exactly why it's so much more.
+</RealWorld>
+
+<Concept>
+## Base models vs the assistant you actually talk to
+
+Pretraining alone produces a **base model** — a pure text-continuer. Ask it
+"What's the capital of France?" and it might reply with *another geography
+question*, because quiz lists in its training data look exactly like that.
+Continuation, not conversation.
+
+Turning that into an assistant takes a second, much smaller phase:
+**instruction tuning** (fine-tuning on many example instruction→good-response
+pairs) and **preference alignment** — RLHF and friends — where the model is
+optimized toward responses humans rate as helpful, honest, and safe. Module 11
+goes deeper; for now the takeaway is that "chatting" is a *learned behavior
+on top of* next-token prediction, not the native mode. The chat format itself
+(system prompt, user turns, assistant turns) is just structured text laid into
+the context window — which is why Module 5's prompting techniques work at all.
+</Concept>
+
+<Check id="llm-found-base-instruct" />
+
+<Gotcha>
+The model is **not a database**, and its confident tone is not a confidence
+score. It produces the most *plausible-sounding* continuation — plausibility
+learned from text, not truth checked against a source. So it will state a
+wrong fact in the same fluent register as a right one, invent citations that
+"look like" citations, and never say "I don't know" unless trained or prompted
+to. This one gotcha predicts the shape of the whole field: RAG exists to bolt
+sources on (Module 6), tool use to fetch ground truth (Module 7), and
+evaluation to measure the damage (Module 10).
+</Gotcha>
+
+<Aside title="Why bigger got better — scaling, in one paragraph">
+The empirical surprise of the last decade: make the model bigger, feed it more
+text, spend more compute, and next-token prediction improves *smoothly and
+predictably* — and qualitatively new abilities (translation, coding,
+multi-step reasoning) show up along the way without being explicitly taught.
+These "scaling laws" are why labs race to train ever-larger models, and why
+model families come in sizes (a phone-sized 3B, a datacenter 400B): same
+recipe, different points on the curve, with cost and capability rising
+together. Module 12 picks up the cost half of that story.
+</Aside>
+
+<Cheatsheet>
+The sentence to carry into every other lesson: **an LLM is frozen weights that
+turn a context window of tokens into a probability distribution over the next
+token — trained once on the internet, remembering nothing, checking nothing.**
+When behavior surprises you, ask which part of that sentence explains it;
+one of them always does.
+</Cheatsheet>

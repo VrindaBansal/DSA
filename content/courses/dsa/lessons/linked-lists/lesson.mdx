@@ -26,6 +26,23 @@ algorithm uses.
 </Intuition>
 
 <Concept>
+## First, what "pointer" means here
+
+This lesson says *pointer* constantly, so nail it down — especially because
+Python has no pointer type. In Python, a variable never holds an object; it
+holds a **reference** to one (a handle, an arrow to where the object lives).
+`b = a` doesn't copy the object — now `a` and `b` point at the *same* one. A
+linked-list **node** is just an object with two fields, `val` and `next`, where
+`next` is a reference to the following node (or `None` at the end). So
+`node.next = other` doesn't move or copy anything; it **re-points** one arrow.
+"Pointer surgery" is exactly this: rearranging which node's `next`/`prev` arrow
+aims where. And the cardinal rule the Intuition hinted at — *never overwrite an
+arrow you still need to follow* — is why you'll save `nxt = curr.next` before
+reassigning `curr.next`: once you overwrite the only arrow to a node, that node
+(and everything after it) is unreachable.
+</Concept>
+
+<Concept>
 ## The trade, stated without romance
 
 Singly linked: each node holds `val` and `next`. Doubly linked: add

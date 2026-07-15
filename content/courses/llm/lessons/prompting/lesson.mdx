@@ -26,6 +26,29 @@ can try to hijack your instructions. Prompt injection is the security problem
 that never goes away.
 </Intuition>
 
+<Concept>
+## What a "role" actually is
+
+Before "system vs user" can mean anything, see through it. Recall from the
+foundations lesson that a model only ever consumes **one flat context window of
+tokens**. The chat format — `system`, `user`, `assistant` turns — is not a
+separate channel or a special API power; it's just that text, wrapped in
+delimiter tokens that label who said what, and concatenated into that single
+window. The model was *trained* on billions of examples in this format, so it
+learned a behavior: treat the **system** block as standing instructions that
+outrank the rest, treat **user** blocks as the request to fulfill, and treat
+**assistant** blocks as its own past replies to stay consistent with.
+
+Two things follow immediately. First, a role's authority is **learned
+convention, not enforcement** — the system prompt usually wins because training
+taught the model to defer to it, not because anything blocks a user or a
+retrieved document from contradicting it. Second, that's *exactly* why prompt
+injection works: once untrusted text is in the window, it's competing for the
+model's obedience on the same field as your instructions. Roles are the
+foundation lesson's "structured text laid into the context window," made
+concrete.
+</Concept>
+
 <Check id="llm-prompt-order" />
 
 <Check id="llm-prompt-injection" />

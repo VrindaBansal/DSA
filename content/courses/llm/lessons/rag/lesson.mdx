@@ -84,6 +84,20 @@ When retrieval underperforms, reach for these in order:
   single-step precision jump.
 </Concept>
 
+<Aside title="Why not skip retrieval and cross-encode everything?">
+It sounds like the cross-encoder should just replace the whole first stage — if
+reading query and chunk *together* is more accurate, why bother with the vector
+search at all? Cost. The initial retrieval uses a **bi-encoder**: it embeds the
+query and every chunk *separately*, so all your document vectors can be computed
+once, ahead of time, and searched in milliseconds even across millions of
+chunks. A **cross-encoder** never precomputes anything — it must run a fresh
+forward pass on the query-and-chunk pair for *every* candidate, so scoring a
+million chunks per query is hopeless. That's the whole reason RAG is two stages:
+the cheap bi-encoder casts a wide net to ~20 candidates, then the accurate
+cross-encoder does the expensive close read on just those. Fast-and-approximate
+narrows; slow-and-precise refines.
+</Aside>
+
 <Concept>
 ## Lost in the middle, and grounding
 
