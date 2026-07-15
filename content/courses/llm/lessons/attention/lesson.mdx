@@ -25,6 +25,31 @@ properties fall straight out of the mechanism: context cost grows with the
 affordable only because of a cache. Below: attention weights as a live heatmap.
 </Intuition>
 
+<Concept>
+## What Q, K, and V actually are
+
+You'll see attention written as `softmax(QKᵀ/√d)·V`, and the letters look
+arbitrary until you see the analogy: **attention is a soft search**. From each
+token the model computes three different vectors, all just learned linear
+projections of that token's current representation:
+
+- **Query (Q)** — "what am I looking for?" The word *it* emits a query that
+  effectively asks *which earlier noun do I refer to?*
+- **Key (K)** — "what do I offer as a match?" Every token advertises a key, like
+  the label on a filing cabinet drawer.
+- **Value (V)** — "what do I contribute if you attend to me?" The actual
+  information a token hands over once it's been matched.
+
+The mechanism is then exactly a lookup made soft: dot each token's **query**
+against every **key** (`QKᵀ`) to get a relevance score for every pair, divide by
+`√d` to keep the numbers stable, `softmax` the scores into weights that sum to 1
+(Module 4's softmax, reused here), and take that weighted average of the
+**values**. So "*it* attends to *dog*" literally means *it*'s query matched
+*dog*'s key, so *dog*'s value dominates the average. Because every query meets
+every key, the score matrix is n×n — and that's the quadratic cost the next
+check is about.
+</Concept>
+
 <Visual id="llm-attention" />
 
 <Check id="llm-attn-quadratic" />

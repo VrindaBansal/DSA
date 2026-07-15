@@ -5,6 +5,68 @@ import type { Question } from '@/lib/types';
 // Aggregated globally in content/questions/index.ts.
 
 export const QUESTIONS: Question[] = [
+  // --- Foundations --------------------------------------------------------
+  {
+    kind: 'mcq',
+    id: 'llm-found-next-token',
+    lessonId: 'llm-foundations',
+    difficulty: 1,
+    prompt:
+      'At the most fundamental level, what does a large language model compute?',
+    options: [
+      'It searches a stored database of facts for the best matching answer',
+      'It outputs a probability distribution over which token comes next, given the tokens so far',
+      'It runs a set of if/then logic rules written by its developers',
+      'It retrieves the most similar sentence it saw during training and repeats it',
+    ],
+    correctIndex: 1,
+    explanation:
+      'An LLM is one function: text in → a probability for every token in its vocabulary being next. Generation is that function in a loop (autoregressive). It isn’t a database lookup, a rule engine, or a copy-paste of training sentences — every fluent or false thing it does falls out of next-token prediction.',
+    distractorNotes: [
+      'There is no database inside the weights — facts are only implicit in the learned distribution, which is why it can’t cite or update them.',
+      'Correct.',
+      'No hand-written rules run at inference; there are only learned weights multiplying the input.',
+      'It doesn’t retrieve a nearest training sentence — it generalizes into a distribution, then samples token by token.',
+    ],
+  },
+  {
+    kind: 'short',
+    id: 'llm-found-training-short',
+    lessonId: 'llm-foundations',
+    difficulty: 2,
+    prompt:
+      'Your colleague says “the model learned my name during our chat yesterday, so it should remember it today.” Using the training/inference distinction, explain why that’s wrong.',
+    rubric: [
+      'Weights are learned once during training, then frozen — inference never changes them',
+      'A chat happens at inference; nothing you type updates the weights',
+      'Any “memory” across turns is the application re-feeding history into the context window, not the model learning',
+    ],
+    modelAnswer:
+      'Training and inference are two different lives. The weights are learned once, ahead of time, and then frozen; every conversation you have is inference, running your prompt through those frozen weights without changing them. So the model didn’t “learn” your name yesterday — it can’t learn anything at inference. If a chat app appears to remember your name, that’s the application stuffing the earlier messages back into the context window on each request, not the model retaining anything between sessions.',
+  },
+  {
+    kind: 'mcq',
+    id: 'llm-found-base-instruct',
+    lessonId: 'llm-foundations',
+    difficulty: 2,
+    prompt:
+      'You give a raw base model (pretrained only, no instruction tuning) the input “What is the capital of France?” Why might it reply with another quiz question instead of “Paris”?',
+    options: [
+      'Its knowledge cutoff was before France had a capital',
+      'A base model only continues text; question-and-answer lists in its training data make “another question” a plausible continuation, because it was never taught to answer',
+      'The temperature must have been set too high',
+      'Base models cannot process question marks',
+    ],
+    correctIndex: 1,
+    explanation:
+      'Pretraining produces a pure text-continuer. “Answering helpfully” is a learned behavior added later by instruction tuning and preference alignment (RLHF). Without that phase, the most plausible continuation of a quiz-style line can be more quiz, not the answer — the chat assistant you’re used to is a layer on top of next-token prediction.',
+    distractorNotes: [
+      'Capitals are trivially in any large corpus; this isn’t a knowledge-cutoff issue.',
+      'Correct.',
+      'Temperature changes randomness, not whether the model has been taught to answer versus continue.',
+      'Question marks are just tokens; there’s no special handling that fails here.',
+    ],
+  },
   // --- Tokenization -------------------------------------------------------
   {
     kind: 'mcq',

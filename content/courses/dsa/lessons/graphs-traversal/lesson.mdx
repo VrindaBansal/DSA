@@ -28,9 +28,12 @@ group order (connectivity).
 ## Representation: the adjacency list default
 
 Store, for each node, the list of its neighbors: `dict[node,
-list[node]]`. Space O(V + E), neighbor iteration proportional to actual
-degree — right for the sparse graphs reality produces (your social graph
-is not densely wired to all eight billion). The alternative — an
+list[node]]`. Complexity here is written in **two** quantities, not one:
+throughout graph analysis **V is the number of vertices (nodes) and E the
+number of edges** — so O(V + E) reads "work proportional to the nodes plus the
+connections." That adjacency list costs O(V + E) space, with neighbor iteration
+proportional to actual degree — right for the sparse graphs reality produces
+(your social graph is not densely wired to all eight billion). The alternative — an
 adjacency *matrix*, V×V booleans — buys O(1) "are u,v connected?" for
 O(V²) space, worth it only for dense graphs or tiny ones. Interview
 default: adjacency list, and say "V plus E" like it's one word.
