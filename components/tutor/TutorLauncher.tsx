@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { usePathname } from 'next/navigation';
 import { useTutor } from './TutorContext';
 import { TutorDrawer } from './TutorDrawer';
 
@@ -11,6 +12,8 @@ import { TutorDrawer } from './TutorDrawer';
  */
 export function TutorLauncher() {
   const { open, openDrawer } = useTutor();
+  const pathname = usePathname();
+  if (pathname === '/unlock') return null;
   return (
     <>
       {!open && (

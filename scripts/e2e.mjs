@@ -116,9 +116,49 @@ if (spawnErr.includes('EADDRINUSE')) {
   console.error(`Port ${PORT} was still in use even after fuser -k — results below may be stale.`);
 }
 
+const SITE_PASSWORD = process.env.SITE_PASSWORD || 'Hello227';
+
+// --- password gate — must be verified BEFORE we ever authenticate ------------
+section('site password gate');
+const unauthPage = await fetch(BASE + '/', { redirect: 'manual' });
+if (unauthPage.status === 307 && unauthPage.headers.get('location')?.includes('/unlock'))
+  pass('unauthenticated page request redirects to /unlock');
+else fail(`unauthenticated page request: expected 307 → /unlock, got ${unauthPage.status}`);
+
+const unauthApi = await fetch(BASE + '/api/chat', {
+  method: 'POST',
+  headers: { 'content-type': 'application/json' },
+  body: '{}',
+});
+if (unauthApi.status === 401) pass('unauthenticated /api/chat rejected with 401 (the key is actually protected)');
+else fail(`unauthenticated /api/chat: expected 401, got ${unauthApi.status}`);
+
+const wrongPw = await fetch(BASE + '/api/unlock', {
+  method: 'POST',
+  headers: { 'content-type': 'application/json' },
+  body: JSON.stringify({ password: 'definitely-wrong' }),
+});
+if (wrongPw.status === 401) pass('wrong password rejected');
+else fail(`wrong password: expected 401, got ${wrongPw.status}`);
+
 const { chromium } = await import('playwright-core');
 const browser = await chromium.launch({ executablePath: CHROMIUM, args: ['--no-sandbox'] });
 const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+
+const unlockRes = await page.request.post(`${BASE}/api/unlock`, {
+  data: { password: SITE_PASSWORD },
+});
+if (unlockRes.ok()) pass('correct password unlocks (cookie set on the browser context)');
+else {
+  fail(`correct password rejected — got ${unlockRes.status()}. Is SITE_PASSWORD env var out of sync?`);
+}
+// Raw (non-browser) fetches below the browser sections need the same cookie
+// explicitly, since they don't share the Playwright browser context's jar.
+const authCookies = await page.context().cookies();
+const unlockCookie = authCookies.find((c) => c.name === 'invariant_unlock');
+const authHeaders = unlockCookie
+  ? { cookie: `${unlockCookie.name}=${unlockCookie.value}` }
+  : {};
 
 const pageErrors = [];
 page.on('pageerror', (e) => pageErrors.push(e.message));
@@ -198,17 +238,27 @@ section('highlight-to-ask on a lesson page');
 await page.goto(`${BASE}/lesson/queues`, { waitUntil: 'networkidle' });
 const introPara = page.locator('.lesson-prose p').first();
 await introPara.scrollIntoViewIfNeeded();
-// clear the sticky nav (h-12, fixed, z-40) so the synthetic drag below
-// actually lands on the paragraph text instead of the header on top of it
-await page.evaluate(() => window.scrollBy(0, -100));
-const box = await introPara.boundingBox();
-if (box) {
-  const midY = box.y + box.height / 2;
-  await page.mouse.move(box.x + 5, midY);
-  await page.mouse.down();
-  await page.mouse.move(box.x + Math.min(box.width - 5, 260), midY, { steps: 8 });
-  await page.mouse.up();
-  await page.waitForTimeout(200);
+// Select via the DOM Range API instead of simulating a real mouse drag: a
+// synthetic OS-level drag's hit-testing is a genuine source of flakiness
+// (confirmed by re-running with identical coordinates — passes and fails
+// nondeterministically). Programmatic selection + a real mouseup event
+// exercises the exact same app code path (LessonShell's document-level
+// 'mouseup' listener reading window.getSelection()) deterministically.
+const selectedText = await page.evaluate(() => {
+  const p = document.querySelector('.lesson-prose p');
+  const node = p?.firstChild;
+  if (!p || !node || !node.textContent) return '';
+  const range = document.createRange();
+  range.setStart(node, 0);
+  range.setEnd(node, Math.min(40, node.textContent.length));
+  const sel = window.getSelection();
+  sel?.removeAllRanges();
+  sel?.addRange(range);
+  document.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+  return sel?.toString() ?? '';
+});
+await page.waitForTimeout(100);
+if (selectedText.trim().length >= 8) {
   const explainBtn = page.locator('button:has-text("explain this")');
   if (await explainBtn.isVisible()) {
     pass('"explain this" button appears on text selection');
@@ -221,7 +271,7 @@ if (box) {
     if (opened && hasBg) pass('explain-this opens the drawer on the lesson tab with the selection quoted');
     else fail('explain-this did not open the lesson tab with the quoted selection');
   } else fail('"explain this" button did not appear on selection');
-} else fail('could not locate lesson paragraph to select text from');
+} else fail(`could not select text from the lesson paragraph (got: ${JSON.stringify(selectedText)})`);
 await page.keyboard.press('Escape');
 
 section('general chat thread persists across reload');
@@ -320,16 +370,18 @@ await page.emulateMedia({ media: 'screen' });
 section('API surface');
 const put = await fetch(`${BASE}/api/progress`, {
   method: 'PUT',
-  headers: { 'content-type': 'application/json' },
+  headers: { 'content-type': 'application/json', ...authHeaders },
   body: JSON.stringify({ lessons: {}, review: {}, lastLesson: 'e2e-probe' }),
 });
-const got = put.ok ? await (await fetch(`${BASE}/api/progress`)).json() : null;
+const got = put.ok
+  ? await (await fetch(`${BASE}/api/progress`, { headers: authHeaders })).json()
+  : null;
 if (got?.lastLesson === 'e2e-probe') pass('sqlite progress adapter roundtrips');
 else fail(`/api/progress roundtrip failed (${put.status})`);
 
 const grade = await fetch(`${BASE}/api/grade`, {
   method: 'POST',
-  headers: { 'content-type': 'application/json' },
+  headers: { 'content-type': 'application/json', ...authHeaders },
   body: JSON.stringify({ prompt: 'p', rubric: ['r'], answer: 'a' }),
 });
 const gradeBody = await grade.json().catch(() => ({}));
@@ -345,7 +397,7 @@ let saw429 = false;
 for (let i = 0; i < 25; i++) {
   const r = await fetch(`${BASE}/api/grade`, {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
+    headers: { 'content-type': 'application/json', ...authHeaders },
     body: JSON.stringify({ prompt: 'p', rubric: ['r'], answer: 'a' }),
   });
   if (r.status === 429) {
