@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { runScript, type ScriptOutcome } from '@/lib/pyodide';
+import { runScript, isPyodideLoaded, type ScriptOutcome } from '@/lib/pyodide';
 
 const CodeMirror = dynamic(() => import('@uiw/react-codemirror'), {
   ssr: false,
@@ -70,14 +70,12 @@ export function PlaygroundClient() {
   const [booting, setBooting] = useState(false);
   const [outcome, setOutcome] = useState<ScriptOutcome | null>(null);
   const [ranAt, setRanAt] = useState<number | null>(null);
-  const hydrated = useRef(false);
 
   useEffect(() => {
     try {
       const saved = window.localStorage.getItem(STORAGE_KEY);
       if (saved !== null) setCode(saved);
     } catch {}
-    hydrated.current = true;
     import('@codemirror/lang-python').then((m) => setPyExtensions([m.python()]));
   }, []);
 
@@ -91,7 +89,7 @@ export function PlaygroundClient() {
   const run = async () => {
     if (running) return;
     setRunning(true);
-    setBooting(true);
+    setBooting(!isPyodideLoaded());
     try {
       const res = await runScript(code);
       setBooting(false);
@@ -102,7 +100,6 @@ export function PlaygroundClient() {
       setOutcome({
         stdout: '',
         error: e instanceof Error ? e.message : String(e),
-        ok: false,
       });
     } finally {
       setRunning(false);
@@ -118,7 +115,7 @@ export function PlaygroundClient() {
   };
 
   const empty =
-    outcome && !outcome.error && outcome.stdout.trim() === ''
+    outcome && !outcome.error && !outcome.stdout
       ? 'Ran with no output. (Nothing was printed — add print(...) to see values.)'
       : null;
 
@@ -241,7 +238,9 @@ export function PlaygroundClient() {
         The standard library is available (collections, heapq, bisect, math,
         itertools, functools…). No file or network access. This is the same
         engine that grades the coding exercises — so if it runs here, it runs
-        there.
+        there. Runs on the page&apos;s main thread, so an infinite loop will
+        freeze the tab (your code is auto-saved, so just reload) — put a bound
+        on your loops while experimenting.
       </p>
     </div>
   );

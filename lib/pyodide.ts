@@ -82,15 +82,15 @@ __invariant_run()
 `;
 
 export interface ScriptOutcome {
-  /** Everything the program printed (stdout + stderr, interleaved order kept
-   *  best-effort: stdout first, then stderr). */
+  /** Everything the program printed (stdout + stderr, in program order). */
   stdout: string;
   /** Uncaught exception traceback, if the program blew up. */
   error?: string;
-  /** True when the program ran to completion with no uncaught exception. */
-  ok: boolean;
 }
 
+// Compiling the user code as "<your code>" names it nicely in tracebacks, and
+// dropping the harness frame (tb_next) makes the traceback start at the user's
+// own line instead of leaking this wrapper's internals.
 const SCRIPT_HARNESS = `
 import sys, io, json, traceback
 
@@ -100,11 +100,11 @@ def __invariant_script():
     sys.stdout = sys.stderr = buf
     err = None
     try:
-        exec(__USER_SCRIPT, {"__name__": "__main__"})
+        exec(compile(__USER_SCRIPT, "<your code>", "exec"), {"__name__": "__main__"})
     except SystemExit:
         pass
-    except Exception:
-        err = traceback.format_exc()
+    except Exception as e:
+        err = "".join(traceback.format_exception(type(e), e, e.__traceback__.tb_next))
     finally:
         sys.stdout, sys.stderr = old_out, old_err
     return json.dumps({"stdout": buf.getvalue(), "error": err})
@@ -114,8 +114,9 @@ __invariant_script()
 
 /**
  * Run arbitrary Python for the playground / print-debugging — captures stdout
- * and stderr and returns them as text, plus any uncaught traceback. Unlike
- * runTests there are no hidden tests: this is a plain "run my code" REPL.
+ * and stderr and returns them as text, plus any uncaught traceback (starting at
+ * the user's own line). Unlike runTests there are no hidden tests: this is a
+ * plain "run my code" REPL.
  */
 export async function runScript(code: string): Promise<ScriptOutcome> {
   const py = await getPyodide();
@@ -125,7 +126,6 @@ export async function runScript(code: string): Promise<ScriptOutcome> {
   return {
     stdout: parsed.stdout ?? '',
     error: parsed.error ?? undefined,
-    ok: !parsed.error,
   };
 }
 

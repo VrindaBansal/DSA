@@ -90,9 +90,10 @@ export function ExerciseCard({
   };
 
   const run = async () => {
-    if (running) return;
+    if (running || scratchRunning) return;
     setRunning(true);
     setRunError(null);
+    setScratch(null);
     setBooting(true);
     try {
       const res = await runTests(code, q.tests);
@@ -111,6 +112,8 @@ export function ExerciseCard({
     if (scratchRunning || running) return;
     setScratchRunning(true);
     setScratch(null);
+    setOutcome(null);
+    setRunError(null);
     try {
       const res = await runScript(code);
       setScratch(res);
@@ -118,7 +121,6 @@ export function ExerciseCard({
       setScratch({
         stdout: '',
         error: e instanceof Error ? e.message : String(e),
-        ok: false,
       });
     } finally {
       setScratchRunning(false);
@@ -185,7 +187,7 @@ export function ExerciseCard({
       <div className="flex flex-wrap items-center gap-2 px-4 py-2.5">
         <button
           onClick={run}
-          disabled={running}
+          disabled={running || scratchRunning}
           className="rounded border border-active bg-active px-4 py-1.5 font-mono text-[11.5px] font-semibold text-white transition-colors hover:bg-active-deep disabled:opacity-50"
         >
           {booting ? 'booting Python…' : running ? 'running…' : '▶ run tests'}
