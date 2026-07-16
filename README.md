@@ -24,9 +24,13 @@ anchors, tested constantly):
   reading constraints → the core patterns (two pointers, sliding window,
   hashing, binary search, stacks, linked lists, trees, heaps) → the heavy
   hitters (backtracking, graphs, DP) → a Hard capstone that decomposes real
-  LeetCode-Hard problems into patterns you already know. ~28 in-browser coding
+  LeetCode-Hard problems into patterns you already know. ~73 in-browser coding
   exercises ramping Easy → Hard, each with hidden tests, hints, a gated
-  solution, and a complexity self-check.
+  solution, and a complexity self-check. **Every lesson ends with a ~10-problem
+  set on an embedded IDE**: 3 fully in-app testable problems (solve here, "run
+  tests" for a green check) plus 7 curated real LeetCode problems (name,
+  difficulty, direct link) worked in an embedded scratchpad and tracked with
+  per-problem progress.
 
 Adding a course = drop a folder under `content/courses/<id>/` and register it in
 `lib/courses.ts`. Adding a lesson = drop a directory under that course's

@@ -135,6 +135,34 @@ for (const l of lessons) {
 }
 console.log('  ok');
 
+section('problem sets resolve (leetcode)');
+{
+  const psFile = path.join(coursesDir, 'leetcode', 'problemsets.ts');
+  if (!exists(psFile)) {
+    console.log('  (none)');
+  } else {
+    const psSrc = read(psFile);
+    const psLessons = new Set();
+    const entryRe = /lessonId: '([^']+)',\s*\n\s*inApp: \[([^\]]*)\]/g;
+    let m;
+    while ((m = entryRe.exec(psSrc))) {
+      const lid = m[1];
+      psLessons.add(lid);
+      if (!lessonIds.has(lid)) fail(`problemsets: lessonId "${lid}" is not a lesson`);
+      for (const qm of m[2].matchAll(/'([^']+)'/g))
+        if (!questionIds.includes(qm[1]))
+          fail(`problemsets: inApp "${qm[1]}" is not a question id`);
+    }
+    for (const l of lessons) {
+      const src = read(path.join(l.path, 'lesson.mdx'));
+      for (const mm of src.matchAll(/<ProblemSet id="([^"]+)"/g))
+        if (!psLessons.has(mm[1]))
+          fail(`${l.course}/${l.dir}: <ProblemSet> → unknown set "${mm[1]}"`);
+    }
+    console.log(`  ${psLessons.size} problem sets, all inApp ids resolve`);
+  }
+}
+
 section('question bank sanity');
 const seen = new Set();
 for (const id of questionIds) {

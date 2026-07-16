@@ -13,6 +13,7 @@ import { TradeoffTableBlock } from './TradeoffTable';
 import { CheatsheetBlock } from './Cheatsheet';
 import { VisualBlock } from './VisualBlock';
 import { ExerciseBlock } from './Exercise';
+import { ProblemSetBlock } from './ProblemSet';
 
 const flat = (c: React.ReactNode): string =>
   React.Children.toArray(c)
@@ -91,6 +92,13 @@ export function makeMdxComponents(lessonId: string) {
     ),
     Exercise: ({ id }: any) => (
       <ExerciseBlock lessonId={lessonId} blockId={bid('exercise', id)} id={id} />
+    ),
+    ProblemSet: ({ id }: any) => (
+      <ProblemSetBlock
+        lessonId={lessonId}
+        blockId={bid('problemset', id)}
+        id={id}
+      />
     ),
     LeetCode,
 

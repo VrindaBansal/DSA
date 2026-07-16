@@ -2038,4 +2038,2535 @@ def test_direct():
         'Every edge (one-letter change) has equal weight, so BFS’s level-by-level expansion guarantees first-arrival = shortest. With L = word length and N = number of words, generating neighbors costs about O(L² · N) overall — and DFS would risk returning a non-minimal path.',
     },
   },
+
+  // ======================================================================
+  // Problem-set exercises (end-of-lesson grind — lc-ps-*). Fresh problems,
+  // distinct from the inline teaching exercises above.
+  // ======================================================================
+
+  // --- lc-method ----------------------------------------------------------
+  {
+    kind: 'code',
+    id: 'lc-ps-method-runsum',
+    lessonId: 'lc-method',
+    difficulty: 1,
+    prompt:
+      'Running Sum of 1d Array. Return a new list where the i-th element is the sum of nums[0..i]. Example: [1,2,3,4] -> [1,3,6,10].',
+    starterCode: `def running_sum(nums):
+    # Keep a running total; append it at each step.
+    # TODO
+    return []
+`,
+    tests: `def test_basic():
+    assert running_sum([1, 2, 3, 4]) == [1, 3, 6, 10]
+
+def test_ones():
+    assert running_sum([1, 1, 1, 1, 1]) == [1, 2, 3, 4, 5]
+
+def test_mixed():
+    assert running_sum([3, 1, 2, 10, 1]) == [3, 4, 6, 16, 17]
+
+def test_single():
+    assert running_sum([7]) == [7]
+`,
+    hints: [
+      'Track total = 0; iterate the list.',
+      'total += n each step, then append total to the output.',
+    ],
+    solution: `def running_sum(nums):
+    out = []
+    total = 0
+    for n in nums:
+        total += n
+        out.append(total)
+    return out
+`,
+    complexityCheck: {
+      prompt: 'Time complexity of running_sum?',
+      options: ['O(1)', 'O(n)', 'O(n²)', 'O(n log n)'],
+      correctIndex: 1,
+      explanation:
+        'One pass, O(1) work per element, and an output of size n → O(n). This is a prefix sum, the building block behind many subarray tricks.',
+    },
+  },
+  {
+    kind: 'code',
+    id: 'lc-ps-method-wealth',
+    lessonId: 'lc-method',
+    difficulty: 1,
+    prompt:
+      'Richest Customer Wealth. accounts[i] is a list of what customer i has in each bank. Return the largest total wealth any single customer has.',
+    starterCode: `def maximum_wealth(accounts):
+    # Each customer's wealth is the sum of their row. Return the max.
+    # TODO
+    return 0
+`,
+    tests: `def test_basic():
+    assert maximum_wealth([[1, 2, 3], [3, 2, 1]]) == 6
+
+def test_second():
+    assert maximum_wealth([[1, 5], [7, 3], [3, 5]]) == 10
+
+def test_third():
+    assert maximum_wealth([[2, 8, 7], [7, 1, 3], [1, 9, 5]]) == 17
+
+def test_one():
+    assert maximum_wealth([[5]]) == 5
+`,
+    hints: [
+      'sum(row) gives one customer’s wealth.',
+      'max(sum(row) for row in accounts).',
+    ],
+    solution: `def maximum_wealth(accounts):
+    return max(sum(row) for row in accounts)
+`,
+    complexityCheck: {
+      prompt: 'With m customers and n banks, the cost is…',
+      options: ['O(m·n)', 'O(m + n)', 'O(m²)', 'O(1)'],
+      correctIndex: 0,
+      explanation:
+        'You touch every cell once to sum the rows → O(m·n). There’s no shortcut: the answer depends on all the balances.',
+    },
+  },
+  {
+    kind: 'code',
+    id: 'lc-ps-method-steps',
+    lessonId: 'lc-method',
+    difficulty: 1,
+    prompt:
+      'Number of Steps to Reduce a Number to Zero. If the number is even, halve it; if odd, subtract 1. Return how many steps reach 0. Example: 14 -> 6 steps.',
+    starterCode: `def number_of_steps(num):
+    # Loop until num is 0, counting steps. Even -> //2, odd -> -1.
+    # TODO
+    return 0
+`,
+    tests: `def test_fourteen():
+    assert number_of_steps(14) == 6
+
+def test_eight():
+    assert number_of_steps(8) == 4
+
+def test_123():
+    assert number_of_steps(123) == 12
+
+def test_zero():
+    assert number_of_steps(0) == 0
+`,
+    hints: [
+      'while num > 0: branch on num % 2.',
+      'Even: num //= 2. Odd: num -= 1. Count each step.',
+    ],
+    solution: `def number_of_steps(num):
+    steps = 0
+    while num > 0:
+        if num % 2 == 0:
+            num //= 2
+        else:
+            num -= 1
+        steps += 1
+    return steps
+`,
+    complexityCheck: {
+      prompt: 'How many steps, roughly, for a number num?',
+      options: [
+        'O(log num) — halving dominates, so it’s logarithmic in the value',
+        'O(num)',
+        'O(num²)',
+        'O(1)',
+      ],
+      correctIndex: 0,
+      explanation:
+        'Halving happens on every even step and can only be followed by at most one subtract, so the count is proportional to the number of bits → O(log num). A great reminder that complexity can be in the VALUE, not the array length.',
+    },
+  },
+
+  // --- lc-constraints -----------------------------------------------------
+  {
+    kind: 'code',
+    id: 'lc-ps-con-haspair',
+    lessonId: 'lc-constraints',
+    difficulty: 2,
+    prompt:
+      'The array can be up to 10⁵ long, so O(n²) is out. Return True if any two DISTINCT elements sum to target, else False — in O(n) using a set.',
+    starterCode: `def has_pair_with_sum(nums, target):
+    # n is large -> the double loop times out. One pass with a "seen" set.
+    # TODO
+    return False
+`,
+    tests: `def test_no():
+    assert has_pair_with_sum([1, 2, 3, 9], 8) is False
+
+def test_yes():
+    assert has_pair_with_sum([1, 2, 4, 4], 8) is True
+
+def test_empty():
+    assert has_pair_with_sum([], 5) is False
+
+def test_pair():
+    assert has_pair_with_sum([3, 5], 8) is True
+`,
+    hints: [
+      'Keep a set of values you’ve seen.',
+      'For each n, if target - n is in the set, return True; else add n.',
+    ],
+    solution: `def has_pair_with_sum(nums, target):
+    seen = set()
+    for n in nums:
+        if target - n in seen:
+            return True
+        seen.add(n)
+    return False
+`,
+    complexityCheck: {
+      prompt: 'Why does the set version matter at n = 10⁵?',
+      options: [
+        'O(n²) ≈ 10¹⁰ ops would time out; the set makes it O(n) with O(1) lookups',
+        'It doesn’t; both are fine',
+        'The set is O(log n)',
+        'It only saves memory',
+      ],
+      correctIndex: 0,
+      explanation:
+        'At n = 10⁵ the double loop is ~10¹⁰ operations — over the budget. The constraint told you to find O(n): the set gives O(1) membership so one pass suffices.',
+    },
+  },
+  {
+    kind: 'code',
+    id: 'lc-ps-con-kadane',
+    lessonId: 'lc-constraints',
+    difficulty: 2,
+    prompt:
+      'Maximum Subarray (Kadane’s). With n up to 10⁵ you need O(n). Return the largest sum of any contiguous non-empty subarray.',
+    starterCode: `def max_subarray(nums):
+    # At each index, the best subarray ENDING here either extends the previous
+    # best or restarts at this element. Track the running best and the global.
+    # TODO
+    return 0
+`,
+    tests: `def test_example():
+    assert max_subarray([-2, 1, -3, 4, -1, 2, 1, -5, 4]) == 6
+
+def test_single():
+    assert max_subarray([1]) == 1
+
+def test_all_pos():
+    assert max_subarray([5, 4, -1, 7, 8]) == 23
+
+def test_all_neg():
+    assert max_subarray([-1, -2, -3]) == -1
+`,
+    hints: [
+      'cur = best = nums[0].',
+      'For each later n: cur = max(n, cur + n) — extend or restart.',
+      'best = max(best, cur).',
+    ],
+    solution: `def max_subarray(nums):
+    best = cur = nums[0]
+    for n in nums[1:]:
+        cur = max(n, cur + n)
+        best = max(best, cur)
+    return best
+`,
+    complexityCheck: {
+      prompt: 'Kadane’s complexity?',
+      options: ['O(n) time, O(1) space', 'O(n²)', 'O(n log n)', 'O(n) time, O(n) space'],
+      correctIndex: 0,
+      explanation:
+        'One pass keeping two numbers → O(n) time, O(1) space. The brute force over all subarrays is O(n²), which the 10⁵ constraint rules out.',
+    },
+  },
+  {
+    kind: 'code',
+    id: 'lc-ps-con-negatives',
+    lessonId: 'lc-constraints',
+    difficulty: 2,
+    prompt:
+      'Count Negative Numbers in a Sorted Matrix. Each row and column is sorted in non-increasing order. Count the negatives in O(m + n) using the staircase walk (not O(m·n)).',
+    starterCode: `def count_negatives(grid):
+    # Start at the TOP-RIGHT. If the cell is negative, everything below it in
+    # this column is negative too (columns decrease going down) — count them and
+    # move left. Otherwise move down.
+    # TODO
+    return 0
+`,
+    tests: `def test_example():
+    grid = [[4, 3, 2, -1], [3, 2, 1, -1], [1, 1, -1, -2], [-1, -1, -2, -3]]
+    assert count_negatives(grid) == 8
+
+def test_none():
+    assert count_negatives([[3, 2], [1, 0]]) == 0
+
+def test_all():
+    assert count_negatives([[-1, -2], [-3, -4]]) == 4
+
+def test_single_row():
+    assert count_negatives([[5, 1, 0, -1]]) == 1
+`,
+    hints: [
+      'rows, cols = len(grid), len(grid[0]); r, c = 0, cols - 1.',
+      'If grid[r][c] < 0: every row from r down is negative in this column → count += rows - r, then c -= 1.',
+      'Else move down: r += 1. Stop when r runs off the bottom or c off the left.',
+    ],
+    solution: `def count_negatives(grid):
+    rows, cols = len(grid), len(grid[0])
+    r, c = 0, cols - 1
+    count = 0
+    while r < rows and c >= 0:
+        if grid[r][c] < 0:
+            count += rows - r
+            c -= 1
+        else:
+            r += 1
+    return count
+`,
+    complexityCheck: {
+      prompt: 'Why is the staircase walk O(m + n), not O(m·n)?',
+      options: [
+        'Each step moves either left or down and never back, so at most m + n moves total',
+        'It sorts the grid',
+        'It’s actually O(m·n)',
+        'Binary search on each row',
+      ],
+      correctIndex: 0,
+      explanation:
+        'From the top-right corner every step commits to one column (left) or one row (down) permanently, so the walk length is bounded by m + n. The "sorted rows and columns" hint in the constraints is what licenses skipping whole blocks.',
+    },
+  },
+
+  // --- lc-two-pointers ----------------------------------------------------
+  {
+    kind: 'code',
+    id: 'lc-ps-tp-movezeroes',
+    lessonId: 'lc-two-pointers',
+    difficulty: 1,
+    prompt:
+      'Move Zeroes. Move all 0s to the end of nums while keeping the order of the non-zero elements, IN PLACE. Return the same list. Example: [0,1,0,3,12] -> [1,3,12,0,0].',
+    starterCode: `def move_zeroes(nums):
+    # Same-direction two pointers: a write index for the next non-zero slot.
+    # TODO
+    return nums
+`,
+    tests: `def test_example():
+    assert move_zeroes([0, 1, 0, 3, 12]) == [1, 3, 12, 0, 0]
+
+def test_single_zero():
+    assert move_zeroes([0]) == [0]
+
+def test_no_zeros():
+    assert move_zeroes([1, 2, 3]) == [1, 2, 3]
+
+def test_leading():
+    assert move_zeroes([0, 0, 1]) == [1, 0, 0]
+`,
+    hints: [
+      'last = 0 is the next position to place a non-zero.',
+      'Scan i; when nums[i] != 0, swap nums[last] and nums[i], then last += 1.',
+    ],
+    solution: `def move_zeroes(nums):
+    last = 0
+    for i in range(len(nums)):
+        if nums[i] != 0:
+            nums[last], nums[i] = nums[i], nums[last]
+            last += 1
+    return nums
+`,
+    complexityCheck: {
+      prompt: 'Complexity of the in-place move?',
+      options: ['O(n) time, O(1) space', 'O(n) time, O(n) space', 'O(n²) time', 'O(n log n) time'],
+      correctIndex: 0,
+      explanation:
+        'One pass with a write pointer, swapping in place → O(n) time, O(1) space. Building a new list would cost O(n) extra space.',
+    },
+  },
+  {
+    kind: 'code',
+    id: 'lc-ps-tp-subsequence',
+    lessonId: 'lc-two-pointers',
+    difficulty: 1,
+    prompt:
+      'Is Subsequence. Return True if s is a subsequence of t (s’s characters appear in t in order, not necessarily contiguous). Two pointers, one over each string.',
+    starterCode: `def is_subsequence(s, t):
+    # Advance a pointer into s only when the current char of t matches.
+    # s is consumed iff the pointer reaches the end.
+    # TODO
+    return False
+`,
+    tests: `def test_yes():
+    assert is_subsequence("abc", "ahbgdc") is True
+
+def test_no():
+    assert is_subsequence("axc", "ahbgdc") is False
+
+def test_empty_s():
+    assert is_subsequence("", "anything") is True
+
+def test_longer_s():
+    assert is_subsequence("a", "") is False
+`,
+    hints: [
+      'i = 0 indexes s. Walk each char of t.',
+      'If i < len(s) and s[i] == ch: i += 1.',
+      'Return i == len(s).',
+    ],
+    solution: `def is_subsequence(s, t):
+    i = 0
+    for ch in t:
+        if i < len(s) and s[i] == ch:
+            i += 1
+    return i == len(s)
+`,
+    complexityCheck: {
+      prompt: 'Complexity, with |t| = n?',
+      options: ['O(n) time, O(1) space', 'O(n²)', 'O(n log n)', 'O(|s|·|t|)'],
+      correctIndex: 0,
+      explanation:
+        'One walk over t, advancing into s as matches occur → O(n) time, O(1) space. Both pointers only move forward.',
+    },
+  },
+  {
+    kind: 'code',
+    id: 'lc-ps-tp-sqsquares',
+    lessonId: 'lc-two-pointers',
+    difficulty: 2,
+    prompt:
+      'Squares of a Sorted Array. Given nums sorted ascending (may contain negatives), return the squares in sorted order — in O(n). The largest square is at one of the two ends.',
+    starterCode: `def sorted_squares(nums):
+    # Two pointers at the ends; the bigger absolute value squares largest, so
+    # fill the result from the BACK.
+    # TODO
+    return []
+`,
+    tests: `def test_example():
+    assert sorted_squares([-4, -1, 0, 3, 10]) == [0, 1, 9, 16, 100]
+
+def test_negatives():
+    assert sorted_squares([-7, -3, 2, 3, 11]) == [4, 9, 9, 49, 121]
+
+def test_single():
+    assert sorted_squares([2]) == [4]
+
+def test_all_neg():
+    assert sorted_squares([-3, -2, -1]) == [1, 4, 9]
+`,
+    hints: [
+      'res = [0]*n; l, r = 0, n-1; fill k from n-1 down to 0.',
+      'Compare abs(nums[l]) vs abs(nums[r]); the larger goes to res[k], then move that pointer inward.',
+    ],
+    solution: `def sorted_squares(nums):
+    n = len(nums)
+    res = [0] * n
+    l, r = 0, n - 1
+    for k in range(n - 1, -1, -1):
+        if abs(nums[l]) > abs(nums[r]):
+            res[k] = nums[l] * nums[l]
+            l += 1
+        else:
+            res[k] = nums[r] * nums[r]
+            r -= 1
+    return res
+`,
+    complexityCheck: {
+      prompt: 'Why is two pointers better than squaring then sorting?',
+      options: [
+        'Squaring then sorting is O(n log n); two pointers is O(n) by merging from the sorted ends',
+        'They are the same',
+        'Two pointers is O(n²)',
+        'Sorting is O(n) here',
+      ],
+      correctIndex: 0,
+      explanation:
+        'The array is already sorted by value, so the squares are largest at the ends — merging inward fills the result in sorted order in O(n), beating the O(n log n) square-then-sort.',
+    },
+  },
+
+  // --- lc-sliding-window --------------------------------------------------
+  {
+    kind: 'code',
+    id: 'lc-ps-sw-minlen',
+    lessonId: 'lc-sliding-window',
+    difficulty: 2,
+    prompt:
+      'Minimum Size Subarray Sum. Given positive nums and a target, return the length of the shortest contiguous subarray whose sum is ≥ target, or 0 if none. Variable window.',
+    starterCode: `def min_subarray_len(target, nums):
+    # Grow the right edge, adding to a running sum. While the sum is >= target,
+    # record the length and shrink from the left.
+    # TODO
+    return 0
+`,
+    tests: `def test_example():
+    assert min_subarray_len(7, [2, 3, 1, 2, 4, 3]) == 2
+
+def test_single():
+    assert min_subarray_len(4, [1, 4, 4]) == 1
+
+def test_impossible():
+    assert min_subarray_len(11, [1, 1, 1, 1, 1, 1, 1, 1]) == 0
+
+def test_whole():
+    assert min_subarray_len(15, [1, 2, 3, 4, 5]) == 5
+`,
+    hints: [
+      'left = 0, total = 0, best = infinity.',
+      'For right: total += nums[right]; while total >= target: best = min(best, right-left+1), total -= nums[left], left += 1.',
+      'Return best if it changed, else 0.',
+    ],
+    solution: `def min_subarray_len(target, nums):
+    left = 0
+    total = 0
+    best = float("inf")
+    for right in range(len(nums)):
+        total += nums[right]
+        while total >= target:
+            best = min(best, right - left + 1)
+            total -= nums[left]
+            left += 1
+    return best if best != float("inf") else 0
+`,
+    complexityCheck: {
+      prompt: 'Complexity of the variable window?',
+      options: [
+        'O(n) — each index is added once and removed once',
+        'O(n²)',
+        'O(n log n)',
+        'O(n) but only because the array is sorted',
+      ],
+      correctIndex: 0,
+      explanation:
+        'Both pointers move forward only, so total movement is at most 2n → O(n). Positive values are what make shrinking valid; negatives would break it.',
+    },
+  },
+  {
+    kind: 'code',
+    id: 'lc-ps-sw-ones',
+    lessonId: 'lc-sliding-window',
+    difficulty: 2,
+    prompt:
+      'Max Consecutive Ones III. Given a binary array nums and an integer k, return the longest run of 1s you can get by flipping at most k zeros. Variable window that shrinks when it holds more than k zeros.',
+    starterCode: `def longest_ones(nums, k):
+    # Grow the window; count zeros inside it. When zeros > k, shrink from the
+    # left until it's back to <= k. Track the max window length.
+    # TODO
+    return 0
+`,
+    tests: `def test_example():
+    assert longest_ones([1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0], 2) == 6
+
+def test_bigger():
+    assert longest_ones([0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1], 3) == 10
+
+def test_no_flips():
+    assert longest_ones([1, 1, 1], 0) == 3
+
+def test_all_zero():
+    assert longest_ones([0, 0, 0], 0) == 0
+`,
+    hints: [
+      'Track zeros inside the window.',
+      'When zeros > k, advance left (decrementing zeros when you pass a 0).',
+      'best = max(best, right - left + 1) each step.',
+    ],
+    solution: `def longest_ones(nums, k):
+    left = 0
+    zeros = 0
+    best = 0
+    for right in range(len(nums)):
+        if nums[right] == 0:
+            zeros += 1
+        while zeros > k:
+            if nums[left] == 0:
+                zeros -= 1
+            left += 1
+        best = max(best, right - left + 1)
+    return best
+`,
+    complexityCheck: {
+      prompt: 'What is the window’s invariant here?',
+      options: [
+        'It always contains at most k zeros — shrink whenever that breaks',
+        'It always has a fixed size',
+        'It never shrinks',
+        'It contains at most k ones',
+      ],
+      correctIndex: 0,
+      explanation:
+        'The valid window is "≤ k zeros" (each flippable to a 1). You grow greedily and shrink only when the zero count exceeds k. O(n), both pointers forward-only.',
+    },
+  },
+  {
+    kind: 'code',
+    id: 'lc-ps-sw-anagrams',
+    lessonId: 'lc-sliding-window',
+    difficulty: 2,
+    prompt:
+      'Find All Anagrams in a String. Return the start indices of every substring of s that is an anagram of p. Fixed-size window (|p|) plus a character-count comparison.',
+    starterCode: `def find_anagrams(s, p):
+    # Slide a window of length len(p). Keep a running Counter of the window and
+    # compare it to Counter(p). Record the start index on a match.
+    # TODO
+    return []
+`,
+    tests: `def test_example():
+    assert find_anagrams("cbaebabacd", "abc") == [0, 6]
+
+def test_overlap():
+    assert find_anagrams("abab", "ab") == [0, 1, 2]
+
+def test_none():
+    assert find_anagrams("af", "be") == []
+
+def test_too_short():
+    assert find_anagrams("a", "aa") == []
+`,
+    hints: [
+      'If len(p) > len(s): return []. Build need = Counter(p) and window = Counter(s[:len(p)]).',
+      'Compare window == need for index 0, then slide: add s[i], remove s[i-len(p)].',
+      'Delete keys whose count hits 0 so Counter equality works cleanly.',
+    ],
+    solution: `def find_anagrams(s, p):
+    from collections import Counter
+    if len(p) > len(s):
+        return []
+    need = Counter(p)
+    window = Counter(s[:len(p)])
+    res = []
+    if window == need:
+        res.append(0)
+    for i in range(len(p), len(s)):
+        window[s[i]] += 1
+        left = s[i - len(p)]
+        window[left] -= 1
+        if window[left] == 0:
+            del window[left]
+        if window == need:
+            res.append(i - len(p) + 1)
+    return res
+`,
+    complexityCheck: {
+      prompt: 'Complexity, with |s| = n and an alphabet of size A?',
+      options: [
+        'O(n·A) from comparing fixed-size counts each slide (O(n) with O(1)-tracked match count)',
+        'O(n²)',
+        'O(n log n)',
+        'O(2ⁿ)',
+      ],
+      correctIndex: 0,
+      explanation:
+        'Each slide is O(1) to update the window counts and up to O(A) to compare Counters; with a lowercase alphabet A is a constant, so it’s effectively O(n). A running "matches" counter removes even the O(A) compare.',
+    },
+  },
+
+  // --- lc-hashing ---------------------------------------------------------
+  {
+    kind: 'code',
+    id: 'lc-ps-hash-dup',
+    lessonId: 'lc-hashing',
+    difficulty: 1,
+    prompt:
+      'Contains Duplicate. Return True if any value appears at least twice in nums, else False. The one-line "seen" pattern.',
+    starterCode: `def contains_duplicate(nums):
+    # A set of what you've seen; if a value is already in it, you found a dup.
+    # TODO
+    return False
+`,
+    tests: `def test_dup():
+    assert contains_duplicate([1, 2, 3, 1]) is True
+
+def test_unique():
+    assert contains_duplicate([1, 2, 3, 4]) is False
+
+def test_empty():
+    assert contains_duplicate([]) is False
+
+def test_all_same():
+    assert contains_duplicate([7, 7]) is True
+`,
+    hints: [
+      'Compare len(nums) to len(set(nums)), or…',
+      'Walk with a set: return True on the first value already seen.',
+    ],
+    solution: `def contains_duplicate(nums):
+    seen = set()
+    for n in nums:
+        if n in seen:
+            return True
+        seen.add(n)
+    return False
+`,
+    complexityCheck: {
+      prompt: 'Complexity?',
+      options: ['O(n) time, O(n) space', 'O(n²) time', 'O(n log n) time', 'O(1) space'],
+      correctIndex: 0,
+      explanation:
+        'One pass with O(1) set lookups → O(n) time, O(n) space. Sorting first would be O(n log n) time but O(1) extra space — a real time/space trade.',
+    },
+  },
+  {
+    kind: 'code',
+    id: 'lc-ps-hash-anagram',
+    lessonId: 'lc-hashing',
+    difficulty: 1,
+    prompt:
+      'Valid Anagram. Return True if t is an anagram of s (same letters, same counts). A frequency map (or Counter) makes it one line.',
+    starterCode: `def is_anagram(s, t):
+    # Two strings are anagrams iff their character counts are equal.
+    # TODO
+    return False
+`,
+    tests: `def test_yes():
+    assert is_anagram("anagram", "nagaram") is True
+
+def test_no():
+    assert is_anagram("rat", "car") is False
+
+def test_diff_len():
+    assert is_anagram("a", "ab") is False
+
+def test_empty():
+    assert is_anagram("", "") is True
+`,
+    hints: [
+      'Different lengths → immediately False.',
+      'Compare Counter(s) == Counter(t).',
+    ],
+    solution: `def is_anagram(s, t):
+    from collections import Counter
+    return Counter(s) == Counter(t)
+`,
+    complexityCheck: {
+      prompt: 'Complexity for strings of length n?',
+      options: ['O(n) time, O(1) space for a fixed alphabet', 'O(n²)', 'O(n log n) if you sort', 'O(2ⁿ)'],
+      correctIndex: 0,
+      explanation:
+        'Counting is O(n); the map holds at most the alphabet size (a constant for lowercase letters) → O(1) space in that model. Sorting both and comparing is the O(n log n) alternative.',
+    },
+  },
+  {
+    kind: 'code',
+    id: 'lc-ps-hash-firstuniq',
+    lessonId: 'lc-hashing',
+    difficulty: 1,
+    prompt:
+      'First Unique Character in a String. Return the index of the first non-repeating character, or -1 if none. Count first, then scan.',
+    starterCode: `def first_uniq_char(s):
+    # Two passes: count every char, then return the index of the first with
+    # count == 1.
+    # TODO
+    return -1
+`,
+    tests: `def test_first():
+    assert first_uniq_char("leetcode") == 0
+
+def test_middle():
+    assert first_uniq_char("loveleetcode") == 2
+
+def test_none():
+    assert first_uniq_char("aabb") == -1
+
+def test_single():
+    assert first_uniq_char("z") == 0
+`,
+    hints: [
+      'counts = Counter(s).',
+      'Enumerate s; return the first i where counts[s[i]] == 1.',
+    ],
+    solution: `def first_uniq_char(s):
+    from collections import Counter
+    counts = Counter(s)
+    for i, ch in enumerate(s):
+        if counts[ch] == 1:
+            return i
+    return -1
+`,
+    complexityCheck: {
+      prompt: 'Why two passes instead of one?',
+      options: [
+        'You can’t know a char is unique until you’ve seen the whole string; so count first (O(n)), then scan (O(n)) → O(n) total',
+        'One pass is impossible in any language',
+        'It makes it O(n²)',
+        'To sort the string',
+      ],
+      correctIndex: 0,
+      explanation:
+        'Uniqueness is a global property — the last character could repeat the first. Counting fully, then scanning for the first count-1 char, is two O(n) passes → O(n) with O(1) space for a fixed alphabet.',
+    },
+  },
+
+  // --- lc-binary-search ---------------------------------------------------
+  {
+    kind: 'code',
+    id: 'lc-ps-bs-matrix',
+    lessonId: 'lc-binary-search',
+    difficulty: 2,
+    prompt:
+      'Search a 2D Matrix. Each row is sorted, and the first value of each row is greater than the last of the previous row — so the whole matrix is one sorted sequence. Return True if target is present. Treat it as a flat array and binary-search.',
+    starterCode: `def search_matrix(matrix, target):
+    # Map a flat index mid to (mid // cols, mid % cols) and binary-search over
+    # rows*cols positions.
+    # TODO
+    return False
+`,
+    tests: `def test_found():
+    m = [[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]]
+    assert search_matrix(m, 3) is True
+
+def test_absent():
+    m = [[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]]
+    assert search_matrix(m, 13) is False
+
+def test_single():
+    assert search_matrix([[5]], 5) is True
+
+def test_last():
+    assert search_matrix([[1, 2], [3, 4]], 4) is True
+`,
+    hints: [
+      'rows, cols = len(matrix), len(matrix[0]); lo, hi = 0, rows*cols - 1.',
+      'val = matrix[mid // cols][mid % cols].',
+      'Standard lo <= hi template on the flat index.',
+    ],
+    solution: `def search_matrix(matrix, target):
+    rows, cols = len(matrix), len(matrix[0])
+    lo, hi = 0, rows * cols - 1
+    while lo <= hi:
+        mid = (lo + hi) // 2
+        val = matrix[mid // cols][mid % cols]
+        if val == target:
+            return True
+        if val < target:
+            lo = mid + 1
+        else:
+            hi = mid - 1
+    return False
+`,
+    complexityCheck: {
+      prompt: 'Complexity for an m×n matrix?',
+      options: ['O(log(m·n))', 'O(m·n)', 'O(m + n)', 'O(m log n)'],
+      correctIndex: 0,
+      explanation:
+        'The sorted-sequence structure lets one binary search cover all m·n cells → O(log(m·n)). The index math converts a flat position to (row, col).',
+    },
+  },
+  {
+    kind: 'code',
+    id: 'lc-ps-bs-insert',
+    lessonId: 'lc-binary-search',
+    difficulty: 1,
+    prompt:
+      'Search Insert Position. Given a sorted array and a target, return the index of the target, or the index where it would be inserted to keep the array sorted. This is the "lower bound" (leftmost) binary search.',
+    starterCode: `def search_insert(nums, target):
+    # Find the FIRST index whose value is >= target. Boundary template:
+    # lo, hi = 0, len(nums); shrink toward that boundary; return lo.
+    # TODO
+    return 0
+`,
+    tests: `def test_found():
+    assert search_insert([1, 3, 5, 6], 5) == 2
+
+def test_middle():
+    assert search_insert([1, 3, 5, 6], 2) == 1
+
+def test_end():
+    assert search_insert([1, 3, 5, 6], 7) == 4
+
+def test_start():
+    assert search_insert([1, 3, 5, 6], 0) == 0
+`,
+    hints: [
+      'lo, hi = 0, len(nums) (note: hi is len, not len-1, for a boundary search).',
+      'while lo < hi: if nums[mid] < target: lo = mid + 1 else hi = mid.',
+      'Return lo — the first position where target fits.',
+    ],
+    solution: `def search_insert(nums, target):
+    lo, hi = 0, len(nums)
+    while lo < hi:
+        mid = (lo + hi) // 2
+        if nums[mid] < target:
+            lo = mid + 1
+        else:
+            hi = mid
+    return lo
+`,
+    complexityCheck: {
+      prompt: 'Which binary-search template is this?',
+      options: [
+        'The boundary / lower-bound template (lo < hi, hi = mid), returning the first index that fits',
+        'The exact-match template (lo <= hi, mid ± 1)',
+        'Linear scan',
+        'Two pointers',
+      ],
+      correctIndex: 0,
+      explanation:
+        'You’re finding a boundary (first index ≥ target), not an exact value, so it’s the lo < hi / hi = mid form that returns lo. O(log n). This is exactly what bisect_left does.',
+    },
+  },
+  {
+    kind: 'code',
+    id: 'lc-ps-bs-findmin',
+    lessonId: 'lc-binary-search',
+    difficulty: 2,
+    prompt:
+      'Find Minimum in Rotated Sorted Array. A sorted array of distinct values was rotated at an unknown pivot. Return the minimum, in O(log n). Compare mid to the right end to decide which half holds the pivot.',
+    starterCode: `def find_min(nums):
+    # If nums[mid] > nums[hi], the min is to the RIGHT of mid; else it's mid or
+    # to the left. Shrink toward the minimum.
+    # TODO
+    return nums[0]
+`,
+    tests: `def test_rotated():
+    assert find_min([3, 4, 5, 1, 2]) == 1
+
+def test_big_rotate():
+    assert find_min([4, 5, 6, 7, 0, 1, 2]) == 0
+
+def test_not_rotated():
+    assert find_min([11, 13, 15, 17]) == 11
+
+def test_two():
+    assert find_min([2, 1]) == 1
+`,
+    hints: [
+      'lo, hi = 0, len(nums) - 1.',
+      'while lo < hi: if nums[mid] > nums[hi]: lo = mid + 1 else hi = mid.',
+      'Return nums[lo].',
+    ],
+    solution: `def find_min(nums):
+    lo, hi = 0, len(nums) - 1
+    while lo < hi:
+        mid = (lo + hi) // 2
+        if nums[mid] > nums[hi]:
+            lo = mid + 1
+        else:
+            hi = mid
+    return nums[lo]
+`,
+    complexityCheck: {
+      prompt: 'Why compare nums[mid] to nums[hi] rather than nums[lo]?',
+      options: [
+        'Comparing to the right end unambiguously tells you which side is sorted / holds the pivot; comparing to the left is ambiguous when not rotated',
+        'It’s arbitrary',
+        'To make it O(n)',
+        'nums[lo] is always the answer',
+      ],
+      correctIndex: 0,
+      explanation:
+        'If nums[mid] > nums[hi], the drop (pivot/min) must be to the right of mid; otherwise the min is at mid or left. This keeps the invariant clean and gives O(log n).',
+    },
+  },
+
+  // --- lc-stacks ----------------------------------------------------------
+  {
+    kind: 'code',
+    id: 'lc-ps-stack-rpn',
+    lessonId: 'lc-stacks',
+    difficulty: 2,
+    prompt:
+      'Evaluate Reverse Polish Notation. tokens is a postfix expression with integers and the operators + - * /. Evaluate it. Division truncates toward zero. Use a stack.',
+    starterCode: `def eval_rpn(tokens):
+    # Push numbers. On an operator, pop b then a, apply a OP b, push the result.
+    # For division use int(a / b) to truncate toward zero.
+    # TODO
+    return 0
+`,
+    tests: `def test_basic():
+    assert eval_rpn(["2", "1", "+", "3", "*"]) == 9
+
+def test_div():
+    assert eval_rpn(["4", "13", "5", "/", "+"]) == 6
+
+def test_nested():
+    assert eval_rpn(["5", "1", "2", "+", "4", "*", "+", "3", "-"]) == 14
+
+def test_single():
+    assert eval_rpn(["42"]) == 42
+`,
+    hints: [
+      'ops = {"+", "-", "*", "/"}.',
+      'On an operator: b = stack.pop(); a = stack.pop(); apply and push.',
+      'Division: int(a / b) truncates toward zero (unlike a // b for negatives).',
+    ],
+    solution: `def eval_rpn(tokens):
+    ops = {"+", "-", "*", "/"}
+    stack = []
+    for t in tokens:
+        if t in ops:
+            b = stack.pop()
+            a = stack.pop()
+            if t == "+":
+                stack.append(a + b)
+            elif t == "-":
+                stack.append(a - b)
+            elif t == "*":
+                stack.append(a * b)
+            else:
+                stack.append(int(a / b))
+        else:
+            stack.append(int(t))
+    return stack[0]
+`,
+    complexityCheck: {
+      prompt: 'Complexity, and why a stack fits postfix?',
+      options: [
+        'O(n): each operator’s operands are exactly the two most recent results — the stack top',
+        'O(n²)',
+        'O(n log n)',
+        'O(2ⁿ)',
+      ],
+      correctIndex: 0,
+      explanation:
+        'Postfix means an operator applies to the most recently produced values — precisely what a stack hands you in O(1). One pass → O(n).',
+    },
+  },
+  {
+    kind: 'code',
+    id: 'lc-ps-stack-dedup',
+    lessonId: 'lc-stacks',
+    difficulty: 1,
+    prompt:
+      'Remove All Adjacent Duplicates In String. Repeatedly remove two adjacent equal letters until none remain; return the final string. Example: "abbaca" -> "ca". A stack does it in one pass.',
+    starterCode: `def remove_duplicates(s):
+    # Push each char; if it equals the top of the stack, pop instead (they
+    # cancel). Join what's left.
+    # TODO
+    return ""
+`,
+    tests: `def test_example():
+    assert remove_duplicates("abbaca") == "ca"
+
+def test_second():
+    assert remove_duplicates("azxxzy") == "ay"
+
+def test_all_cancel():
+    assert remove_duplicates("aabb") == ""
+
+def test_none():
+    assert remove_duplicates("abc") == "abc"
+`,
+    hints: [
+      'stack = []; for ch in s.',
+      'If stack and stack[-1] == ch: stack.pop(); else stack.append(ch).',
+      'Return "".join(stack).',
+    ],
+    solution: `def remove_duplicates(s):
+    stack = []
+    for ch in s:
+        if stack and stack[-1] == ch:
+            stack.pop()
+        else:
+            stack.append(ch)
+    return "".join(stack)
+`,
+    complexityCheck: {
+      prompt: 'Complexity?',
+      options: ['O(n) time, O(n) space', 'O(n²) time', 'O(n log n) time', 'O(1) space'],
+      correctIndex: 0,
+      explanation:
+        'Each character is pushed and popped at most once → O(n) time; the stack holds up to n characters → O(n) space. The naive "scan and rebuild repeatedly" is O(n²).',
+    },
+  },
+  {
+    kind: 'code',
+    id: 'lc-ps-stack-backspace',
+    lessonId: 'lc-stacks',
+    difficulty: 1,
+    prompt:
+      'Backspace String Compare. Each "#" is a backspace. Return True if s and t produce the same final string after applying backspaces. Build each with a stack and compare.',
+    starterCode: `def backspace_compare(s, t):
+    # Build the typed result of a string: push normal chars, pop on "#".
+    # Compare the two results.
+    # TODO
+    return False
+`,
+    tests: `def test_equal():
+    assert backspace_compare("ab#c", "ad#c") is True
+
+def test_empty_both():
+    assert backspace_compare("ab##", "c#d#") is True
+
+def test_diff():
+    assert backspace_compare("a#c", "b") is False
+
+def test_leading_backspace():
+    assert backspace_compare("#a#c", "c") is True
+`,
+    hints: [
+      'Write a helper build(x) that returns the stack after processing x.',
+      'On "#" pop if non-empty; otherwise push the char.',
+      'Return build(s) == build(t).',
+    ],
+    solution: `def backspace_compare(s, t):
+    def build(x):
+        st = []
+        for ch in x:
+            if ch == "#":
+                if st:
+                    st.pop()
+            else:
+                st.append(ch)
+        return st
+
+    return build(s) == build(t)
+`,
+    complexityCheck: {
+      prompt: 'Complexity of the stack approach?',
+      options: ['O(n + m) time, O(n + m) space', 'O(n·m)', 'O(n²)', 'O(log n)'],
+      correctIndex: 0,
+      explanation:
+        'Each string is processed once with push/pop → linear time and space. (A two-pointer scan from the right can do it in O(1) space, but the stack version is the clearest.)',
+    },
+  },
+
+  // --- lc-linked-list -----------------------------------------------------
+  {
+    kind: 'code',
+    id: 'lc-ps-ll-merge',
+    lessonId: 'lc-linked-list',
+    difficulty: 1,
+    prompt:
+      'Merge Two Sorted Lists. Splice two sorted linked lists into one sorted list and return its head. Use a dummy head so the front is not a special case.',
+    starterCode: `class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def merge_two_lists(l1, l2):
+    # dummy head; walk both, attaching the smaller node each step; then attach
+    # whatever remains.
+    # TODO
+    return l1
+`,
+    tests: `def build(vals):
+    dummy = ListNode()
+    cur = dummy
+    for v in vals:
+        cur.next = ListNode(v)
+        cur = cur.next
+    return dummy.next
+
+def to_list(head):
+    out = []
+    while head:
+        out.append(head.val)
+        head = head.next
+    return out
+
+def test_example():
+    assert to_list(merge_two_lists(build([1, 2, 4]), build([1, 3, 4]))) == [1, 1, 2, 3, 4, 4]
+
+def test_empty_both():
+    assert merge_two_lists(build([]), build([])) is None
+
+def test_one_empty():
+    assert to_list(merge_two_lists(build([]), build([0]))) == [0]
+`,
+    hints: [
+      'dummy = ListNode(); tail = dummy.',
+      'While both non-empty: attach the smaller, advance that list, advance tail.',
+      'tail.next = l1 or l2 (whichever remains); return dummy.next.',
+    ],
+    solution: `class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def merge_two_lists(l1, l2):
+    dummy = ListNode()
+    tail = dummy
+    while l1 and l2:
+        if l1.val <= l2.val:
+            tail.next = l1
+            l1 = l1.next
+        else:
+            tail.next = l2
+            l2 = l2.next
+        tail = tail.next
+    tail.next = l1 or l2
+    return dummy.next
+`,
+    complexityCheck: {
+      prompt: 'Complexity to merge lists of length m and n?',
+      options: ['O(m + n) time, O(1) extra space', 'O(m·n)', 'O((m+n) log(m+n))', 'O(m + n) space'],
+      correctIndex: 0,
+      explanation:
+        'Each node is visited once and re-linked in place → O(m + n) time, O(1) extra space. The dummy head removes the "which list starts first" special case.',
+    },
+  },
+  {
+    kind: 'code',
+    id: 'lc-ps-ll-middle',
+    lessonId: 'lc-linked-list',
+    difficulty: 1,
+    prompt:
+      'Middle of the Linked List. Return the middle node (if two middles, the second). Fast/slow pointers: when fast reaches the end, slow is at the middle.',
+    starterCode: `class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def middle_node(head):
+    # slow +1, fast +2; return slow when fast runs off the end.
+    # TODO
+    return head
+`,
+    tests: `def build(vals):
+    dummy = ListNode()
+    cur = dummy
+    for v in vals:
+        cur.next = ListNode(v)
+        cur = cur.next
+    return dummy.next
+
+def to_list(head):
+    out = []
+    while head:
+        out.append(head.val)
+        head = head.next
+    return out
+
+def test_odd():
+    assert to_list(middle_node(build([1, 2, 3, 4, 5]))) == [3, 4, 5]
+
+def test_even():
+    assert to_list(middle_node(build([1, 2, 3, 4, 5, 6]))) == [4, 5, 6]
+
+def test_single():
+    assert to_list(middle_node(build([1]))) == [1]
+`,
+    hints: [
+      'slow = fast = head.',
+      'while fast and fast.next: slow = slow.next; fast = fast.next.next.',
+      'Return slow.',
+    ],
+    solution: `class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def middle_node(head):
+    slow = fast = head
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+    return slow
+`,
+    complexityCheck: {
+      prompt: 'Why does slow land on the middle?',
+      options: [
+        'Fast moves twice as fast, so when it reaches the end (2×), slow has covered half (1×)',
+        'It’s a coincidence',
+        'Because the list is sorted',
+        'It only works for even lengths',
+      ],
+      correctIndex: 0,
+      explanation:
+        'Fast travels the full length while slow travels half — so slow sits at the midpoint. One pass, O(n) time, O(1) space, no length count needed.',
+    },
+  },
+  {
+    kind: 'code',
+    id: 'lc-ps-ll-removenth',
+    lessonId: 'lc-linked-list',
+    difficulty: 2,
+    prompt:
+      'Remove Nth Node From End of List. Remove the n-th node from the end and return the head. One pass with two pointers held n apart, over a dummy head.',
+    starterCode: `class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def remove_nth_from_end(head, n):
+    # dummy head; advance fast by n, then move fast and slow together until fast
+    # hits the end — slow now sits just before the target.
+    # TODO
+    return head
+`,
+    tests: `def build(vals):
+    dummy = ListNode()
+    cur = dummy
+    for v in vals:
+        cur.next = ListNode(v)
+        cur = cur.next
+    return dummy.next
+
+def to_list(head):
+    out = []
+    while head:
+        out.append(head.val)
+        head = head.next
+    return out
+
+def test_middle():
+    assert to_list(remove_nth_from_end(build([1, 2, 3, 4, 5]), 2)) == [1, 2, 3, 5]
+
+def test_head():
+    assert remove_nth_from_end(build([1]), 1) is None
+
+def test_first():
+    assert to_list(remove_nth_from_end(build([1, 2]), 2)) == [2]
+
+def test_last():
+    assert to_list(remove_nth_from_end(build([1, 2]), 1)) == [1]
+`,
+    hints: [
+      'dummy = ListNode(0, head); fast = slow = dummy.',
+      'Advance fast n times. Then move both until fast.next is None.',
+      'slow.next = slow.next.next; return dummy.next.',
+    ],
+    solution: `class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def remove_nth_from_end(head, n):
+    dummy = ListNode(0, head)
+    fast = slow = dummy
+    for _ in range(n):
+        fast = fast.next
+    while fast.next:
+        fast = fast.next
+        slow = slow.next
+    slow.next = slow.next.next
+    return dummy.next
+`,
+    complexityCheck: {
+      prompt: 'What does the dummy head prevent here?',
+      options: [
+        'A special case when removing the actual head node (n == length)',
+        'Nothing — it’s decorative',
+        'It sorts the list',
+        'It makes it O(1)',
+      ],
+      correctIndex: 0,
+      explanation:
+        'If the target is the head, slow needs a node before it to re-link. The dummy provides that node, so "remove the head" needs no separate branch. One pass, O(n) time, O(1) space.',
+    },
+  },
+
+  // --- lc-trees -----------------------------------------------------------
+  {
+    kind: 'code',
+    id: 'lc-ps-tree-invert',
+    lessonId: 'lc-trees',
+    difficulty: 1,
+    prompt:
+      'Invert Binary Tree. Swap every node’s left and right children (recursively) and return the root. The one-liner that famously stumped a candidate.',
+    starterCode: `class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def invert_tree(root):
+    # Base case empty; otherwise swap the inverted subtrees.
+    # TODO
+    return root
+`,
+    tests: `from collections import deque
+
+def level_order(root):
+    if not root:
+        return []
+    out = []
+    q = deque([root])
+    while q:
+        node = q.popleft()
+        if node:
+            out.append(node.val)
+            q.append(node.left)
+            q.append(node.right)
+        else:
+            out.append(None)
+    while out and out[-1] is None:
+        out.pop()
+    return out
+
+def test_example():
+    root = TreeNode(4, TreeNode(2, TreeNode(1), TreeNode(3)), TreeNode(7, TreeNode(6), TreeNode(9)))
+    assert level_order(invert_tree(root)) == [4, 7, 2, 9, 6, 3, 1]
+
+def test_empty():
+    assert invert_tree(None) is None
+
+def test_single():
+    assert level_order(invert_tree(TreeNode(1))) == [1]
+`,
+    hints: [
+      'if not root: return None.',
+      'root.left, root.right = invert_tree(root.right), invert_tree(root.left).',
+      'Return root.',
+    ],
+    solution: `class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def invert_tree(root):
+    if not root:
+        return None
+    root.left, root.right = invert_tree(root.right), invert_tree(root.left)
+    return root
+`,
+    complexityCheck: {
+      prompt: 'Complexity to invert n nodes?',
+      options: ['O(n) time, O(h) space for the recursion', 'O(n²)', 'O(log n)', 'O(1)'],
+      correctIndex: 0,
+      explanation:
+        'Every node is visited once and its children swapped → O(n) time; the call stack is the tree height h (O(log n) balanced, O(n) worst case).',
+    },
+  },
+  {
+    kind: 'code',
+    id: 'lc-ps-tree-same',
+    lessonId: 'lc-trees',
+    difficulty: 1,
+    prompt:
+      'Same Tree. Return True if two binary trees are identical in structure and values. Recurse both in lockstep.',
+    starterCode: `class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def is_same_tree(p, q):
+    # Both empty -> True. One empty or values differ -> False. Else recurse
+    # on both pairs of children.
+    # TODO
+    return False
+`,
+    tests: `def test_equal():
+    p = TreeNode(1, TreeNode(2), TreeNode(3))
+    q = TreeNode(1, TreeNode(2), TreeNode(3))
+    assert is_same_tree(p, q) is True
+
+def test_shape_diff():
+    p = TreeNode(1, TreeNode(2))
+    q = TreeNode(1, None, TreeNode(2))
+    assert is_same_tree(p, q) is False
+
+def test_value_diff():
+    p = TreeNode(1, TreeNode(2), TreeNode(1))
+    q = TreeNode(1, TreeNode(1), TreeNode(2))
+    assert is_same_tree(p, q) is False
+
+def test_both_empty():
+    assert is_same_tree(None, None) is True
+`,
+    hints: [
+      'if not p and not q: return True.',
+      'if not p or not q or p.val != q.val: return False.',
+      'return is_same_tree(p.left, q.left) and is_same_tree(p.right, q.right).',
+    ],
+    solution: `class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def is_same_tree(p, q):
+    if not p and not q:
+        return True
+    if not p or not q or p.val != q.val:
+        return False
+    return is_same_tree(p.left, q.left) and is_same_tree(p.right, q.right)
+`,
+    complexityCheck: {
+      prompt: 'Complexity comparing trees of n nodes?',
+      options: ['O(n) time, O(h) space', 'O(n²)', 'O(n log n)', 'O(1)'],
+      correctIndex: 0,
+      explanation:
+        'Each pair of corresponding nodes is compared once → O(n); recursion depth is the height h. Short-circuit AND stops early on the first mismatch.',
+    },
+  },
+  {
+    kind: 'code',
+    id: 'lc-ps-tree-pathsum',
+    lessonId: 'lc-trees',
+    difficulty: 1,
+    prompt:
+      'Path Sum. Return True if the tree has a root-to-LEAF path whose values sum to target. Subtract as you descend; check the remainder at leaves.',
+    starterCode: `class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def has_path_sum(root, target):
+    # Empty -> False. At a leaf -> does target equal this node's value?
+    # Otherwise recurse with target - node.val into the children.
+    # TODO
+    return False
+`,
+    tests: `def test_yes():
+    root = TreeNode(5, TreeNode(4, TreeNode(11, TreeNode(7), TreeNode(2))), TreeNode(8, TreeNode(13), TreeNode(4, None, TreeNode(1))))
+    assert has_path_sum(root, 22) is True
+
+def test_no():
+    root = TreeNode(1, TreeNode(2), TreeNode(3))
+    assert has_path_sum(root, 5) is False
+
+def test_empty():
+    assert has_path_sum(None, 0) is False
+
+def test_single():
+    assert has_path_sum(TreeNode(7), 7) is True
+`,
+    hints: [
+      'if not root: return False.',
+      'if not root.left and not root.right: return target == root.val.',
+      'rem = target - root.val; recurse into left OR right.',
+    ],
+    solution: `class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def has_path_sum(root, target):
+    if not root:
+        return False
+    if not root.left and not root.right:
+        return target == root.val
+    rem = target - root.val
+    return has_path_sum(root.left, rem) or has_path_sum(root.right, rem)
+`,
+    complexityCheck: {
+      prompt: 'Why check the sum only at leaves, not internal nodes?',
+      options: [
+        'A "root-to-leaf path" must end at a leaf, so the target is only fully spent there',
+        'It’s faster',
+        'Internal nodes have no value',
+        'To sort the tree',
+      ],
+      correctIndex: 0,
+      explanation:
+        'The problem asks for a complete root-to-leaf path. You subtract each node’s value on the way down and confirm the remainder equals the leaf’s value at a leaf. O(n) time, O(h) space.',
+    },
+  },
+
+  // --- lc-heaps -----------------------------------------------------------
+  {
+    kind: 'code',
+    id: 'lc-ps-heap-laststone',
+    lessonId: 'lc-heaps',
+    difficulty: 2,
+    prompt:
+      'Last Stone Weight. Repeatedly smash the two heaviest stones; if unequal, the difference goes back. Return the weight of the last stone (or 0 if none remain). A max-heap (negate for heapq).',
+    starterCode: `def last_stone_weight(stones):
+    # Max-heap via negation. Pop the two largest; push back their difference if
+    # nonzero. Repeat until 0 or 1 stones remain.
+    # TODO
+    return 0
+`,
+    tests: `def test_example():
+    assert last_stone_weight([2, 7, 4, 1, 8, 1]) == 1
+
+def test_single():
+    assert last_stone_weight([1]) == 1
+
+def test_cancel():
+    assert last_stone_weight([2, 2]) == 0
+
+def test_two():
+    assert last_stone_weight([3, 7]) == 4
+`,
+    hints: [
+      'h = [-s for s in stones]; heapq.heapify(h).',
+      'While len(h) > 1: a = -heappop, b = -heappop; if a != b: heappush(h, -(a - b)).',
+      'Return -h[0] if h else 0.',
+    ],
+    solution: `import heapq
+
+def last_stone_weight(stones):
+    h = [-s for s in stones]
+    heapq.heapify(h)
+    while len(h) > 1:
+        a = -heapq.heappop(h)
+        b = -heapq.heappop(h)
+        if a != b:
+            heapq.heappush(h, -(a - b))
+    return -h[0] if h else 0
+`,
+    complexityCheck: {
+      prompt: 'Complexity for n stones?',
+      options: [
+        'O(n log n) — up to n rounds, each doing O(log n) heap operations',
+        'O(n)',
+        'O(n²)',
+        'O(log n)',
+      ],
+      correctIndex: 0,
+      explanation:
+        'Each round removes at least one stone and costs O(log n) for the heap operations, so O(n log n) overall. The heap keeps the two heaviest available in O(log n).',
+    },
+  },
+  {
+    kind: 'code',
+    id: 'lc-ps-heap-klargest',
+    lessonId: 'lc-heaps',
+    difficulty: 1,
+    prompt:
+      'Return the k largest numbers in descending order. Use heapq.nlargest (the size-k heap under the hood). Example: ([3,2,1,5,6,4], 2) -> [6, 5].',
+    starterCode: `def k_largest(nums, k):
+    # heapq has a one-liner for exactly this.
+    # TODO
+    return []
+`,
+    tests: `def test_example():
+    assert k_largest([3, 2, 1, 5, 6, 4], 2) == [6, 5]
+
+def test_all():
+    assert k_largest([1, 2, 3], 3) == [3, 2, 1]
+
+def test_one():
+    assert k_largest([7], 1) == [7]
+
+def test_dups():
+    assert k_largest([4, 4, 4, 1], 2) == [4, 4]
+`,
+    hints: [
+      'import heapq.',
+      'return heapq.nlargest(k, nums) — already sorted descending.',
+    ],
+    solution: `import heapq
+
+def k_largest(nums, k):
+    return heapq.nlargest(k, nums)
+`,
+    complexityCheck: {
+      prompt: 'Complexity of nlargest(k, nums) for n numbers?',
+      options: [
+        'O(n log k) — it maintains a size-k heap',
+        'O(n log n) always',
+        'O(k)',
+        'O(n²)',
+      ],
+      correctIndex: 0,
+      explanation:
+        'nlargest keeps a heap of size k while scanning all n → O(n log k), better than fully sorting (O(n log n)) when k is small.',
+    },
+  },
+  {
+    kind: 'code',
+    id: 'lc-ps-heap-ropes',
+    lessonId: 'lc-heaps',
+    difficulty: 2,
+    prompt:
+      'Minimum Cost to Connect Ropes. Connecting two ropes costs the sum of their lengths. Repeatedly connect the two SHORTEST ropes; return the minimum total cost. A min-heap greedily gives the two smallest.',
+    starterCode: `def connect_ropes(ropes):
+    # Min-heap. Repeatedly pop the two smallest, add their sum to the total, and
+    # push the combined rope back. Stop when one rope remains.
+    # TODO
+    return 0
+`,
+    tests: `def test_example():
+    assert connect_ropes([1, 2, 3, 4, 5]) == 33
+
+def test_second():
+    assert connect_ropes([4, 3, 2, 6]) == 29
+
+def test_single():
+    assert connect_ropes([5]) == 0
+
+def test_two():
+    assert connect_ropes([1, 8]) == 9
+`,
+    hints: [
+      'If fewer than 2 ropes, cost is 0.',
+      'heapify the list; while len > 1: a = heappop, b = heappop; total += a + b; heappush(a + b).',
+    ],
+    solution: `import heapq
+
+def connect_ropes(ropes):
+    if len(ropes) < 2:
+        return 0
+    h = list(ropes)
+    heapq.heapify(h)
+    total = 0
+    while len(h) > 1:
+        a = heapq.heappop(h)
+        b = heapq.heappop(h)
+        total += a + b
+        heapq.heappush(h, a + b)
+    return total
+`,
+    complexityCheck: {
+      prompt: 'Why always combine the two SHORTEST ropes?',
+      options: [
+        'A rope’s length is re-added every time it’s merged, so short ropes should be merged earliest/most often — a greedy the min-heap enables in O(n log n)',
+        'It’s arbitrary',
+        'To make it O(n)',
+        'Longest-first is actually optimal',
+      ],
+      correctIndex: 0,
+      explanation:
+        'Each merge re-counts the combined length in later merges (like Huffman coding), so merging the smallest first minimizes total re-counting. The min-heap supplies the two smallest in O(log n) → O(n log n) overall.',
+    },
+  },
+
+  // --- lc-backtracking ----------------------------------------------------
+  {
+    kind: 'code',
+    id: 'lc-ps-bt-permutations',
+    lessonId: 'lc-backtracking',
+    difficulty: 2,
+    prompt:
+      'Permutations. Given distinct integers, return all their orderings (in any order). Backtracking over "which unused number comes next."',
+    starterCode: `def permutations(nums):
+    # Build a path; at each step try each remaining number, recurse, then undo.
+    # TODO
+    return []
+`,
+    tests: `def norm(perms):
+    return sorted(tuple(p) for p in perms)
+
+def test_three():
+    got = permutations([1, 2, 3])
+    want = [[1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]]
+    assert norm(got) == norm(want)
+
+def test_one():
+    assert permutations([0]) == [[0]]
+
+def test_count():
+    assert len(permutations([1, 2, 3, 4])) == 24
+`,
+    hints: [
+      'backtrack(path, remaining): if not remaining, record path[:].',
+      'For each i in remaining, choose remaining[i], recurse with it removed, then un-choose.',
+      'remaining[:i] + remaining[i+1:] drops the chosen element.',
+    ],
+    solution: `def permutations(nums):
+    res = []
+
+    def backtrack(path, remaining):
+        if not remaining:
+            res.append(path[:])
+            return
+        for i in range(len(remaining)):
+            path.append(remaining[i])
+            backtrack(path, remaining[:i] + remaining[i + 1:])
+            path.pop()
+
+    backtrack([], nums)
+    return res
+`,
+    complexityCheck: {
+      prompt: 'How many permutations of n distinct items, and the time cost?',
+      options: [
+        'n! permutations, O(n · n!) to build them',
+        'O(2ⁿ)',
+        'O(n²)',
+        'O(n log n)',
+      ],
+      correctIndex: 0,
+      explanation:
+        'There are n! orderings, each of length n to copy → O(n · n!). The output itself is factorial in size, which is why the n ≤ ~10 constraint is your permission to enumerate them.',
+    },
+  },
+  {
+    kind: 'code',
+    id: 'lc-ps-bt-combine',
+    lessonId: 'lc-backtracking',
+    difficulty: 2,
+    prompt:
+      'Combinations. Return all combinations of k numbers chosen from 1..n (order within a combination doesn’t matter). Use a start index so you never repeat a combination.',
+    starterCode: `def combine(n, k):
+    # Backtrack from a start value; stop a branch once the path reaches length k.
+    # TODO
+    return []
+`,
+    tests: `def norm(c):
+    return sorted(tuple(x) for x in c)
+
+def test_example():
+    got = combine(4, 2)
+    want = [[1, 2], [1, 3], [1, 4], [2, 3], [2, 4], [3, 4]]
+    assert norm(got) == norm(want)
+
+def test_k1():
+    assert norm(combine(3, 1)) == norm([[1], [2], [3]])
+
+def test_all():
+    assert combine(2, 2) == [[1, 2]]
+`,
+    hints: [
+      'backtrack(start, path): if len(path) == k, record path[:].',
+      'For i in range(start, n + 1): choose i, recurse with start = i + 1, un-choose.',
+    ],
+    solution: `def combine(n, k):
+    res = []
+
+    def backtrack(start, path):
+        if len(path) == k:
+            res.append(path[:])
+            return
+        for i in range(start, n + 1):
+            path.append(i)
+            backtrack(i + 1, path)
+            path.pop()
+
+    backtrack(1, [])
+    return res
+`,
+    complexityCheck: {
+      prompt: 'What does recursing with start = i + 1 guarantee?',
+      options: [
+        'Combinations are built in increasing order, so [2,3] and [3,2] aren’t both generated',
+        'It sorts the output',
+        'It makes it O(n)',
+        'Nothing important',
+      ],
+      correctIndex: 0,
+      explanation:
+        'Advancing the start index means each choice only considers larger values, so every combination is produced once in ascending order — no permuted duplicates.',
+    },
+  },
+  {
+    kind: 'code',
+    id: 'lc-ps-bt-phone',
+    lessonId: 'lc-backtracking',
+    difficulty: 2,
+    prompt:
+      'Letter Combinations of a Phone Number. Given digits 2-9, return all letter strings they could spell (like old phone keypads). Return [] for an empty input. Backtracking over each digit’s letters.',
+    starterCode: `def letter_combinations(digits):
+    # Map each digit to its letters. Backtrack: for each letter of the current
+    # digit, append it and recurse to the next digit.
+    # TODO
+    return []
+`,
+    tests: `def test_two_digits():
+    got = letter_combinations("23")
+    want = ["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"]
+    assert sorted(got) == sorted(want)
+
+def test_empty():
+    assert letter_combinations("") == []
+
+def test_single():
+    assert sorted(letter_combinations("2")) == ["a", "b", "c"]
+`,
+    hints: [
+      'mapping = {"2": "abc", "3": "def", ... "9": "wxyz"}.',
+      'backtrack(i, path): if i == len(digits), record "".join(path).',
+      'For ch in mapping[digits[i]]: choose, recurse i+1, un-choose.',
+    ],
+    solution: `def letter_combinations(digits):
+    if not digits:
+        return []
+    mapping = {
+        "2": "abc", "3": "def", "4": "ghi", "5": "jkl",
+        "6": "mno", "7": "pqrs", "8": "tuv", "9": "wxyz",
+    }
+    res = []
+
+    def backtrack(i, path):
+        if i == len(digits):
+            res.append("".join(path))
+            return
+        for ch in mapping[digits[i]]:
+            path.append(ch)
+            backtrack(i + 1, path)
+            path.pop()
+
+    backtrack(0, [])
+    return res
+`,
+    complexityCheck: {
+      prompt: 'For d digits each mapping to ~4 letters, how many strings?',
+      options: [
+        'Up to 4^d — the product of the choices per digit',
+        'O(d²)',
+        'O(d)',
+        'O(d log d)',
+      ],
+      correctIndex: 0,
+      explanation:
+        'Each digit multiplies the count by its number of letters (3 or 4), so the output is up to 4^d strings — exponential, which is why inputs are short.',
+    },
+  },
+
+  // --- lc-graphs ----------------------------------------------------------
+  {
+    kind: 'code',
+    id: 'lc-ps-graph-maxarea',
+    lessonId: 'lc-graphs',
+    difficulty: 2,
+    prompt:
+      'Max Area of Island. grid is a matrix of 0s (water) and 1s (land). Return the area (cell count) of the largest island (4-directionally connected). Flood-fill each island and track the max.',
+    starterCode: `def max_area_of_island(grid):
+    # For each unvisited land cell, DFS/flood-fill the whole island, counting
+    # cells and sinking them to 0. Track the maximum area.
+    # TODO
+    return 0
+`,
+    tests: `def test_example():
+    grid = [[0, 0, 1, 0], [0, 1, 1, 0], [0, 0, 0, 0]]
+    assert max_area_of_island(grid) == 3
+
+def test_none():
+    assert max_area_of_island([[0, 0], [0, 0]]) == 0
+
+def test_full():
+    assert max_area_of_island([[1, 1], [1, 1]]) == 4
+
+def test_two_islands():
+    assert max_area_of_island([[1, 0, 1, 1], [0, 0, 0, 0]]) == 2
+`,
+    hints: [
+      'area(r, c) returns 0 if out of bounds or grid[r][c] != 1.',
+      'Otherwise sink grid[r][c] = 0 and return 1 + area of the 4 neighbors.',
+      'Loop all cells; best = max(best, area(r, c)) whenever you hit a 1.',
+    ],
+    solution: `def max_area_of_island(grid):
+    rows, cols = len(grid), len(grid[0])
+
+    def area(r, c):
+        if r < 0 or c < 0 or r >= rows or c >= cols or grid[r][c] != 1:
+            return 0
+        grid[r][c] = 0
+        return 1 + area(r + 1, c) + area(r - 1, c) + area(r, c + 1) + area(r, c - 1)
+
+    best = 0
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == 1:
+                best = max(best, area(r, c))
+    return best
+`,
+    complexityCheck: {
+      prompt: 'Complexity for an m×n grid?',
+      options: ['O(m·n) — each cell is visited a constant number of times', 'O((m·n)²)', 'O(m + n)', 'O(m·n·log(m·n))'],
+      correctIndex: 0,
+      explanation:
+        'Sinking cells means each is counted once across all flood-fills → O(m·n). Same shape as "number of islands," just tracking the max blob size.',
+    },
+  },
+  {
+    kind: 'code',
+    id: 'lc-ps-graph-components',
+    lessonId: 'lc-graphs',
+    difficulty: 3,
+    prompt:
+      'Number of Connected Components in an Undirected Graph. Given n nodes (0..n-1) and an edge list, return the number of connected components. Union-find is the clean tool.',
+    starterCode: `def count_components(n, edges):
+    # Start with n components. Union the endpoints of each edge; every union
+    # that joins two different groups reduces the count by one.
+    # TODO
+    return n
+`,
+    tests: `def test_two():
+    assert count_components(5, [[0, 1], [1, 2], [3, 4]]) == 2
+
+def test_one():
+    assert count_components(5, [[0, 1], [1, 2], [2, 3], [3, 4]]) == 1
+
+def test_none_connected():
+    assert count_components(4, []) == 4
+
+def test_redundant_edge():
+    assert count_components(3, [[0, 1], [1, 2], [0, 2]]) == 1
+`,
+    hints: [
+      'parent = list(range(n)); find(x) walks to the root (with path compression).',
+      'union(a, b): if roots differ, link one under the other and return True.',
+      'count = n; subtract 1 for each successful union.',
+    ],
+    solution: `def count_components(n, edges):
+    parent = list(range(n))
+
+    def find(x):
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    def union(a, b):
+        ra, rb = find(a), find(b)
+        if ra != rb:
+            parent[ra] = rb
+            return True
+        return False
+
+    count = n
+    for a, b in edges:
+        if union(a, b):
+            count -= 1
+    return count
+`,
+    complexityCheck: {
+      prompt: 'Why does a redundant edge (both endpoints already connected) not change the count?',
+      options: [
+        'union returns False when the roots are already equal, so the count only drops on genuine merges',
+        'Redundant edges are removed first',
+        'It always decrements',
+        'Because the graph is a tree',
+      ],
+      correctIndex: 0,
+      explanation:
+        'find(a) == find(b) means they’re already in one component, so no merge happens and the count is unchanged. With path compression it’s effectively O((n + e)·α(n)).',
+    },
+  },
+  {
+    kind: 'code',
+    id: 'lc-ps-graph-oranges',
+    lessonId: 'lc-graphs',
+    difficulty: 3,
+    prompt:
+      'Rotting Oranges. grid cells are 0 (empty), 1 (fresh), 2 (rotten). Each minute, every rotten orange rots its 4-neighboring fresh oranges. Return the minutes until none are fresh, or -1 if impossible. Multi-source BFS.',
+    starterCode: `def oranges_rotting(grid):
+    # Seed a queue with ALL rotten oranges at time 0 and count the fresh ones.
+    # BFS outward; each fresh orange rots at parent_time + 1. Answer is the max
+    # time, or -1 if any fresh remain.
+    # TODO
+    return 0
+`,
+    tests: `def test_example():
+    assert oranges_rotting([[2, 1, 1], [1, 1, 0], [0, 1, 1]]) == 4
+
+def test_impossible():
+    assert oranges_rotting([[2, 1, 1], [0, 1, 1], [1, 0, 1]]) == -1
+
+def test_none_fresh():
+    assert oranges_rotting([[0, 2]]) == 0
+
+def test_already_done():
+    assert oranges_rotting([[2, 2], [2, 2]]) == 0
+`,
+    hints: [
+      'Scan once: enqueue every rotten cell as (r, c, 0) and count fresh cells.',
+      'BFS: for each fresh neighbor, rot it, decrement fresh, enqueue with t + 1, track max t.',
+      'Return the max time if fresh == 0 else -1.',
+    ],
+    solution: `def oranges_rotting(grid):
+    from collections import deque
+    rows, cols = len(grid), len(grid[0])
+    q = deque()
+    fresh = 0
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == 2:
+                q.append((r, c, 0))
+            elif grid[r][c] == 1:
+                fresh += 1
+    minutes = 0
+    while q:
+        r, c, t = q.popleft()
+        minutes = max(minutes, t)
+        for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            nr, nc = r + dr, c + dc
+            if 0 <= nr < rows and 0 <= nc < cols and grid[nr][nc] == 1:
+                grid[nr][nc] = 2
+                fresh -= 1
+                q.append((nr, nc, t + 1))
+    return minutes if fresh == 0 else -1
+`,
+    complexityCheck: {
+      prompt: 'Why seed the queue with ALL rotten oranges before starting BFS?',
+      options: [
+        'They all rot simultaneously — multi-source BFS advances every front in lockstep so the layer number equals the minute',
+        'To sort them',
+        'Only one source is allowed',
+        'It’s required by heapq',
+      ],
+      correctIndex: 0,
+      explanation:
+        'Multiple rotten oranges spread at once, so all are level 0. Multi-source BFS treats them as one combined frontier, and BFS depth = minutes. O(m·n).',
+    },
+  },
+
+  // --- lc-dp-1d -----------------------------------------------------------
+  {
+    kind: 'code',
+    id: 'lc-ps-dp-rob',
+    lessonId: 'lc-dp-1d',
+    difficulty: 2,
+    prompt:
+      'House Robber. You can’t rob two adjacent houses. Return the maximum money from nums. Classic 1-D DP: at each house, skip it (take the previous best) or rob it (best from two back + this).',
+    starterCode: `def rob(nums):
+    # Roll two values: best excluding the current house, and best including it.
+    # TODO
+    return 0
+`,
+    tests: `def test_example():
+    assert rob([1, 2, 3, 1]) == 4
+
+def test_bigger():
+    assert rob([2, 7, 9, 3, 1]) == 12
+
+def test_alt():
+    assert rob([2, 1, 1, 2]) == 4
+
+def test_empty():
+    assert rob([]) == 0
+`,
+    hints: [
+      'prev, curr = 0, 0 (best up to two-back, best up to one-back).',
+      'For each n: prev, curr = curr, max(curr, prev + n).',
+      'Return curr.',
+    ],
+    solution: `def rob(nums):
+    prev, curr = 0, 0
+    for n in nums:
+        prev, curr = curr, max(curr, prev + n)
+    return curr
+`,
+    complexityCheck: {
+      prompt: 'What is the state and transition here?',
+      options: [
+        'State: best loot up to house i; transition: max(skip = dp[i-1], rob = dp[i-2] + nums[i])',
+        'State: the current house value only',
+        'There is no transition',
+        'It’s greedy, not DP',
+      ],
+      correctIndex: 0,
+      explanation:
+        'dp[i] is the best you can rob considering houses 0..i; you either skip house i (keep dp[i-1]) or rob it (dp[i-2] + nums[i]). Only two prior values are needed → O(n) time, O(1) space.',
+    },
+  },
+  {
+    kind: 'code',
+    id: 'lc-ps-dp-mincost',
+    lessonId: 'lc-dp-1d',
+    difficulty: 1,
+    prompt:
+      'Min Cost Climbing Stairs. cost[i] is the price to step off stair i; you may start at index 0 or 1 and climb 1 or 2 steps at a time. Return the min cost to reach the top (past the last stair).',
+    starterCode: `def min_cost_climbing(cost):
+    # dp[i] = min cost to REACH step i (top = len(cost)). Each step is reached
+    # from one or two below, paying that step's cost. Two rolling values suffice.
+    # TODO
+    return 0
+`,
+    tests: `def test_small():
+    assert min_cost_climbing([10, 15, 20]) == 15
+
+def test_long():
+    assert min_cost_climbing([1, 100, 1, 1, 1, 100, 1, 1, 100, 1]) == 6
+
+def test_two():
+    assert min_cost_climbing([0, 0]) == 0
+
+def test_two_cost():
+    assert min_cost_climbing([1, 2]) == 1
+`,
+    hints: [
+      'a, b = 0, 0 are the min costs to reach steps i-2 and i-1 (top starts reachable for free at 0 and 1).',
+      'For i from 2 to len(cost): new = min(b + cost[i-1], a + cost[i-2]).',
+      'Roll a, b forward and return b.',
+    ],
+    solution: `def min_cost_climbing(cost):
+    a, b = 0, 0
+    for i in range(2, len(cost) + 1):
+        a, b = b, min(b + cost[i - 1], a + cost[i - 2])
+    return b
+`,
+    complexityCheck: {
+      prompt: 'Complexity?',
+      options: ['O(n) time, O(1) space', 'O(n) time, O(n) space', 'O(n²)', 'O(2ⁿ)'],
+      correctIndex: 0,
+      explanation:
+        'Each step depends only on the previous two, so two rolling variables give O(n) time and O(1) space — the space-optimized form of the 1-D table.',
+    },
+  },
+  {
+    kind: 'code',
+    id: 'lc-ps-dp-lis',
+    lessonId: 'lc-dp-1d',
+    difficulty: 3,
+    prompt:
+      'Longest Increasing Subsequence. Return the length of the longest strictly increasing subsequence of nums (elements in order, not necessarily contiguous). The O(n²) DP is the classic first solution.',
+    starterCode: `def length_of_lis(nums):
+    # dp[i] = length of the longest increasing subsequence ENDING at i.
+    # dp[i] = 1 + max(dp[j] for j < i with nums[j] < nums[i]), or 1.
+    # TODO
+    return 0
+`,
+    tests: `def test_example():
+    assert length_of_lis([10, 9, 2, 5, 3, 7, 101, 18]) == 4
+
+def test_second():
+    assert length_of_lis([0, 1, 0, 3, 2, 3]) == 4
+
+def test_flat():
+    assert length_of_lis([7, 7, 7, 7]) == 1
+
+def test_single():
+    assert length_of_lis([5]) == 1
+`,
+    hints: [
+      'dp = [1] * len(nums).',
+      'For i, for each j < i with nums[j] < nums[i]: dp[i] = max(dp[i], dp[j] + 1).',
+      'Answer is max(dp).',
+    ],
+    solution: `def length_of_lis(nums):
+    if not nums:
+        return 0
+    dp = [1] * len(nums)
+    for i in range(len(nums)):
+        for j in range(i):
+            if nums[j] < nums[i]:
+                dp[i] = max(dp[i], dp[j] + 1)
+    return max(dp)
+`,
+    complexityCheck: {
+      prompt: 'What is dp[i] defined as, and the cost?',
+      options: [
+        'dp[i] = LIS length ending exactly at i; O(n²) from the inner scan over earlier indices',
+        'dp[i] = the value at i; O(n)',
+        'O(n log n) with this exact code',
+        'O(2ⁿ)',
+      ],
+      correctIndex: 0,
+      explanation:
+        'Anchoring the subsequence to end at i makes the transition well-defined (extend any smaller earlier ending). The double loop is O(n²); a patience-sorting + binary-search variant reaches O(n log n).',
+    },
+  },
+
+  // --- lc-dp-2d -----------------------------------------------------------
+  {
+    kind: 'code',
+    id: 'lc-ps-dp-minpath',
+    lessonId: 'lc-dp-2d',
+    difficulty: 2,
+    prompt:
+      'Minimum Path Sum. From the top-left of a grid of non-negative numbers, moving only right or down, return the minimum sum along a path to the bottom-right. 2-D DP.',
+    starterCode: `def min_path_sum(grid):
+    # dp[r][c] = grid[r][c] + min(cost from above, cost from left). First row/col
+    # have only one way in.
+    # TODO
+    return 0
+`,
+    tests: `def test_example():
+    assert min_path_sum([[1, 3, 1], [1, 5, 1], [4, 2, 1]]) == 7
+
+def test_rect():
+    assert min_path_sum([[1, 2, 3], [4, 5, 6]]) == 12
+
+def test_single():
+    assert min_path_sum([[5]]) == 5
+
+def test_row():
+    assert min_path_sum([[1, 2, 3]]) == 6
+`,
+    hints: [
+      'Handle (0,0) = grid[0][0]; first row accumulates from the left; first column from above.',
+      'Otherwise dp[r][c] = grid[r][c] + min(dp[r-1][c], dp[r][c-1]).',
+      'Answer is dp[last][last].',
+    ],
+    solution: `def min_path_sum(grid):
+    rows, cols = len(grid), len(grid[0])
+    dp = [[0] * cols for _ in range(rows)]
+    for r in range(rows):
+        for c in range(cols):
+            if r == 0 and c == 0:
+                dp[r][c] = grid[r][c]
+            elif r == 0:
+                dp[r][c] = dp[r][c - 1] + grid[r][c]
+            elif c == 0:
+                dp[r][c] = dp[r - 1][c] + grid[r][c]
+            else:
+                dp[r][c] = min(dp[r - 1][c], dp[r][c - 1]) + grid[r][c]
+    return dp[rows - 1][cols - 1]
+`,
+    complexityCheck: {
+      prompt: 'Complexity for an m×n grid?',
+      options: ['O(m·n) time and space (reducible to O(n) space)', 'O(m + n)', 'O((m·n)²)', 'O(2^(m+n))'],
+      correctIndex: 0,
+      explanation:
+        'Each cell is computed once from its top and left neighbors → O(m·n) time and space. Since each row only needs the previous row, it collapses to O(n) space.',
+    },
+  },
+  {
+    kind: 'code',
+    id: 'lc-ps-dp-obstacles',
+    lessonId: 'lc-dp-2d',
+    difficulty: 2,
+    prompt:
+      'Unique Paths II. Count paths from top-left to bottom-right moving only right or down, where grid cells with a 1 are obstacles you cannot enter. Return 0 if the start or end is blocked.',
+    starterCode: `def unique_paths_with_obstacles(grid):
+    # dp[r][c] = ways to reach (r,c). Obstacles contribute 0 ways. Otherwise sum
+    # the ways from above and from the left.
+    # TODO
+    return 0
+`,
+    tests: `def test_example():
+    assert unique_paths_with_obstacles([[0, 0, 0], [0, 1, 0], [0, 0, 0]]) == 2
+
+def test_small():
+    assert unique_paths_with_obstacles([[0, 1], [0, 0]]) == 1
+
+def test_blocked_start():
+    assert unique_paths_with_obstacles([[1]]) == 0
+
+def test_open():
+    assert unique_paths_with_obstacles([[0, 0], [0, 0]]) == 2
+`,
+    hints: [
+      'If the start cell is an obstacle, return 0. Seed dp[0][0] = 1.',
+      'For each cell: if it’s an obstacle, dp = 0; else add dp from above (if any) and from the left (if any).',
+    ],
+    solution: `def unique_paths_with_obstacles(grid):
+    rows, cols = len(grid), len(grid[0])
+    if grid[0][0] == 1:
+        return 0
+    dp = [[0] * cols for _ in range(rows)]
+    dp[0][0] = 1
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == 1:
+                dp[r][c] = 0
+                continue
+            if r > 0:
+                dp[r][c] += dp[r - 1][c]
+            if c > 0:
+                dp[r][c] += dp[r][c - 1]
+    return dp[rows - 1][cols - 1]
+`,
+    complexityCheck: {
+      prompt: 'How are obstacles handled in the recurrence?',
+      options: [
+        'An obstacle cell contributes 0 ways, so paths route around it automatically',
+        'Obstacles are deleted from the grid first',
+        'They add 1 way',
+        'They make the answer 0 always',
+      ],
+      correctIndex: 0,
+      explanation:
+        'Setting an obstacle’s dp to 0 means no path passes through it; downstream cells simply sum the surviving routes. O(m·n) time and space.',
+    },
+  },
+  {
+    kind: 'code',
+    id: 'lc-ps-dp-edit',
+    lessonId: 'lc-dp-2d',
+    difficulty: 3,
+    prompt:
+      'Edit Distance (Hard). Return the minimum number of single-character insertions, deletions, or replacements to turn word a into word b. The canonical two-sequence 2-D DP.',
+    starterCode: `def edit_distance(a, b):
+    # dp[i][j] = edits to turn a[:i] into b[:j]. Base cases: dp[i][0]=i, dp[0][j]=j.
+    # If last chars match, no new cost (diagonal); else 1 + min(insert, delete, replace).
+    # TODO
+    return 0
+`,
+    tests: `def test_example():
+    assert edit_distance("horse", "ros") == 3
+
+def test_second():
+    assert edit_distance("intention", "execution") == 5
+
+def test_empty():
+    assert edit_distance("", "abc") == 3
+
+def test_same():
+    assert edit_distance("abc", "abc") == 0
+`,
+    hints: [
+      'dp is (m+1) x (n+1). dp[i][0] = i, dp[0][j] = j (all inserts/deletes).',
+      'If a[i-1] == b[j-1]: dp[i][j] = dp[i-1][j-1].',
+      'Else dp[i][j] = 1 + min(dp[i-1][j] delete, dp[i][j-1] insert, dp[i-1][j-1] replace).',
+    ],
+    solution: `def edit_distance(a, b):
+    m, n = len(a), len(b)
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+    for i in range(m + 1):
+        dp[i][0] = i
+    for j in range(n + 1):
+        dp[0][j] = j
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if a[i - 1] == b[j - 1]:
+                dp[i][j] = dp[i - 1][j - 1]
+            else:
+                dp[i][j] = 1 + min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1])
+    return dp[m][n]
+`,
+    complexityCheck: {
+      prompt: 'What do the three terms in the min represent?',
+      options: [
+        'Delete from a (dp[i-1][j]), insert into a (dp[i][j-1]), replace (dp[i-1][j-1])',
+        'Three unrelated constants',
+        'Left, right, and down moves in a grid',
+        'Nothing — only the diagonal matters',
+      ],
+      correctIndex: 0,
+      explanation:
+        'Each option is one edit onto a smaller subproblem: drop a char of a, add a char to match b, or swap the mismatched char. O(m·n) time and space — the engine behind diff and spell-check.',
+    },
+  },
+
+  // --- lc-hard ------------------------------------------------------------
+  {
+    kind: 'code',
+    id: 'lc-ps-hard-histogram',
+    lessonId: 'lc-hard',
+    difficulty: 3,
+    prompt:
+      'Largest Rectangle in Histogram (Hard). Given bar heights of width 1, return the area of the largest rectangle. A monotonic (increasing) stack of (start_index, height) finds, for each bar, how far left it can extend.',
+    starterCode: `def largest_rectangle_area(heights):
+    # Keep a stack increasing by height, storing (start_index, height). When a
+    # shorter bar arrives, pop taller bars and settle their rectangles, carrying
+    # the leftmost start back to the new bar.
+    # TODO
+    return 0
+`,
+    tests: `def test_example():
+    assert largest_rectangle_area([2, 1, 5, 6, 2, 3]) == 10
+
+def test_two():
+    assert largest_rectangle_area([2, 4]) == 4
+
+def test_single():
+    assert largest_rectangle_area([5]) == 5
+
+def test_valley():
+    assert largest_rectangle_area([2, 1, 2]) == 3
+`,
+    hints: [
+      'stack holds (start, height) with heights increasing. best = 0.',
+      'For each i, h: start = i; while stack top is taller than h, pop (idx, ht), best = max(best, ht * (i - idx)), and set start = idx. Push (start, h).',
+      'After the loop, settle the rest: for (idx, ht) in stack, best = max(best, ht * (n - idx)).',
+    ],
+    solution: `def largest_rectangle_area(heights):
+    stack = []
+    best = 0
+    for i, h in enumerate(heights):
+        start = i
+        while stack and stack[-1][1] > h:
+            idx, height = stack.pop()
+            best = max(best, height * (i - idx))
+            start = idx
+        stack.append((start, h))
+    n = len(heights)
+    for idx, height in stack:
+        best = max(best, height * (n - idx))
+    return best
+`,
+    complexityCheck: {
+      prompt: 'Why is this O(n) despite the inner while-loop?',
+      options: [
+        'Each bar is pushed once and popped once, so total pops across the run are ≤ n',
+        'It’s O(n²)',
+        'The heights are sorted',
+        'Binary search bounds it',
+      ],
+      correctIndex: 0,
+      explanation:
+        'When a bar is popped, its maximal rectangle is finalized and it’s never revisited. Each index enters and leaves the stack once → O(n). Carrying the leftmost start back is what extends a popped bar’s width correctly.',
+    },
+  },
+  {
+    kind: 'code',
+    id: 'lc-ps-hard-slidingmax',
+    lessonId: 'lc-hard',
+    difficulty: 3,
+    prompt:
+      'Sliding Window Maximum (Hard). Return the maximum of every contiguous window of size k. A monotonic-decreasing deque of indices gives each window’s max in O(1).',
+    starterCode: `def max_sliding_window(nums, k):
+    # Deque of indices, values decreasing. Pop smaller values from the back when
+    # a bigger one arrives; drop the front if it falls out of the window. The
+    # front is always the current window's max.
+    # TODO
+    return []
+`,
+    tests: `def test_example():
+    assert max_sliding_window([1, 3, -1, -3, 5, 3, 6, 7], 3) == [3, 3, 5, 5, 6, 7]
+
+def test_single_k():
+    assert max_sliding_window([1, 2, 3], 1) == [1, 2, 3]
+
+def test_full():
+    assert max_sliding_window([9, 11], 2) == [11]
+
+def test_decreasing():
+    assert max_sliding_window([4, 3, 2, 1], 2) == [4, 3, 2]
+`,
+    hints: [
+      'from collections import deque; dq holds indices with decreasing nums values.',
+      'For i, n: pop from the back while nums[back] < n; append i; if dq[0] <= i - k, popleft.',
+      'Once i >= k - 1, append nums[dq[0]] to the result.',
+    ],
+    solution: `def max_sliding_window(nums, k):
+    from collections import deque
+    dq = deque()
+    res = []
+    for i, n in enumerate(nums):
+        while dq and nums[dq[-1]] < n:
+            dq.pop()
+        dq.append(i)
+        if dq[0] <= i - k:
+            dq.popleft()
+        if i >= k - 1:
+            res.append(nums[dq[0]])
+    return res
+`,
+    complexityCheck: {
+      prompt: 'Why is the deque approach O(n) rather than O(n·k)?',
+      options: [
+        'Each index is added and removed from the deque at most once, so the total work is linear',
+        'It sorts each window',
+        'It uses binary search',
+        'It’s actually O(n·k)',
+      ],
+      correctIndex: 0,
+      explanation:
+        'The monotonic deque discards dominated indices permanently, so across the whole scan each index is pushed and popped once → O(n). Recomputing each window’s max naively would be O(n·k).',
+    },
+  },
+  {
+    kind: 'code',
+    id: 'lc-ps-hard-validparen',
+    lessonId: 'lc-hard',
+    difficulty: 3,
+    prompt:
+      'Longest Valid Parentheses (Hard). Given a string of "(" and ")", return the length of the longest well-formed substring. A stack of indices, seeded with a -1 base, measures each valid stretch.',
+    starterCode: `def longest_valid_parentheses(s):
+    # Stack of indices, start with [-1] as a base "last unmatched" marker.
+    # On "(" push the index. On ")" pop; if the stack empties, push this index as
+    # the new base; else the valid length is i - stack[-1].
+    # TODO
+    return 0
+`,
+    tests: `def test_one():
+    assert longest_valid_parentheses("(()") == 2
+
+def test_two():
+    assert longest_valid_parentheses(")()())") == 4
+
+def test_empty():
+    assert longest_valid_parentheses("") == 0
+
+def test_none_valid():
+    assert longest_valid_parentheses("(((") == 0
+`,
+    hints: [
+      'stack = [-1]; best = 0.',
+      'On "(": push i. On ")": pop.',
+      'After popping, if stack is empty push i (new base); else best = max(best, i - stack[-1]).',
+    ],
+    solution: `def longest_valid_parentheses(s):
+    stack = [-1]
+    best = 0
+    for i, ch in enumerate(s):
+        if ch == "(":
+            stack.append(i)
+        else:
+            stack.pop()
+            if not stack:
+                stack.append(i)
+            else:
+                best = max(best, i - stack[-1])
+    return best
+`,
+    complexityCheck: {
+      prompt: 'What does the -1 base on the stack represent?',
+      options: [
+        'The index just before the current valid run, so i - stack[-1] measures the run length',
+        'An error sentinel',
+        'The answer itself',
+        'The number of open parens',
+      ],
+      correctIndex: 0,
+      explanation:
+        'The stack’s bottom always holds the index of the last position that broke validity. Subtracting it from i gives the length of the valid stretch ending at i. One pass → O(n) time, O(n) space.',
+    },
+  },
 ];
