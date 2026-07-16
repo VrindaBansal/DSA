@@ -88,6 +88,8 @@ off-by-one padding to ignore. **Index alignment** — `dp[i][j]` refers to
 fill it by hand once — it makes the indices click faster than staring at code.
 </Gotcha>
 
+<ProblemSet id="lc-dp-2d" />
+
 <Cheatsheet>
 Two indices vary → 2-D table `dp[i][j]`. **Grid paths:** `dp[i][j] = dp[i-1][j]
 + dp[i][j-1]`, fill top-to-bottom, left-to-right. **Two sequences (LCS / edit
