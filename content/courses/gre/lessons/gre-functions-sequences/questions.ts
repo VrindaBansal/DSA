@@ -1,0 +1,46 @@
+import type { Question } from '@/lib/types';
+
+export const QUESTIONS: Question[] = [
+  {
+    kind: 'numeric',
+    id: 'gre-fn-compose',
+    lessonId: 'gre-functions-sequences',
+    difficulty: 2,
+    prompt: 'If f(x) = x² − 1 and g(x) = 3 − x, what is f(g(5))?',
+    answer: 3,
+    answerDisplay: '3',
+    explanation: 'Inside first: g(5) = 3 − 5 = −2. Then f(−2) = (−2)² − 1 = **3**.',
+  },
+  {
+    kind: 'numeric',
+    id: 'gre-fn-symbol',
+    lessonId: 'gre-functions-sequences',
+    difficulty: 2,
+    prompt: 'For all numbers a and b, a ⊕ b = ab − a + b. What is (2 ⊕ 3) ⊕ (−1)?',
+    answer: -15,
+    answerDisplay: '−15',
+    explanation: 'Parentheses first: 2 ⊕ 3 = (2)(3) − 2 + 3 = 7. Then 7 ⊕ (−1) = (7)(−1) − 7 + (−1) = −7 − 7 − 1 = **−15**. Keep a = 7 and b = −1 in their places — the operation is not symmetric.',
+  },
+  {
+    kind: 'mcq',
+    id: 'gre-fn-sequence',
+    lessonId: 'gre-functions-sequences',
+    difficulty: 2,
+    prompt: 'The first term of a sequence is 3, and each term after the first is 2 times the previous term. What is the 7th term?',
+    options: ['15', '96', '192', '384', '2,187'],
+    correctIndex: 2,
+    explanation: 'Geometric: a₇ = 3 × 2⁶ = 3 × 64 = **192**. (Write it out: 3, 6, 12, 24, 48, 96, 192.)',
+    distractorNotes: ['Added 2 each time instead of multiplying by 2.', 'That is the 6th term.', 'Correct.', 'Used 2⁷ — one step too many.', 'That is 3⁷.'],
+  },
+  {
+    kind: 'mcq',
+    id: 'gre-fn-variation',
+    lessonId: 'gre-functions-sequences',
+    difficulty: 2,
+    prompt: 'The quantity y varies inversely as x. If y = 8 when x = 6, what is y when x = 16?',
+    options: ['2', '3', '6', '12', '21⅓'],
+    correctIndex: 1,
+    explanation: 'Inverse variation: xy is constant = 6 × 8 = 48. At x = 16, y = 48 ÷ 16 = **3**.',
+    distractorNotes: ['Arithmetic slip.', 'Correct.', 'Not a valid step.', 'Not a valid step.', 'Treated it as direct variation (8 × 16/6).'],
+  },
+];

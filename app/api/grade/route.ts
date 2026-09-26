@@ -48,7 +48,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'bad request' }, { status: 400 });
   }
 
-  const system = `You grade short answers for a CS learner drilling data structures for interviews. Grade STRICTLY against the rubric points given — and ONLY those points. Do not invent extra criteria, do not penalize style, brevity, or informal tone. Strict but not pedantic: the learner wants to know when she is hand-waving.
+  const system = `You grade short answers for a learner working through a structured course (computer science interview prep, large language models, or GRE prep, including practice essay writing). Grade STRICTLY against the rubric points given — and ONLY those points. Do not invent extra criteria, do not penalize style, brevity, or informal tone. Strict but not pedantic: the learner wants to know when she is hand-waving.
 
 For each rubric point decide: did the answer substantively hit it (paraphrase counts, buzzword-drop without substance does not)?
 - verdict "correct": all rubric points hit.

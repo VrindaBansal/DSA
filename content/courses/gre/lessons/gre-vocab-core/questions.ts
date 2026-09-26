@@ -1,0 +1,57 @@
+import type { Question } from '@/lib/types';
+
+export const QUESTIONS: Question[] = [
+  {
+    kind: 'multi',
+    id: 'gre-vc-se',
+    lessonId: 'gre-vocab-core',
+    difficulty: 2,
+    prompt: 'The senator’s speech was so ___ that reporters struggled to find a single quotable line; her rival’s, by contrast, was filled with memorable, pointed phrases.\n\nSelect the **two** answer choices that, when used to complete the sentence, fit the meaning of the sentence as a whole and produce completed sentences that are alike in meaning.',
+    options: ['insipid', 'pithy', 'vapid', 'succinct', 'hostile', 'lucid'],
+    correctIndices: [0, 2],
+    selectCount: 2,
+    explanation: 'The contrast with “memorable, pointed phrases” means the speech was dull and flavorless: **insipid** and **vapid**. **Pithy** and **succinct** are a matching pair too — but they describe the rival’s speech, the opposite of what the blank needs.',
+    distractorNotes: [
+      '✓ lacking flavor or interest.',
+      '✗ concise and full of meaning — describes the rival.',
+      '✓ offering nothing stimulating.',
+      '✗ briefly and clearly expressed — a pair with pithy, but wrong side of the contrast.',
+      '✗ no partner, and nothing suggests hostility.',
+      '✗ clear — no partner, and clarity isn’t the issue.',
+    ],
+  },
+  {
+    kind: 'mcq',
+    id: 'gre-vc-opposite',
+    lessonId: 'gre-vocab-core',
+    difficulty: 1,
+    prompt: 'Which word is most nearly OPPOSITE in meaning to **ephemeral**?',
+    options: ['evanescent', 'enduring', 'transient', 'ubiquitous', 'meager'],
+    correctIndex: 1,
+    explanation: '**Ephemeral** means lasting a very short time. Its opposite family is “long-lasting”: **enduring**, abiding, perennial, durable.',
+    distractorNotes: [
+      'A synonym — quickly fading.',
+      'Correct.',
+      'A synonym — lasting only a short time.',
+      'Found everywhere — unrelated to duration.',
+      'Small in amount — unrelated to duration.',
+    ],
+  },
+  {
+    kind: 'mcq',
+    id: 'gre-vc-meaning',
+    lessonId: 'gre-vocab-core',
+    difficulty: 2,
+    prompt: 'The ___ student rarely spoke in class, but her written work showed she had followed every discussion closely.',
+    options: ['reticent', 'garrulous', 'truculent', 'munificent', 'capricious'],
+    correctIndex: 0,
+    explanation: '“Rarely spoke” is the clue: **reticent** (reluctant to share thoughts). **Garrulous** (talkative) is the opposite-family trap.',
+    distractorNotes: [
+      'Correct.',
+      'Excessively talkative — the opposite of the clue.',
+      'Eager to fight — no support in the sentence.',
+      'Extremely generous — irrelevant.',
+      'Changeable — irrelevant.',
+    ],
+  },
+];

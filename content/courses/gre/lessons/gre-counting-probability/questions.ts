@@ -1,0 +1,47 @@
+import type { Question } from '@/lib/types';
+
+export const QUESTIONS: Question[] = [
+  {
+    kind: 'mcq',
+    id: 'gre-cnt-comb',
+    lessonId: 'gre-counting-probability',
+    difficulty: 1,
+    prompt: 'In how many ways can a group of 4 volunteers be chosen from 9 people?',
+    options: ['36', '126', '504', '3,024', '6,561'],
+    correctIndex: 1,
+    explanation: 'A group — order doesn’t matter: C(9, 4) = (9 × 8 × 7 × 6) / (4 × 3 × 2 × 1) = 3,024 / 24 = **126**.',
+    distractorNotes: ['C(9, 2) — chose 2, not 4.', 'Correct.', '9 × 8 × 7 — an ordered choice of 3.', 'Ordered selections — counts each group 24 times.', '9⁴ — allows repeats and order.'],
+  },
+  {
+    kind: 'numeric',
+    id: 'gre-cnt-restrict',
+    lessonId: 'gre-counting-probability',
+    difficulty: 3,
+    prompt: 'In how many ways can 6 people stand in a line if two of them, Lee and Ana, must NOT stand next to each other?',
+    answer: 480,
+    answerDisplay: '480',
+    explanation: 'Total: 6! = 720. Together: treat Lee+Ana as one block → 5! × 2! = 240. Not together: 720 − 240 = **480**.',
+  },
+  {
+    kind: 'mcq',
+    id: 'gre-prob-draw',
+    lessonId: 'gre-counting-probability',
+    difficulty: 2,
+    prompt: 'A box has 5 green and 3 yellow balls. Two balls are drawn at random without replacement. What is the probability that both are yellow?',
+    options: ['3/28', '9/64', '3/8', '1/4', '6/64'],
+    correctIndex: 0,
+    explanation: '3/8 × 2/7 = 6/56 = **3/28**.',
+    distractorNotes: ['Correct.', 'With replacement: (3/8)².', 'That is one draw.', 'Not supported.', 'Mixed up the denominators.'],
+  },
+  {
+    kind: 'mcq',
+    id: 'gre-prob-atleast',
+    lessonId: 'gre-counting-probability',
+    difficulty: 2,
+    prompt: 'A fair coin is flipped 4 times. What is the probability of getting at least one head?',
+    options: ['1/16', '1/4', '1/2', '3/4', '15/16'],
+    correctIndex: 4,
+    explanation: 'P(at least one head) = 1 − P(no heads) = 1 − (1/2)⁴ = 1 − 1/16 = **15/16**.',
+    distractorNotes: ['That is P(no heads).', 'Not supported.', 'Not supported.', 'Not supported.', 'Correct.'],
+  },
+];

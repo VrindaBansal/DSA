@@ -22,7 +22,7 @@ const mono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: { default: 'Invariant', template: '%s · Invariant' },
   description:
-    'Personal DSA learning portal — interactive lectures, animations, exercises, AI tutor.',
+    'Personal learning portal — DSA, LLMs, LeetCode and GRE prep: interactive lectures, exercises, practice, AI tutor.',
 };
 
 export default function RootLayout({

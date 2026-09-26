@@ -11,6 +11,7 @@ import React, {
 } from 'react';
 import type {
   AppState,
+  BankSetResult,
   ChatMessage,
   LessonProgress,
   Question,
@@ -42,6 +43,9 @@ interface ProgressApi {
     answerText: string,
   ) => void;
   answerReview: (item: ReviewItem, correct: boolean) => void;
+  /** Practice-bank answer: compact record + misses enter the review queue. */
+  recordBankAnswer: (question: Question, correct: boolean) => void;
+  recordBankSet: (setId: string, result: BankSetResult) => void;
   appendChat: (lessonId: string, msg: ChatMessage) => void;
   clearChat: (lessonId: string) => void;
   appendGeneralChat: (msg: ChatMessage) => void;
@@ -279,6 +283,24 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
     }));
   }, []);
 
+  const recordBankAnswer = useCallback((question: Question, correct: boolean) => {
+    setState((s) => ({
+      ...s,
+      bank: {
+        ...s.bank,
+        answers: { ...s.bank.answers, [question.id]: correct ? 1 : 0 },
+      },
+      review: applyAnswer(s.review, question.id, question.lessonId, correct),
+    }));
+  }, []);
+
+  const recordBankSet = useCallback((setId: string, result: BankSetResult) => {
+    setState((s) => ({
+      ...s,
+      bank: { ...s.bank, sets: { ...s.bank.sets, [setId]: result } },
+    }));
+  }, []);
+
   const appendChat = useCallback(
     (lessonId: string, msg: ChatMessage) => {
       updateLesson(lessonId, (lp) => ({ ...lp, chat: [...lp.chat, msg] }));
@@ -333,6 +355,8 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
       revealSolution,
       recordComplexityCheck,
       answerReview,
+      recordBankAnswer,
+      recordBankSet,
       appendChat,
       clearChat,
       appendGeneralChat,
@@ -353,6 +377,8 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
       revealSolution,
       recordComplexityCheck,
       answerReview,
+      recordBankAnswer,
+      recordBankSet,
       appendChat,
       clearChat,
       appendGeneralChat,

@@ -33,11 +33,25 @@ export interface ModuleMeta {
 
 // --- Question model (spec §5.2) --------------------------------------------
 
+/**
+ * Material shown above a question's prompt — a reading passage, a data
+ * table, or the two columns of a GRE quantitative comparison.
+ */
+export interface Stimulus {
+  /** Reading passage or argument paragraph. */
+  passage?: string;
+  /** Data table (data interpretation). */
+  table?: { caption?: string; columns: string[]; rows: string[][] };
+  /** Quantitative comparison: Quantity A vs Quantity B. */
+  quantities?: { a: string; b: string };
+}
+
 interface QuestionBase {
   id: string;
   lessonId: string;
   prompt: string;
   difficulty: Difficulty;
+  stimulus?: Stimulus;
 }
 
 export interface McqQuestion extends QuestionBase {
@@ -76,7 +90,55 @@ export interface CodeQuestion extends QuestionBase {
   complexityCheck?: ComplexityCheck;
 }
 
-export type Question = McqQuestion | ShortQuestion | CodeQuestion;
+/**
+ * Select-all-that-apply (GRE "select one or more"), or select exactly
+ * `selectCount` (GRE sentence equivalence: exactly 2 of 6). All-or-nothing.
+ */
+export interface MultiQuestion extends QuestionBase {
+  kind: 'multi';
+  options: string[];
+  correctIndices: number[];
+  selectCount?: number;
+  explanation: string;
+  distractorNotes?: string[];
+}
+
+/** Numeric entry: type the number (or a fraction). */
+export interface NumericQuestion extends QuestionBase {
+  kind: 'numeric';
+  answer: number;
+  /** How the answer is shown after grading, e.g. "3/4" or "12.5". */
+  answerDisplay: string;
+  /** Answer box is a fraction (numerator / denominator), as on the GRE. */
+  fraction?: boolean;
+  /** Accept anything that rounds to the answer at this place value (e.g. 0.1). */
+  roundTo?: number;
+  /** Units shown after the box, e.g. "%" or "cm". */
+  suffix?: string;
+  prefix?: string;
+  explanation: string;
+}
+
+/** Multi-blank text completion: one choice per blank, all must be right. */
+export interface BlanksQuestion extends QuestionBase {
+  kind: 'blanks';
+  /** Blanks appear in the prompt as (i)_____, (ii)_____, (iii)_____. */
+  blanks: { options: string[]; correctIndex: number }[];
+  explanation: string;
+  /** Per blank, why the tempting wrong choice is wrong. */
+  blankNotes?: string[];
+}
+
+export type Question =
+  | McqQuestion
+  | ShortQuestion
+  | CodeQuestion
+  | MultiQuestion
+  | NumericQuestion
+  | BlanksQuestion;
+
+/** Every kind answered in a single card (everything except code exercises). */
+export type CardQuestion = Exclude<Question, CodeQuestion>;
 
 // --- Cheatsheet + tradeoff data (spec §5.1, §6) -----------------------------
 
@@ -94,6 +156,9 @@ export interface CheatsheetData {
   opsHeaders?: [string, string, string];
   useWhen: string;
   dontUseWhen: string;
+  /** Labels for the two boxes; default "Use this when" / "Don't use this when". */
+  useWhenLabel?: string;
+  dontUseWhenLabel?: string;
   /** Python stdlib equivalent (DSA) or key tools/libraries (LLM). */
   stdlib: string;
   /** Label for the stdlib row; defaults to "Python stdlib". */
@@ -172,12 +237,32 @@ export interface LessonProgress {
   lastWrong?: { questionId: string; prompt: string; myAnswer: string; at: number };
 }
 
+export interface BankSetResult {
+  correct: number;
+  total: number;
+  at: number;
+  /** Seconds spent, when the set was run as a timed section. */
+  seconds?: number;
+}
+
+/**
+ * Practice-bank progress. Kept compact on purpose — the bank holds 10k+
+ * questions, so each answer is one key and a 0/1, not a full CheckResult.
+ */
+export interface BankProgress {
+  /** questionId → 1 (last attempt right) or 0 (last attempt wrong). */
+  answers: Record<string, 0 | 1>;
+  /** set id → most recent result. */
+  sets: Record<string, BankSetResult>;
+}
+
 export interface AppState {
   lessons: Record<string, LessonProgress>;
   review: Record<string, ReviewItem>;
   lastLesson?: string;
   /** The "General" tutor tab's thread — not scoped to any one lesson. */
   generalChat: ChatMessage[];
+  bank: BankProgress;
 }
 
 export const emptyLessonProgress = (lessonId: string): LessonProgress => ({
@@ -193,4 +278,5 @@ export const emptyAppState = (): AppState => ({
   lessons: {},
   review: {},
   generalChat: [],
+  bank: { answers: {}, sets: {} },
 });

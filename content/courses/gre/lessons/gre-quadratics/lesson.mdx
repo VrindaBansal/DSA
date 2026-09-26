@@ -1,0 +1,71 @@
+---
+id: gre-quadratics
+module: gre-algebra
+title: Quadratics & special products
+order: 2
+estimatedMinutes: 30
+prerequisites: [gre-linear]
+objectives:
+  - Solve quadratics by factoring, and read the sum and product of roots from the equation
+  - Expand and factor the three special products on sight
+  - Use x² + y² = (x + y)² − 2xy style identities instead of solving for x and y
+  - Never divide both sides by a variable that could be zero
+tags: [gre, quant, algebra, quadratics]
+---
+
+<Intuition>
+GRE quadratics are almost always factorable with small integers, and the most useful facts
+are three identities you can recognize at a glance. The test likes giving you pieces — x + y
+and xy — and asking for something like x² + y², which you can get without ever knowing x
+or y. Spotting that saves minutes.
+</Intuition>
+
+<Concept>
+## Factoring
+
+To solve x² + bx + c = 0, find two numbers that **multiply to c** and **add to b**.
+
+x² − 5x + 6 = 0 → (−2)(−3) = 6 and −2 + −3 = −5 → (x − 2)(x − 3) = 0 → x = 2 or x = 3.
+
+A product is zero only when a factor is zero — that’s why you set the equation equal to 0
+first.
+
+**Shortcut:** for x² + bx + c = 0, the roots add to −b and multiply to c.
+</Concept>
+
+<Check id="gre-quad-factor" />
+
+<Concept>
+## The three special products
+
+| Identity | Example |
+|---|---|
+| (x + y)² = x² + 2xy + y² | (a + 3)² = a² + 6a + 9 |
+| (x − y)² = x² − 2xy + y² | (a − 3)² = a² − 6a + 9 |
+| (x + y)(x − y) = x² − y² | 51 × 49 = 50² − 1² = 2,499 |
+
+Recognize them in both directions: expanding **and** factoring.
+</Concept>
+
+<Example title="Use the identity, skip the solving">
+If x + y = 7 and xy = 10, what is x² + y²?
+
+<Solution>
+(x + y)² = x² + 2xy + y², so x² + y² = (x + y)² − 2xy = 49 − 20 = **29**.
+
+(x and y are 2 and 5 — but you didn’t need to find them.)
+</Solution>
+</Example>
+
+<Check id="gre-quad-identity" />
+
+<Gotcha title="Trap — dividing by a variable">
+From x² = 5x, dividing by x gives x = 5 and loses the solution x = 0. Instead, move
+everything to one side and factor: x² − 5x = 0 → x(x − 5) = 0 → x = 0 or x = 5.
+</Gotcha>
+
+<Check id="gre-quad-divide" />
+
+<Cheatsheet>
+Practice bank topic drills: Solving quadratics · Special products.
+</Cheatsheet>

@@ -1,0 +1,121 @@
+---
+id: gre-quant-comparison
+module: gre-quant-strategy
+title: Quantitative comparison
+order: 1
+estimatedMinutes: 35
+prerequisites: [gre-exponents-roots]
+objectives:
+  - Know what each of the four fixed answers means — especially D
+  - Decide variable comparisons by testing numbers from every zone the constraint allows
+  - Simplify both quantities the way you would an inequality, without flipping errors
+  - Recognize the classic traps — x² = k, percent points, “equal-looking” quantities
+tags: [gre, quant, quantitative-comparison, strategy]
+---
+
+<Intuition>
+Quantitative comparison (QC) questions don’t ask you to find a value — only to decide
+which of two quantities is bigger, or whether you **can’t tell**. That changes the game:
+you rarely need to finish a calculation, and when variables are involved, the fastest
+route is often to **try numbers**. If one allowed number makes A bigger and another makes
+B bigger, you’re done — the answer is D, no algebra required. QC is roughly a third of
+Quant, and it rewards exactly this kind of quick, skeptical testing.
+</Intuition>
+
+<Concept>
+## The four answers never change
+
+- **A** — Quantity A is greater (for every allowed value).
+- **B** — Quantity B is greater (for every allowed value).
+- **C** — The two quantities are equal (for every allowed value).
+- **D** — The relationship cannot be determined from the information given.
+
+Two consequences. First, **if there are no variables** (both quantities are just numbers),
+D is impossible — two fixed numbers always compare one way. Second, A, B, or C are claims
+about **every** allowed case. One counterexample kills them.
+</Concept>
+
+<Check id="gre-qc-fixed" />
+
+<Concept>
+## Testing numbers: the zones
+
+When a quantity has a variable, test values from each “zone” the constraint allows. Most
+wrong answers come from testing only positive integers.
+</Concept>
+
+<TradeoffTable id="gre-number-zones" />
+
+<Example title="Test the zones">
+Given: x ≠ 0.
+
+Quantity A: x²   ·   Quantity B: x³
+
+<Solution>
+Try x = 2: A = 4, B = 8 → **B** bigger.
+Try x = −1: A = 1, B = −1 → **A** bigger.
+
+Two allowed values disagree, so the answer is **D**. You can stop after the second test.
+</Solution>
+</Example>
+
+<Example title="When testing agrees">
+Given: 0 < x < 1.
+
+Quantity A: x   ·   Quantity B: √x
+
+<Solution>
+Try x = ¼: A = 0.25, B = 0.5 → B bigger. Try x = 0.81: A = 0.81, B = 0.9 → B bigger.
+Try something near the edges, x = 0.01: A = 0.01, B = 0.1 → B bigger.
+
+Every test agrees, and the reason is general: for 0 < x < 1, the square root of a number is
+larger than the number. Answer: **B**.
+
+When your tests keep agreeing, look for the reason — that’s what confirms the answer isn’t D.
+</Solution>
+</Example>
+
+<Check id="gre-qc-zones" />
+
+<Concept>
+## Simplify both sides like an inequality
+
+You can do the same thing to both quantities to make them easier to compare, **as long as
+it can’t change their order**:
+
+- add or subtract the same number ✓
+- multiply or divide by the same **positive** number ✓
+- square both ✓ only if both are known to be non-negative
+- multiply or divide by something that **could be negative** ✗ — that might flip the order,
+  and you won’t know which way
+
+Example: A = 3x + 7, B = 3x + 5 → subtract 3x from both → A = 7, B = 5 → **A**, whatever x is.
+</Concept>
+
+<Gotcha title="Trap — x² = 16 means x = 4 or x = −4">
+Given x² = 16, compare x with 4. It is tempting to answer C. But x could be −4, which is
+less than 4. The answer is **D**. Even powers hide the sign; if the question doesn’t say
+x > 0, keep both roots.
+</Gotcha>
+
+<Check id="gre-qc-square" />
+
+<Concept>
+## Word QCs: same trap, different clothes
+
+- **Percent vs. percentage points.** A rate going from 20% to 25% rose by 5 percentage
+  points — and by 25 **percent**.
+- **Averages.** If the average of x and y is 20 and x > 20, then y < 20 — no numbers needed.
+- **Equal-looking quantities.** 30% of 80 and 80% of 30 are equal (both 24). x% of y always
+  equals y% of x.
+- **Geometry without a figure you can trust.** Unless the question states it, don’t assume a
+  right angle, equal sides, or that a figure is drawn to scale.
+</Concept>
+
+<Check id="gre-qc-points" />
+
+<Check id="gre-qc-simplify" />
+
+<Cheatsheet>
+Practice bank topic drills: QC — variables & constraints · QC — numbers only · QC — classic traps.
+</Cheatsheet>

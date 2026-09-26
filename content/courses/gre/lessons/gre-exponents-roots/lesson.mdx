@@ -1,0 +1,116 @@
+---
+id: gre-exponents-roots
+module: gre-arithmetic
+title: Exponents & roots
+order: 2
+estimatedMinutes: 30
+prerequisites: [gre-integers]
+objectives:
+  - Apply the exponent rules — and recognize the moves that are NOT rules
+  - Rewrite powers with a common base to solve exponential equations
+  - Simplify square roots and estimate them between consecutive integers
+  - Find units digits of large powers using cycles
+tags: [gre, quant, exponents, roots]
+---
+
+<Intuition>
+Exponent rules are shortcuts for counting multiplications. x³ · x⁴ is (x·x·x)(x·x·x·x) —
+seven x’s, so x⁷. If you ever doubt a rule, expand a tiny example and count. That habit
+also protects you from the two moves that feel like rules but aren’t:
+**(a + b)² ≠ a² + b²** and **√(a + b) ≠ √a + √b**. The GRE builds wrong answers out of
+exactly those.
+</Intuition>
+
+<Concept>
+## The rules
+
+| Rule | Example |
+|---|---|
+| xᵃ · xᵇ = x^(a+b) | 2³ · 2⁴ = 2⁷ |
+| xᵃ / xᵇ = x^(a−b) | 5⁶ / 5² = 5⁴ |
+| (xᵃ)ᵇ = x^(ab) | (3²)⁵ = 3¹⁰ |
+| (xy)ᵃ = xᵃyᵃ | (2·5)³ = 2³·5³ = 1,000 |
+| x⁰ = 1 (x ≠ 0) | 7⁰ = 1 |
+| x^(−a) = 1/xᵃ | 2^(−3) = 1/8 |
+| x^(1/2) = √x | 9^(1/2) = 3 |
+
+The rules work for **products and quotients only**. There is no rule for 2³ + 2⁴ except
+to factor: 2³ + 2⁴ = 2³(1 + 2) = 3 · 2³.
+</Concept>
+
+<Example title="Same base, different look">
+If 4^x · 8 = 2^11, what is x?
+
+<Solution>
+Rewrite everything as a power of 2: 4 = 2², 8 = 2³.
+
+(2²)^x · 2³ = 2^(2x) · 2³ = 2^(2x + 3).
+
+Same base → set exponents equal: 2x + 3 = 11 → x = **4**.
+</Solution>
+</Example>
+
+<Check id="gre-exp-base" />
+
+<Example title="Adding identical powers">
+3¹² + 3¹² + 3¹² = 3^k. What is k?
+
+<Solution>
+Three copies of 3¹² is 3 × 3¹² = 3¹ × 3¹² = 3¹³. So k = **13**.
+
+Not 36 (that multiplies the exponent by the number of copies) and not 12 + 3 = 15.
+</Solution>
+</Example>
+
+<Concept>
+## Roots
+
+- √(ab) = √a · √b and √(a/b) = √a / √b — roots distribute over products and quotients.
+- **Simplify** by pulling out the largest perfect square: √72 = √(36 · 2) = 6√2.
+- **Estimate** by bracketing between perfect squares: 7² = 49 < 55 < 64 = 8², so √55 is
+  between 7 and 8 (closer to 7).
+- Know the squares through 15² = 225 and the cubes through 5³ = 125 cold.
+</Concept>
+
+<Gotcha title="Trap — roots don’t split over addition">
+√9 + √16 = 3 + 4 = 7, but √(9 + 16) = √25 = 5. For positive numbers,
+√a + √b is always **greater** than √(a + b) — a favorite quantitative comparison.
+</Gotcha>
+
+<Check id="gre-exp-root" />
+
+<Concept>
+## Numbers between 0 and 1 behave backwards
+
+For 0 < x < 1: x² < x (squaring shrinks it) and √x > x (the root grows it), and 1/x > 1.
+(½)² = ¼, √¼ = ½. Keep this in mind for every “which is greatest” question.
+</Concept>
+
+<Check id="gre-exp-fraction" />
+
+<Concept>
+## Units digits of big powers cycle
+
+Only the units digit of the base matters, and powers cycle:
+
+- 2: 2, 4, 8, 6 (length 4) · 3: 3, 9, 7, 1 · 7: 7, 9, 3, 1 · 8: 8, 4, 2, 6
+- 4: 4, 6 · 9: 9, 1 · 0, 1, 5, 6: always themselves
+
+Divide the exponent by the cycle length; the remainder tells you the position
+(remainder 0 means the last position).
+</Concept>
+
+<Example title="Units digit">
+What is the units digit of 7⁴³?
+
+<Solution>
+Powers of 7 end in 7, 9, 3, 1, repeating every 4. 43 ÷ 4 = 10 remainder 3 → third in the
+cycle → **3**.
+</Solution>
+</Example>
+
+<Check id="gre-exp-units" />
+
+<Cheatsheet>
+Practice bank topic drills: Exponent rules · Solving exponential equations · Roots & radicals · Units digits.
+</Cheatsheet>

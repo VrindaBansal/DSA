@@ -8,6 +8,7 @@ import { CHEATSHEET as recursionTrees } from './courses/dsa/lessons/recursion-tr
 import { MODULE_CHEATSHEETS } from './courses/dsa/module-cheatsheets';
 import { LLM_CHEATSHEETS } from './courses/llm/cheatsheets';
 import { LEETCODE_CHEATSHEETS } from './courses/leetcode/cheatsheets';
+import { GRE_CHEATSHEETS } from './courses/gre/cheatsheets';
 
 export const CHEATSHEETS: CheatsheetData[] = [
   bigO,
@@ -19,6 +20,7 @@ export const CHEATSHEETS: CheatsheetData[] = [
   ...MODULE_CHEATSHEETS,
   ...LLM_CHEATSHEETS,
   ...LEETCODE_CHEATSHEETS,
+  ...GRE_CHEATSHEETS,
 ];
 
 export const CHEATSHEET_BY_LESSON: Record<string, CheatsheetData> =

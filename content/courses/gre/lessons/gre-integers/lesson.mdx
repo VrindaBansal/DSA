@@ -1,0 +1,161 @@
+---
+id: gre-integers
+module: gre-arithmetic
+title: Integers, divisibility, primes & remainders
+order: 1
+estimatedMinutes: 35
+prerequisites: [gre-overview]
+objectives:
+  - Prime-factorize quickly and use the factorization to count divisors, find GCD and LCM
+  - Solve remainder questions by picking the simplest number that fits
+  - Apply odd/even and positive/negative rules to “must be” questions
+  - Find the sum or the extremes of consecutive integers using the average
+tags: [gre, quant, arithmetic, number-properties]
+---
+
+<Intuition>
+Number-property questions look like puzzles, but nearly all of them fall to one move:
+**break the number into its prime factors.** Primes are the atoms of the integers —
+every factor, multiple, GCD, and LCM question is really a question about which primes
+are present and how many times. The other big idea is that for “must be” questions about
+odd/even or positive/negative, you don’t need algebra: you test a couple of simple numbers
+that satisfy the conditions.
+</Intuition>
+
+<Concept>
+## Prime factorization
+
+A **prime** has exactly two positive divisors: 1 and itself. The primes under 50 are
+2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47. Note that **1 is not prime**, and
+**2 is the only even prime**.
+
+Factor by dividing out small primes until nothing is left:
+
+360 = 2 × 180 = 2 × 2 × 90 = 2 × 2 × 2 × 45 = 2³ × 3² × 5.
+
+**Divisibility shortcuts** speed this up: divisible by 3 if the digit sum is (e.g., 1,251 →
+1+2+5+1 = 9 ✓); by 4 if the last two digits are; by 5 if it ends in 0 or 5; by 9 if the
+digit sum is divisible by 9.
+</Concept>
+
+<Concept>
+## Counting divisors
+
+Write N = pᵃ × qᵇ × rᶜ (p, q, r distinct primes). Every divisor picks an exponent for each prime
+independently — from 0 up to the one in N. So the number of positive divisors is
+
+**(a + 1)(b + 1)(c + 1)**.
+</Concept>
+
+<Example title="Counting divisors">
+How many positive divisors does 360 have?
+
+<Solution>
+360 = 2³ × 3² × 5¹. A divisor can use 2⁰ through 2³ (4 choices), 3⁰ through 3² (3 choices),
+and 5⁰ or 5¹ (2 choices).
+
+(3 + 1)(2 + 1)(1 + 1) = 4 × 3 × 2 = **24**.
+
+The “+1” is the part people forget: an exponent of 0 is a choice — it is how 1 and the pure
+prime powers get counted.
+</Solution>
+</Example>
+
+<Check id="gre-int-divisors" />
+
+<Concept>
+## GCD and LCM
+
+- **GCD** (greatest common divisor): the primes both numbers share, each at its **lowest**
+  power. Used for “cut into equal pieces as large as possible.”
+- **LCM** (least common multiple): every prime that appears in either number, at its
+  **highest** power. Used for “when will they coincide again.”
+- Handy identity: **GCD × LCM = the product of the two numbers.**
+
+For 24 = 2³ × 3 and 36 = 2² × 3²: GCD = 2² × 3 = 12; LCM = 2³ × 3² = 72; and 12 × 72 = 864 = 24 × 36 ✓.
+</Concept>
+
+<Example title="When do they meet again?">
+One bus leaves the station every 12 minutes, another every 18 minutes. Both leave at 8:00.
+When do they next leave together?
+
+<Solution>
+They coincide at common multiples of 12 and 18; the next time is the LCM.
+12 = 2² × 3 and 18 = 2 × 3² → LCM = 2² × 3² = 36.
+
+They next leave together at **8:36**.
+</Solution>
+</Example>
+
+<Concept>
+## Remainders: pick the simplest number that works
+
+“When n is divided by 7, the remainder is 3” describes n = 3, 10, 17, 24, …. Any one of them
+answers a question about how n behaves, so **pick the smallest: n = 3.**
+
+Why that is legitimate: n = 7q + 3, so 5n + 2 = 35q + 17. The 35q part is a multiple of 7,
+so only 17 matters for the remainder.
+</Concept>
+
+<Example title="A remainder question">
+When the positive integer n is divided by 7, the remainder is 3. What is the remainder when
+5n + 2 is divided by 7?
+
+<Solution>
+Take n = 3. Then 5n + 2 = 17, and 17 = 2 × 7 + 3 → remainder **3**.
+
+Check with another value, n = 10: 5(10) + 2 = 52 = 7 × 7 + 3 → remainder 3 again ✓.
+</Solution>
+</Example>
+
+<Check id="gre-int-remainder" />
+
+<Concept>
+## Odd/even and positive/negative
+
+You never need to memorize a table. **Test the simplest values** that satisfy the
+conditions: 1 and 2 for odd/even; −2, −½, ½, 2 for sign questions.
+
+The rules those tests reveal:
+
+- odd ± odd = even; even ± anything keeps that thing’s parity
+- odd × odd = odd; anything × even = even
+- a product is negative exactly when an **odd number** of its factors are negative
+- even powers are never negative; odd powers keep the sign
+
+For a “**must be**” question, one counterexample eliminates a choice. For a “**could be**”
+question, one example confirms it.
+</Concept>
+
+<Gotcha title="Trap — only testing positive integers">
+“If x² > x, then x must be greater than 1” sounds true until you try x = −1: (−1)² = 1 > −1.
+Whenever a question doesn’t say “positive integer,” test a negative and a fraction too.
+</Gotcha>
+
+<Check id="gre-int-parity" />
+
+<Concept>
+## Consecutive integers
+
+For any evenly spaced list, **average = middle term = (first + last)/2**, and
+**sum = average × count**. So when you know the sum and the count, divide to get the
+middle, then step out to the ends.
+</Concept>
+
+<Example title="Consecutive integers">
+The sum of 7 consecutive integers is 98. What is the greatest of them?
+
+<Solution>
+Average = 98 ÷ 7 = 14, which is the middle (4th) term. Three steps up: 15, 16, **17**.
+
+The list is 11, 12, 13, 14, 15, 16, 17, and 11 + … + 17 = 98 ✓.
+</Solution>
+</Example>
+
+<Check id="gre-int-consecutive" />
+
+<Check id="gre-int-prime" />
+
+<Cheatsheet>
+Practice bank topic drills: Counting factors · GCD & LCM · Remainders · Odd/even & sign rules · Consecutive integers · Primes.
+</Cheatsheet>

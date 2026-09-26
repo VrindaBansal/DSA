@@ -88,6 +88,41 @@ export function DashboardClient({
         </div>
       </div>
 
+      {(course.bank || course.planLessonId) && (
+        <div className="mb-6 grid gap-4 sm:grid-cols-2">
+          {course.planLessonId && (
+            <Link
+              href={`/lesson/${course.planLessonId}`}
+              className="group rounded-md border-[1.5px] border-ink bg-panel p-5 transition-colors hover:bg-active-wash/30"
+            >
+              <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">Start here</div>
+              <div className="mt-1 font-display text-[17px] font-semibold group-hover:text-active-deep">
+                Your week-by-week study plan →
+              </div>
+              <p className="mt-1 text-[13px] text-muted">
+                What to do each week: which lessons, how many practice sets, when to take timed sections.
+              </p>
+            </Link>
+          )}
+          {course.bank && (
+            <Link
+              href={`/course/${course.id}/bank`}
+              className="group rounded-md border-[1.5px] border-active bg-active-wash/40 p-5 transition-colors hover:bg-active-wash"
+            >
+              <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-active-deep">Practice bank</div>
+              <div className="mt-1 font-display text-[17px] font-semibold group-hover:text-active-deep">
+                11,000+ questions, sets, drills & timed sections →
+              </div>
+              <p className="mt-1 text-[13px] text-muted">
+                {ready
+                  ? `${Object.keys(state.bank.answers).filter((id) => id.startsWith('gre.')).length.toLocaleString('en-US')} answered so far · feedback on every choice`
+                  : 'feedback on every choice'}
+              </p>
+            </Link>
+          )}
+        </div>
+      )}
+
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {modules.map((m) => {
           const ls = byModule(m.slug);

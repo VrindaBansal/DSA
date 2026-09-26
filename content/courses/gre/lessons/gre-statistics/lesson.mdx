@@ -1,0 +1,111 @@
+---
+id: gre-statistics
+module: gre-data
+title: Statistics — mean, median, spread & the normal curve
+order: 1
+estimatedMinutes: 35
+prerequisites: [gre-fractions-decimals]
+objectives:
+  - Solve average problems by working with sums, including weighted averages
+  - Find median, mode, range, quartiles, and interquartile range
+  - Reason about standard deviation as spread — and how it changes when data shift or scale
+  - Use the 68-95-99.7 rule for normal distributions
+tags: [gre, quant, statistics, data-analysis]
+---
+
+<Intuition>
+Most GRE statistics questions are about two ideas: **where the data sit** (mean, median)
+and **how spread out they are** (range, standard deviation). You almost never compute a
+standard deviation by hand — you compare spreads. And average problems become easy the
+moment you switch from averages to **sums**, because sums add and averages don’t.
+</Intuition>
+
+<Concept>
+## Averages: think in sums
+
+**Sum = average × count.** When numbers are added, removed, or combined, work with sums.
+</Concept>
+
+<Example title="Adding a number">
+The average of 5 numbers is 12. When a sixth number is added, the average becomes 14. What
+is the sixth number?
+
+<Solution>
+Old sum = 5 × 12 = 60. New sum = 6 × 14 = 84. Sixth number = 84 − 60 = **24**.
+
+Intuition check: it must be 14 (the new average) plus 2 extra for each of the 5 old
+numbers it raises: 14 + 10 = 24 ✓.
+</Solution>
+</Example>
+
+<Check id="gre-stat-avg" />
+
+<Concept>
+## Weighted averages
+
+Combining groups of different sizes: combined average = (total of all values) ÷ (total
+count). The result lies between the group averages, **closer to the larger group’s**.
+
+20 students averaging 80 and 30 averaging 90: (1,600 + 2,700) ÷ 50 = 86 — not 85.
+</Concept>
+
+<Concept>
+## Median, mode, range, quartiles
+
+- **Median:** sort, then take the middle value (or the average of the two middle values).
+- **Mode:** the most frequent value. **Range:** max − min.
+- **Quartiles:** Q1 is the median of the lower half, Q3 of the upper half.
+  **Interquartile range** = Q3 − Q1: the range of the middle half of the data.
+- Outliers pull the **mean** toward them; the median barely moves.
+</Concept>
+
+<Check id="gre-stat-median" />
+
+<Concept>
+## Standard deviation is spread
+
+Standard deviation (SD) measures how far values typically sit from the mean.
+
+- All values equal → SD = 0.
+- **Add** the same number to every value → the SD **doesn’t change** (everything shifts
+  together).
+- **Multiply** every value by k → the SD is multiplied by |k|.
+- To compare SDs, compare how spread out the values are relative to their own mean — not
+  how big they are. The lists 1, 2, 3 and 101, 102, 103 have the same SD.
+</Concept>
+
+<Check id="gre-stat-sd" />
+
+<Concept>
+## The normal distribution
+
+For data that are approximately normal (a symmetric bell curve):
+
+- about **68%** fall within 1 SD of the mean,
+- about **95%** within 2 SDs,
+- about **99.7%** within 3 SDs.
+
+Split into regions: 34% between the mean and 1 SD (each side), 13.5% between 1 and 2 SDs,
+and 2.5% beyond 2 SDs (each side). So about 16% are above +1 SD, and about 84% are below it.
+</Concept>
+
+<Example title="Normal distribution">
+Test scores are normally distributed with mean 500 and SD 100. About what percent of
+scores are between 400 and 700?
+
+<Solution>
+400 is −1 SD; 700 is +2 SD. From −1 to the mean: 34%. From the mean to +2: 34% + 13.5% = 47.5%.
+Total ≈ **81.5%**.
+</Solution>
+</Example>
+
+<Gotcha title="Trap — averaging averages">
+The average of two group averages equals the overall average only if the groups are the
+same size. Otherwise, weight by the counts.
+</Gotcha>
+
+<Check id="gre-stat-normal" />
+
+<Cheatsheet>
+Practice bank topic drills: Averages · Weighted averages · Median, mode & range · Standard deviation · Normal distribution · Quartiles & interquartile range.
+</Cheatsheet>

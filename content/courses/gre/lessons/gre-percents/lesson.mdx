@@ -1,0 +1,108 @@
+---
+id: gre-percents
+module: gre-word-problems
+title: Percents
+order: 1
+estimatedMinutes: 35
+prerequisites: [gre-fractions-decimals]
+objectives:
+  - Translate “what percent of what” sentences into equations
+  - Compute percent change from the ORIGINAL value, every time
+  - Combine successive percent changes by multiplying factors
+  - Undo a percent change (find the original) by dividing by the factor
+  - Handle simple and compound interest
+tags: [gre, quant, percents, word-problems]
+---
+
+<Intuition>
+Almost every percent question becomes easy once you stop thinking of percents as
+something to add and subtract and start thinking of them as **multipliers**. A 20%
+increase multiplies by 1.2. A 15% decrease multiplies by 0.85. Two changes in a row?
+Multiply the two multipliers. Going backward to the original? Divide by the multiplier.
+That one idea removes the classic traps: adding percents that don’t add, and taking a
+percent of the wrong base.
+</Intuition>
+
+<Concept>
+## Translation
+
+“Percent” means “per hundred,” “of” means multiply, and “is” means equals.
+
+- 30% of 80 = 0.30 × 80 = 24
+- 12 is what percent of 48? → 12 = (p/100) × 48 → p = 25
+- 15% of what number is 9? → 0.15 × N = 9 → N = 60
+</Concept>
+
+<Check id="gre-pct-of" />
+
+<Concept>
+## Percent change: always divide by the original
+
+**Percent change = (new − old) ÷ old × 100.**
+
+From 40 to 50 is +25% (10 ÷ 40). From 50 to 40 is −20% (10 ÷ 50). Same 10-unit change,
+different percents, because the base differs.
+</Concept>
+
+<Example title="Percent change">
+A jacket’s price rose from $80 to $92. By what percent did it increase?
+
+<Solution>
+Change = $12. Divide by the ORIGINAL price: 12 ÷ 80 = 0.15 → **15%**.
+
+The trap is dividing by the new price: 12 ÷ 92 ≈ 13%.
+</Solution>
+</Example>
+
+<Concept>
+## Multipliers do all the work
+</Concept>
+
+<TradeoffTable id="gre-percent-tools" />
+
+<Example title="Successive changes">
+A price rises 25% and then falls 20%. What is the net change?
+
+<Solution>
+Multiply the factors: 1.25 × 0.80 = 1.00 → **no change**.
+
+Adding the percents (+25 − 20 = +5%) is the trap. The 20% decrease is taken of a larger
+number (after the increase), so it removes more than the 20% of the original.
+</Solution>
+</Example>
+
+<Check id="gre-pct-successive" />
+
+<Example title="Finding the original">
+After a 25% discount, a lamp costs $54. What was the original price?
+
+<Solution>
+A 25% discount leaves 75% of the original: 0.75 × P = 54 → P = 54 ÷ 0.75 = **$72**.
+
+Check: 25% of $72 is $18, and $72 − $18 = $54 ✓. The trap — adding 25% of $54 — gives
+$67.50, because the discount was 25% of the *original*, not of the sale price.
+</Solution>
+</Example>
+
+<Check id="gre-pct-reverse" />
+
+<Concept>
+## Interest
+
+- **Simple interest:** I = P × r × t. The interest each year is the same.
+- **Compound interest (annually):** A = P(1 + r)ᵗ. Each year’s interest is earned on the
+  previous interest too, so compound always beats simple after the first year.
+
+$1,000 at 10% for 2 years: simple → $1,200; compound → $1,000 × 1.1² = $1,210.
+</Concept>
+
+<Gotcha title="Trap — percent vs. percentage points">
+A rate rising from 20% to 25% has gone up **5 percentage points**, which is a
+**25 percent** increase. When a question compares rates, check which one it means.
+</Gotcha>
+
+<Check id="gre-pct-interest" />
+
+<Cheatsheet>
+Practice bank topic drills: Percent of / what percent · Percent change · Successive percent changes · Finding the original · Simple & compound interest.
+</Cheatsheet>

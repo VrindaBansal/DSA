@@ -1,0 +1,47 @@
+import type { Question } from '@/lib/types';
+
+export const QUESTIONS: Question[] = [
+  {
+    kind: 'numeric',
+    id: 'gre-stat-avg',
+    lessonId: 'gre-statistics',
+    difficulty: 2,
+    prompt: 'Maya’s average on 4 tests is 82. What score must she get on the 5th test to raise her average to 85?',
+    answer: 97,
+    answerDisplay: '97',
+    explanation: 'Needed total for 5 tests: 5 × 85 = 425. Current total: 4 × 82 = 328. Fifth score: 425 − 328 = **97**.',
+  },
+  {
+    kind: 'mcq',
+    id: 'gre-stat-median',
+    lessonId: 'gre-statistics',
+    difficulty: 1,
+    prompt: 'What is the median of 14, 3, 9, 21, 9, 30?',
+    options: ['9', '11.5', '14', '14.33', '17.5'],
+    correctIndex: 1,
+    explanation: 'Sorted: 3, 9, 9, 14, 21, 30. Six values → average the 3rd and 4th: (9 + 14)/2 = **11.5**.',
+    distractorNotes: ['That is the mode.', 'Correct.', 'The 4th value alone.', 'That is the mean (86 ÷ 6).', 'Not the middle of the sorted list — sort first.'],
+  },
+  {
+    kind: 'mcq',
+    id: 'gre-stat-sd',
+    lessonId: 'gre-statistics',
+    difficulty: 2,
+    prompt: 'Data set S has standard deviation 4. Each value in S is multiplied by 3 and then 10 is added. What is the standard deviation of the new set?',
+    options: ['4', '12', '14', '22', '36'],
+    correctIndex: 1,
+    explanation: 'Multiplying by 3 triples the spread (4 → 12). Adding 10 shifts every value equally and doesn’t change the spread. New SD = **12**.',
+    distractorNotes: ['Multiplying changes the spread.', 'Correct.', 'Added 10 to the SD — shifts don’t affect spread.', 'Added 10 after tripling.', 'That is how the variance would scale (×9).'],
+  },
+  {
+    kind: 'mcq',
+    id: 'gre-stat-normal',
+    lessonId: 'gre-statistics',
+    difficulty: 2,
+    prompt: 'Heights of a plant species are normally distributed with mean 40 cm and standard deviation 5 cm. Approximately what percent of the plants are taller than 45 cm?',
+    options: ['2.5%', '16%', '34%', '50%', '84%'],
+    correctIndex: 1,
+    explanation: '45 cm is +1 SD. Half the plants are above the mean, and 34% are between the mean and +1 SD, so 50% − 34% = **16%** are above 45 cm.',
+    distractorNotes: ['That is above +2 SD (50 cm).', 'Correct.', 'That is between 40 and 45 cm.', 'That is above the mean.', 'That is BELOW 45 cm.'],
+  },
+];

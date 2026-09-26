@@ -62,6 +62,10 @@ const routes = [
   ...moduleSlugs.map((s) => `/module/${s}`),
   ...lessonIds.map((l) => `/lesson/${l}`),
   ...lessonIds.map((l) => `/lesson/${l}/cheatsheet`),
+  // courses with a generated practice bank (lib/courses.ts `bank: true`)
+  ...[
+    ...fs.readFileSync(path.join(root, 'lib', 'courses.ts'), 'utf8').matchAll(/id: '([^']+)',[^}]*?bank: true/gs),
+  ].map((m) => `/course/${m[1]}/bank`),
 ];
 
 // --- boot server -------------------------------------------------------------
@@ -364,6 +368,126 @@ if ((await page.locator('text=due today').count()) > 0) {
   if ((await page.locator('text=queue clear').count()) > 0) pass('review session completes, interval ×2.2');
   else fail('review session did not reach the clear state');
 } else fail('/review shows nothing due despite past-due item');
+
+// --- GRE: new question types + the practice bank -------------------------------
+section('GRE question types in lesson checks');
+await page.goto(`${BASE}/lesson/gre-quant-comparison`, { waitUntil: 'networkidle' });
+{
+  const qcBlock = page.locator('[data-block*="gre-qc-fixed"]');
+  await qcBlock.scrollIntoViewIfNeeded();
+  if ((await qcBlock.locator('text=Quantity A').count()) > 0) pass('QC renders Quantity A / Quantity B columns');
+  else fail('QC columns missing');
+  await qcBlock.getByRole('button', { name: /Quantity A is greater/ }).click();
+  if ((await qcBlock.locator('text=Correct').count()) > 0) pass('QC grades instantly');
+  else fail('QC did not grade');
+}
+await page.goto(`${BASE}/lesson/gre-integers`, { waitUntil: 'networkidle' });
+{
+  const num = page.locator('[data-block*="gre-int-divisors"]');
+  await num.scrollIntoViewIfNeeded();
+  await num.getByLabel('your answer').fill('12');
+  await num.getByRole('button', { name: 'check' }).click();
+  if ((await num.locator('text=Correct').count()) > 0) pass('numeric entry grades a typed answer');
+  else fail('numeric entry did not grade 12 as correct');
+  const multi = page.locator('[data-block*="gre-int-parity"]');
+  await multi.scrollIntoViewIfNeeded();
+  for (const label of ['a + b', 'a² + b', 'ab + 1']) await multi.getByRole('button', { name: new RegExp(`^.?\\s*[A-E]?\\s*${label.replace(/[+²]/g, (c) => (c === '+' ? '\\+' : c))}$`) }).first().click();
+  await multi.getByRole('button', { name: 'check' }).click();
+  if ((await multi.locator('text=Correct').count()) > 0) pass('select-all grades an exact set');
+  else fail('select-all did not grade the right set as correct');
+}
+await page.goto(`${BASE}/lesson/gre-tc-multi`, { waitUntil: 'networkidle' });
+{
+  const bl = page.locator('[data-block*="gre-tcm-two"]');
+  await bl.scrollIntoViewIfNeeded();
+  await bl.getByRole('button', { name: 'economical' }).click();
+  await bl.getByRole('button', { name: 'prolix' }).click();
+  await bl.getByRole('button', { name: 'check' }).click();
+  if ((await bl.locator('text=Correct').count()) > 0) pass('multi-blank completion grades all blanks');
+  else fail('multi-blank completion did not grade');
+}
+
+section('GRE practice bank');
+await page.goto(`${BASE}/course/gre/bank`, { waitUntil: 'networkidle' });
+if ((await page.locator('text=Practice bank').count()) > 0 && (await page.locator('text=/\\d{2},\\d{3} questions with/').count()) > 0)
+  pass('bank page shows 10,000+ questions');
+else fail('bank page header missing its question count');
+await page.getByRole('button', { name: /practice · feedback/ }).click();
+await page.waitForTimeout(800);
+// Answer three questions whatever their format, checking feedback each time.
+let answered = 0;
+for (let i = 0; i < 3; i++) {
+  const card = page.locator('div.rounded-md.border.border-line.bg-panel.p-5').first();
+  if (await card.getByLabel('your answer').count()) {
+    await card.getByLabel('your answer').fill('1');
+    await card.getByRole('button', { name: 'check' }).click();
+  } else if (await card.getByLabel('numerator').count()) {
+    await card.getByLabel('numerator').fill('1');
+    await card.getByLabel('denominator').fill('2');
+    await card.getByRole('button', { name: 'check' }).click();
+  } else if (await card.locator('text=/Select exactly two|Select all that apply/i').count()) {
+    const opts = card.locator('button[aria-pressed]');
+    await opts.nth(0).click();
+    await opts.nth(1).click();
+    await card.getByRole('button', { name: 'check' }).click();
+  } else if (await card.locator('text=/Blank \\(i\\)/').count()) {
+    const opts = card.locator('button[aria-pressed]');
+    const n = await opts.count();
+    for (let k = 0; k < n; k += 3) await opts.nth(k).click();
+    await card.getByRole('button', { name: 'check' }).click();
+  } else {
+    await card.locator('button:has(span.font-mono)').first().click();
+  }
+  await page.waitForTimeout(200);
+  if ((await card.locator('text=/^(Correct|Wrong)/').count()) > 0) answered++;
+  await page.getByRole('button', { name: /next →|finish/ }).click();
+  await page.waitForTimeout(300);
+}
+if (answered === 3) pass('bank runner grades 3 questions of mixed formats with feedback');
+else fail(`bank runner showed feedback on ${answered}/3 questions`);
+await page.getByRole('button', { name: /← bank/ }).click();
+await page.waitForTimeout(700);
+const bankState = await page.evaluate(() => {
+  const s = JSON.parse(localStorage.getItem('invariant.progress.v1') ?? '{}');
+  return { answers: Object.keys(s.bank?.answers ?? {}).length, review: Object.keys(s.review ?? {}).filter((k) => k.startsWith('gre.')) };
+});
+if (bankState.answers === 3) pass('bank answers persisted compactly (3 entries)');
+else fail(`expected 3 bank answers in progress, found ${bankState.answers}`);
+
+// timed section: start, end immediately, results + set score recorded
+await page.locator('button', { hasText: /^2$/ }).first().click();
+await page.getByRole('button', { name: /timed section/ }).click();
+await page.waitForTimeout(500);
+if ((await page.getByLabel('time remaining').count()) > 0) pass('timed section shows a countdown');
+else fail('timed section has no timer');
+await page.getByRole('button', { name: 'end section now' }).click();
+await page.waitForTimeout(300);
+if ((await page.locator('text=results').count()) > 0) pass('ending a timed section shows results');
+else fail('timed section results missing');
+await page.waitForTimeout(700);
+const setSaved = await page.evaluate(() => {
+  const s = JSON.parse(localStorage.getItem('invariant.progress.v1') ?? '{}');
+  return !!s.bank?.sets?.['q-002'];
+});
+if (setSaved) pass('set result recorded for the set tile grid');
+else fail('timed set result not saved');
+
+// a missed bank question comes back in review (as a fresh variant when supported)
+await page.goto(`${BASE}/review`, { waitUntil: 'networkidle' });
+await page.waitForTimeout(600);
+await page.evaluate(() => {
+  const s = JSON.parse(localStorage.getItem('invariant.progress.v1') ?? '{}');
+  s.review = {
+    'gre.int-divisors.0': { questionId: 'gre.int-divisors.0', lessonId: 'gre-integers', intervalDays: 1, due: Date.now() - 1000, reps: 0, lapses: 1 },
+  };
+  localStorage.setItem('invariant.progress.v1', JSON.stringify(s));
+});
+await page.reload({ waitUntil: 'networkidle' });
+await page.getByRole('button', { name: 'start →' }).click();
+await page.waitForTimeout(1500);
+if ((await page.locator('text=no longer exists').count()) === 0 && (await page.locator('text=divisors').count()) > 0)
+  pass('review resolves a practice-bank question (lazy-loaded bank)');
+else fail('review could not load a practice-bank question');
 
 section('print stylesheet on cheatsheet route');
 await page.goto(`${BASE}/lesson/queues/cheatsheet`, { waitUntil: 'networkidle' });

@@ -1,0 +1,118 @@
+---
+id: gre-lines-triangles
+module: gre-geometry
+title: Lines, angles & triangles
+order: 1
+estimatedMinutes: 35
+prerequisites: [gre-exponents-roots]
+objectives:
+  - Use angle facts — lines, parallel lines, triangle sums, exterior angles, isosceles triangles
+  - Apply the Pythagorean theorem and recognize the common triples instantly
+  - Use the 45-45-90 and 30-60-90 side ratios
+  - Apply the triangle inequality and the area ratio of similar figures
+tags: [gre, quant, geometry, triangles]
+---
+
+<Intuition>
+GRE geometry uses a small toolkit over and over: angles on a line add to 180°, a triangle’s
+angles add to 180°, and right triangles follow the Pythagorean theorem and a few special
+ratios. Most questions combine two of those facts. One rule overrides everything:
+**figures are not necessarily drawn to scale.** Use what is stated, not what looks true.
+</Intuition>
+
+<Concept>
+## Angles
+
+- Angles on a straight line add to **180°**; around a point, **360°**.
+- Vertical angles (opposite each other where two lines cross) are **equal**.
+- A transversal across **parallel** lines creates only two angle measures: some angle
+  x and its supplement 180° − x.
+- A triangle’s angles add to **180°**. An **exterior angle** equals the sum of the two
+  remote interior angles.
+- In an **isosceles** triangle, the angles opposite the equal sides are equal. In an
+  equilateral triangle, all three angles are 60°.
+- The largest angle is opposite the longest side.
+</Concept>
+
+<Example title="Angles in a ratio">
+The angles of a triangle are in the ratio 2 : 3 : 7. What is the largest angle?
+
+<Solution>
+2 + 3 + 7 = 12 parts = 180°, so one part = 15°. Largest = 7 × 15° = **105°**.
+</Solution>
+</Example>
+
+<Check id="gre-tri-angles" />
+
+<Concept>
+## Right triangles
+
+**Pythagorean theorem:** in a right triangle with legs a, b and hypotenuse c,
+a² + b² = c². Memorize the triples — they save the arithmetic.
+</Concept>
+
+<TradeoffTable id="gre-special-triangles" />
+
+<Concept>
+The two special triangles, with sides opposite their angles:
+
+<svg viewBox="0 0 420 150" width="100%" style={{maxWidth: '420px'}} role="img" aria-label="A 45-45-90 triangle with sides x, x, x root 2 and a 30-60-90 triangle with sides x, x root 3, 2x">
+  <polygon points="20,130 140,130 20,10" fill="none" stroke="currentColor" strokeWidth="1.5" />
+  <polyline points="20,118 32,118 32,130" fill="none" stroke="currentColor" strokeWidth="1" />
+  <text x="70" y="146" fontSize="13" fill="currentColor">x</text>
+  <text x="4" y="74" fontSize="13" fill="currentColor">x</text>
+  <text x="86" y="64" fontSize="13" fill="currentColor">x√2</text>
+  <text x="112" y="124" fontSize="11" fill="currentColor">45°</text>
+  <text x="26" y="34" fontSize="11" fill="currentColor">45°</text>
+  <polygon points="220,130 400,130 220,26" fill="none" stroke="currentColor" strokeWidth="1.5" />
+  <polyline points="220,118 232,118 232,130" fill="none" stroke="currentColor" strokeWidth="1" />
+  <text x="296" y="146" fontSize="13" fill="currentColor">x√3</text>
+  <text x="206" y="82" fontSize="13" fill="currentColor">x</text>
+  <text x="316" y="70" fontSize="13" fill="currentColor">2x</text>
+  <text x="362" y="124" fontSize="11" fill="currentColor">30°</text>
+  <text x="226" y="50" fontSize="11" fill="currentColor">60°</text>
+</svg>
+
+- **45-45-90:** sides x : x : x√2. It is half of a square, cut along the diagonal.
+- **30-60-90:** sides x : x√3 : 2x (short leg opposite 30°, hypotenuse = twice the short
+  leg). It is half of an equilateral triangle, so an equilateral triangle with side s has
+  height (s/2)√3 and area s²√3/4.
+</Concept>
+
+<Example title="A special right triangle">
+The hypotenuse of a 30-60-90 triangle is 10. What is its area?
+
+<Solution>
+Short leg = 10 ÷ 2 = 5. Long leg = 5√3. Area = ½ × 5 × 5√3 = **(25√3)/2** ≈ 21.65.
+</Solution>
+</Example>
+
+<Check id="gre-tri-special" />
+
+<Concept>
+## The triangle inequality
+
+Any side is **less than the sum** and **greater than the difference** of the other two.
+With sides 4 and 9, the third side x satisfies 5 < x < 13.
+</Concept>
+
+<Check id="gre-tri-ineq" />
+
+<Concept>
+## Similar figures
+
+Similar figures have the same shape. If corresponding sides are in ratio k, then
+**perimeters** are in ratio k, **areas** in ratio k², and **volumes** in ratio k³.
+</Concept>
+
+<Gotcha title="Trap — trusting the figure">
+A triangle that looks like a right triangle, or two lines that look parallel, are not
+known to be unless the question says so (or marks the right angle). On quantitative
+comparison, that uncertainty often makes the answer D.
+</Gotcha>
+
+<Check id="gre-tri-similar" />
+
+<Cheatsheet>
+Practice bank topic drills: Angles & triangles · Pythagorean theorem · 45-45-90 & 30-60-90 triangles · Triangle inequality · Similar figures & area ratios.
+</Cheatsheet>

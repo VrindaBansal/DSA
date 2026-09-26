@@ -6,6 +6,8 @@ import {
   Gotcha,
   Aside,
   LeetCode,
+  Example,
+  Solution,
 } from './static';
 import { CodeWalk, type WalkLine } from './CodeWalk';
 import { CheckBlock } from './Check';
@@ -13,6 +15,7 @@ import { TradeoffTableBlock } from './TradeoffTable';
 import { CheatsheetBlock } from './Cheatsheet';
 import { VisualBlock } from './VisualBlock';
 import { ExerciseBlock } from './Exercise';
+import { WordFamilies } from './gre/WordFamilies';
 
 const flat = (c: React.ReactNode): string =>
   React.Children.toArray(c)
@@ -53,11 +56,17 @@ export function makeMdxComponents(lessonId: string) {
         {children}
       </RealWorld>
     ),
-    Gotcha: ({ children }: any) => (
-      <Gotcha lessonId={lessonId} blockId={bid('gotcha')}>
+    Gotcha: ({ title, children }: any) => (
+      <Gotcha lessonId={lessonId} blockId={bid('gotcha')} title={title}>
         {children}
       </Gotcha>
     ),
+    Example: ({ title, children }: any) => (
+      <Example lessonId={lessonId} blockId={bid('example', title)} title={title}>
+        {children}
+      </Example>
+    ),
+    Solution,
     Aside: ({ title, children }: any) => (
       <Aside lessonId={lessonId} blockId={bid('aside', title)} title={title}>
         {children}
@@ -93,6 +102,7 @@ export function makeMdxComponents(lessonId: string) {
       <ExerciseBlock lessonId={lessonId} blockId={bid('exercise', id)} id={id} />
     ),
     LeetCode,
+    WordFamilies,
 
     // prose element overrides
     h2: ({ children }: any) => (

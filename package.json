@@ -2,15 +2,16 @@
   "name": "invariant",
   "version": "0.1.0",
   "private": true,
-  "description": "Personal DSA learning portal — interactive lectures, animations, exercises, AI tutor",
+  "description": "Personal learning portal — DSA, LLMs, LeetCode, and GRE prep: interactive lectures, animations, exercises, a practice bank, AI tutor",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "npm run test:content && npm run test:exercises",
+    "test": "npm run test:content && npm run test:exercises && npm run test:bank",
     "test:content": "node scripts/check-content.mjs",
     "test:exercises": "python3 scripts/check-exercises.py",
+    "test:bank": "node scripts/check-gre-bank.mjs",
     "test:e2e": "node scripts/e2e.mjs"
   },
   "dependencies": {

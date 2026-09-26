@@ -1,0 +1,100 @@
+---
+id: gre-counting-probability
+module: gre-data
+title: Counting & probability
+order: 2
+estimatedMinutes: 40
+prerequisites: [gre-fractions-decimals]
+objectives:
+  - Count with the multiplication principle, permutations, and combinations — and know which applies
+  - Handle restrictions (together, apart, at least one) with blocks and complements
+  - Compute probabilities of AND and OR events, with and without replacement
+  - Solve overlapping-sets problems with a Venn diagram or a 2×2 table
+tags: [gre, quant, counting, probability, sets]
+---
+
+<Intuition>
+Counting problems all start from one principle: if one choice can be made in m ways and a
+second in n ways, together they can be made in m × n ways. Permutations and combinations
+are just that principle plus one question — **does order matter?** Probability is then
+“favorable outcomes over total outcomes,” and for anything that says “at least one,” the
+fastest path is almost always 1 minus the probability of none.
+</Intuition>
+
+<Concept>
+## The multiplication principle
+
+Fill slots one at a time and multiply the number of options for each. A code of 2 letters
+followed by 3 digits, repeats allowed: 26 × 26 × 10 × 10 × 10 = 676,000.
+</Concept>
+
+<TradeoffTable id="gre-counting" />
+
+<Example title="Order matters or not?">
+From 8 club members, how many ways can you choose (a) a president, secretary, and
+treasurer, (b) a 3-person committee?
+
+<Solution>
+(a) Distinct roles → order matters: 8 × 7 × 6 = **336**.
+
+(b) A committee is just a group → order doesn’t matter. Each committee was counted 3! = 6
+times in (a), so 336 ÷ 6 = **56** = C(8, 3).
+</Solution>
+</Example>
+
+<Check id="gre-cnt-comb" />
+
+<Concept>
+## Restrictions
+
+- **Must be together:** glue them into one block, arrange the blocks, then multiply by the
+  ways to arrange inside the block. 5 people in a row with A and B together:
+  4! × 2! = 48.
+- **Must not be together:** total − together = 5! − 48 = 72.
+- **At least one:** total − none. Committees of 3 from 5 men and 4 women with at least one
+  woman: C(9, 3) − C(5, 3) = 84 − 10 = 74.
+</Concept>
+
+<Check id="gre-cnt-restrict" />
+
+<Concept>
+## Probability
+
+P(event) = favorable outcomes ÷ total outcomes (when outcomes are equally likely).
+
+- **AND** (both happen), independent events: multiply. P(A and B) = P(A) × P(B).
+- **OR** (at least one happens): P(A or B) = P(A) + P(B) − P(A and B).
+- **NOT**: P(not A) = 1 − P(A).
+- **Without replacement:** the second draw’s probabilities change.
+</Concept>
+
+<Example title="Without replacement">
+A bag has 4 red and 6 blue marbles. Two are drawn without replacement. What is the
+probability both are red?
+
+<Solution>
+First red: 4/10. Then 3 reds among 9 marbles: 3/9. Multiply: 4/10 × 3/9 = 12/90 = **2/15**.
+
+(With replacement it would be 4/10 × 4/10 = 4/25.)
+</Solution>
+</Example>
+
+<Check id="gre-prob-draw" />
+
+<Concept>
+## Overlapping sets
+
+**Total = A + B − Both + Neither.** Subtract “both” once, because people in both groups
+were counted twice.
+</Concept>
+
+<Gotcha title="Trap — adding probabilities for “and”">
+“Both” means multiply; adding gives a number that is too big (and can exceed 1). If your
+probability is bigger than 1, something went wrong.
+</Gotcha>
+
+<Check id="gre-prob-atleast" />
+
+<Cheatsheet>
+Practice bank topic drills: Arrangements (permutations) · Selections (combinations) · Probability · Combining probabilities · Overlapping sets.
+</Cheatsheet>

@@ -1,0 +1,110 @@
+---
+id: gre-linear
+module: gre-algebra
+title: Linear equations, systems, inequalities & absolute value
+order: 1
+estimatedMinutes: 35
+prerequisites: [gre-fractions-decimals]
+objectives:
+  - Solve linear equations, including ones with fractions, without sign errors
+  - Solve systems by elimination — and spot when adding or subtracting gives the answer directly
+  - Solve inequalities, flipping the sign when multiplying or dividing by a negative
+  - Solve absolute value equations and inequalities by thinking of distance
+  - Translate word problems into equations
+tags: [gre, quant, algebra, linear]
+---
+
+<Intuition>
+Linear algebra on the GRE is rarely hard; it is **fiddly**. Points are lost to a dropped
+negative sign, an inequality that should have flipped, or a question that asked for x + y
+while you solved for x. This lesson is about doing the routine moves cleanly and noticing
+the shortcuts the test builds in.
+</Intuition>
+
+<Concept>
+## Equations
+
+Do the same thing to both sides until x is alone. With fractions, **multiply every term by
+the common denominator first**:
+
+x/3 + 2 = x/2 − 1 → multiply by 6 → 2x + 12 = 3x − 6 → x = 18.
+</Concept>
+
+<Concept>
+## Systems: look for the shortcut first
+
+Before solving for x and y separately, check what the question asks. If it wants x + y or
+x − y, **adding or subtracting the equations** often gives it in one step.
+</Concept>
+
+<Example title="Don’t solve what you don’t need">
+If 4x + 3y = 19 and 3x + 4y = 16, what is x + y?
+
+<Solution>
+Add the equations: 7x + 7y = 35 → **x + y = 5**. Done — you never needed x or y.
+
+(Subtracting would give x − y = 3, so x = 4 and y = 1, if you wanted them.)
+</Solution>
+</Example>
+
+<Check id="gre-lin-system" />
+
+<Concept>
+## Inequalities
+
+Solve like equations, with one extra rule: **multiplying or dividing by a negative number
+flips the inequality.**
+
+−3x + 5 > 17 → −3x > 12 → x < −4 (flipped).
+
+For a compound inequality, do the same operation to all three parts:
+−1 < 2x + 3 ≤ 9 → −4 < 2x ≤ 6 → −2 < x ≤ 3.
+</Concept>
+
+<Gotcha title="Trap — multiplying by a variable">
+You can’t multiply both sides of an inequality by x unless you know x’s sign. If x could be
+negative, the direction might flip. This is why x/2 > 3 is safe to multiply by 2, but
+1/x > 2 is not safe to multiply by x.
+</Gotcha>
+
+<Check id="gre-lin-inequality" />
+
+<Concept>
+## Absolute value is distance
+
+|x − a| = b means “x is b away from a,” so x = a + b or x = a − b.
+|x − a| < b means x is **within** b of a: a − b < x < a + b.
+|x − a| > b means x is **farther** than b from a: x < a − b or x > a + b.
+</Concept>
+
+<Example title="Absolute value">
+How many integers satisfy |x − 4| ≤ 3?
+
+<Solution>
+Within 3 of 4: 1 ≤ x ≤ 7. The integers 1 through 7 → **7** of them.
+</Solution>
+</Example>
+
+<Check id="gre-lin-abs" />
+
+<Concept>
+## Translating words
+
+| Words | Algebra |
+|---|---|
+| is, equals, results in | = |
+| more than, increased by | + |
+| less than (reversed order!) | “5 less than x” = x − 5 |
+| of, times, product | × |
+| per, for each | ÷ (a rate) |
+| twice, double | 2 × |
+
+Define your variable in words (“let t = the number of adult tickets”), write one equation
+per fact, and reread the question before you answer.
+</Concept>
+
+<Check id="gre-lin-words" />
+
+<Cheatsheet>
+Practice bank topic drills: Linear equations · Systems of equations · Inequalities · Absolute value · Translating words to equations · Age problems.
+</Cheatsheet>

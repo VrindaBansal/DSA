@@ -45,7 +45,7 @@ export function CoursePickerClient({
       </h1>
       <p className="mt-2 max-w-[60ch] text-[15px] text-ink-soft">
         Concept-first, anchored in real systems, tested constantly — and a tutor
-        that sees the whole curriculum. Two courses, one method.
+        that sees the whole curriculum. {courses.length} courses, one method.
       </p>
 
       <div className="mt-10 grid gap-5 sm:grid-cols-2">
