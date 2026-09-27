@@ -1,0 +1,71 @@
+import type { Question } from '@/lib/types';
+
+export const QUESTIONS: Question[] = [
+  {
+    kind: 'multi',
+    id: 'gre-vm-family',
+    lessonId: 'gre-vocab-method',
+    difficulty: 1,
+    prompt: 'Which of the following belong to the same meaning family as **obstinate**?\n\nIndicate all that apply.',
+    options: ['intransigent', 'pliant', 'recalcitrant', 'amenable', 'obdurate'],
+    correctIndices: [0, 2, 4],
+    explanation: '**Obstinate**, **intransigent**, **recalcitrant**, and **obdurate** all mean stubborn, refusing to budge. **Pliant** and **amenable** belong to the OPPOSITE family: easily persuaded.',
+    distractorNotes: [
+      '✓ unwilling to compromise — stubborn.',
+      '✗ easily bent or influenced — the opposite family.',
+      '✓ stubbornly resisting authority — stubborn.',
+      '✗ open to suggestion — the opposite family.',
+      '✓ hardened against persuasion — stubborn.',
+    ],
+  },
+  {
+    kind: 'mcq',
+    id: 'gre-vm-root',
+    lessonId: 'gre-vocab-method',
+    difficulty: 2,
+    prompt: 'Using its parts (*mal-* = bad, *-vol-* = wish), what does **malevolent** most likely mean?',
+    options: ['Wishing harm on others', 'Eager to help', 'Speaking badly', 'Easily fooled', 'Extremely talkative'],
+    correctIndex: 0,
+    explanation: '*mal-* (bad) + *vol* (wish, as in *volition*) → wishing bad things: **wishing harm on others**. Its opposite, *benevolent*, uses *bene-* (good).',
+    distractorNotes: [
+      'Correct.',
+      'That is benevolent — bene- means good.',
+      'That would need a “speak” root like loqu- or dict-.',
+      'That is credulous or gullible.',
+      'That is loquacious.',
+    ],
+  },
+  {
+    kind: 'mcq',
+    id: 'gre-vm-secondary',
+    lessonId: 'gre-vocab-method',
+    difficulty: 2,
+    prompt: 'The reviewer **qualified** her praise of the novel, noting that its final chapters were rushed. In this sentence, “qualified” most nearly means',
+    options: ['limited', 'earned', 'certified', 'repeated', 'exaggerated'],
+    correctIndex: 0,
+    explanation: 'To **qualify** a statement is to limit or modify it. Pointing out rushed final chapters limits the praise. The everyday meaning (“be eligible”) is the trap.',
+    distractorNotes: [
+      'Correct — the praise came with a limitation.',
+      'The everyday “qualify for” sense doesn’t fit.',
+      'The “licensed/certified” sense doesn’t fit.',
+      'Nothing is repeated.',
+      'The opposite: noting a flaw tones the praise down.',
+    ],
+  },
+  {
+    kind: 'blanks',
+    id: 'gre-vm-charge',
+    lessonId: 'gre-vocab-method',
+    difficulty: 2,
+    prompt: 'Although critics had long considered the drug (i)_____, new studies suggest that its long-term effects may be (ii)_____.',
+    blanks: [
+      { options: ['innocuous', 'pernicious', 'lucrative'], correctIndex: 0 },
+      { options: ['salutary', 'deleterious', 'negligible'], correctIndex: 1 },
+    ],
+    explanation: '“Although” signals a contrast between the old view and the new findings. “Long-term effects” and the contrast point to harm for (ii): **deleterious**. The old view is then the opposite — harmless: **innocuous**.',
+    blankNotes: [
+      '**innocuous** = harmless. **pernicious** (harmful) would make “although” meaningless. **lucrative** (profitable) is off-topic.',
+      '**deleterious** = harmful. **salutary** (beneficial) and **negligible** (tiny) don’t create the contrast.',
+    ],
+  },
+];

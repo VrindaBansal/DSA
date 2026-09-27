@@ -1,0 +1,108 @@
+---
+id: gre-quant-tactics
+module: gre-quant-strategy
+title: Quant tactics — plug in, backsolve, estimate, pace
+order: 2
+estimatedMinutes: 30
+prerequisites: [gre-quant-comparison]
+objectives:
+  - Replace variables with numbers when the choices contain variables
+  - Work backward from the answer choices, starting in the middle
+  - Estimate when choices are far apart, and know when the calculator helps
+  - Handle select-all and numeric entry formats without losing easy points
+tags: [gre, quant, strategy, pacing]
+---
+
+<Intuition>
+Many GRE quant questions are designed so the algebra is slow but the answer is easy to
+**check**. When that’s the case, stop solving and start testing: pick numbers, try the
+answer choices, or estimate. These tactics aren’t tricks for people who can’t do algebra —
+they are how strong test-takers save the minutes that the hardest questions need.
+</Intuition>
+
+<Concept>
+## Plug in numbers
+
+Use it when **the answer choices contain variables**. Pick easy numbers for the variables,
+compute the answer the question asks for, then see which choice gives the same result.
+
+Choose numbers that are small, distinct, and not 0 or 1 (which make too many expressions
+equal). If two choices both match, try a second set of numbers on just those two.
+</Concept>
+
+<Example title="Plugging in">
+A store sells pens at p cents each. How many dollars do n pens cost?
+
+(A) np  (B) 100np  (C) np/100  (D) 100n/p  (E) p/(100n)
+
+<Solution>
+Pick p = 50 (cents) and n = 4. Four pens at 50¢ cost 200¢ = **$2**.
+
+Now test: (A) 200 ✗ (B) 20,000 ✗ (C) 200/100 = 2 ✓ (D) 8 ✗ (E) 0.125 ✗.
+
+Answer: **(C) np/100**. You never had to reason about units abstractly.
+</Solution>
+</Example>
+
+<Check id="gre-tac-plug" />
+
+<Concept>
+## Backsolve
+
+Use it when **the choices are numbers** and the question asks for one value. Choices are
+usually listed in increasing order, so start with the **middle one** (C): if it’s too big,
+you know the answer is A or B; too small, D or E.
+</Concept>
+
+<Example title="Backsolving">
+A number is tripled, then 12 is subtracted, and the result is 4 more than the original
+number. What is the number?
+
+(A) 4  (B) 6  (C) 8  (D) 10  (E) 12
+
+<Solution>
+Try (C) 8: 3 × 8 − 12 = 12. Is that 4 more than 8? 8 + 4 = 12 ✓. Answer **(C) 8**.
+
+(If it had failed, the size of the miss tells you which direction to go.)
+</Solution>
+</Example>
+
+<Concept>
+## Estimate, and use the calculator wisely
+
+When choices are spread far apart, round. 19.7% of 403 ≈ 20% of 400 = 80.
+
+The on-screen calculator is slow (mouse clicks) and follows order of operations. Use it
+for ugly arithmetic you have already set up — 1,284 × 0.37 — not for anything you can do
+faster in your head. For numeric-entry answers, the calculator’s **Transfer Display** button
+copies the result into the answer box.
+</Concept>
+
+<Check id="gre-tac-estimate" />
+
+<Concept>
+## The formats
+
+- **Select one or more:** evaluate every choice independently. The number of correct
+  choices isn’t given, and there is **no partial credit**. Look for a pattern (a range of
+  values) instead of testing choices one by one when there are many.
+- **Numeric entry:** type the exact value unless told to round. Fractions go in the
+  two-box format, and equivalent fractions (like 6/8 for 3/4) are accepted. Check units:
+  a question in minutes wants minutes, not hours.
+</Concept>
+
+<TradeoffTable id="gre-quant-tactics" />
+
+<Gotcha title="Trap — the answer to a different question">
+Wrong choices are often correct values of something else: the width when the question
+asked for the length, the number of red marbles when it asked for blue, x when it asked for
+x + 2. Before you click, reread the last line of the question.
+</Gotcha>
+
+<Check id="gre-tac-multi" />
+
+<Check id="gre-tac-question" />
+
+<Cheatsheet>
+Use these tactics throughout the practice bank; timed sections will show you where you spend too long.
+</Cheatsheet>

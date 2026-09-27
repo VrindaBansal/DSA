@@ -90,13 +90,13 @@ export function CheatsheetBody({ data }: { data: CheatsheetData }) {
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="rounded border-l-2 border-done bg-done-wash/40 py-2 pl-3 pr-3">
           <div className="font-mono text-[10px] uppercase tracking-wider text-done">
-            Use this when
+            {data.useWhenLabel ?? 'Use this when'}
           </div>
           <p className="mt-1 text-[13.5px] leading-snug">{data.useWhen}</p>
         </div>
         <div className="rounded border-l-2 border-alert bg-alert-wash/40 py-2 pl-3 pr-3">
           <div className="font-mono text-[10px] uppercase tracking-wider text-alert">
-            Don&apos;t use this when
+            {data.dontUseWhenLabel ?? "Don't use this when"}
           </div>
           <p className="mt-1 text-[13.5px] leading-snug">{data.dontUseWhen}</p>
         </div>

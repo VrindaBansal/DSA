@@ -1,0 +1,46 @@
+import type { Question } from '@/lib/types';
+
+export const QUESTIONS: Question[] = [
+  {
+    kind: 'mcq',
+    id: 'gre-lin-system',
+    lessonId: 'gre-linear',
+    difficulty: 2,
+    prompt: 'If 5a + 2b = 24 and 2a + 5b = 18, what is a + b?',
+    options: ['4', '6', '7', '42', '6/7'],
+    correctIndex: 1,
+    explanation: 'Add: 7a + 7b = 42 → a + b = **6**. (Subtracting gives 3a − 3b = 6, so a − b = 2, a = 4, b = 2.)',
+    distractorNotes: ['That is a.', 'Correct.', 'Stopped at 7a + 7b = 42 and divided wrong.', 'Forgot to divide by 7.', 'Divided the wrong way.'],
+  },
+  {
+    kind: 'mcq',
+    id: 'gre-lin-inequality',
+    lessonId: 'gre-linear',
+    difficulty: 2,
+    prompt: 'Which of the following describes all values of x for which 7 − 2x ≥ 15?',
+    options: ['x ≥ 4', 'x ≤ 4', 'x ≥ −4', 'x ≤ −4', 'x ≤ −11'],
+    correctIndex: 3,
+    explanation: 'Subtract 7: −2x ≥ 8. Divide by −2 and FLIP: x ≤ −4.',
+    distractorNotes: ['Sign error and no flip.', 'Sign error on the 8.', 'Forgot to flip when dividing by −2.', 'Correct.', 'Added 7 instead of subtracting.'],
+  },
+  {
+    kind: 'numeric',
+    id: 'gre-lin-abs',
+    lessonId: 'gre-linear',
+    difficulty: 2,
+    prompt: 'What is the sum of all solutions of |2x − 6| = 10?',
+    answer: 6,
+    answerDisplay: '6',
+    explanation: '2x − 6 = 10 → x = 8; 2x − 6 = −10 → x = −2. Sum = 8 + (−2) = **6**. (The two solutions are symmetric around x = 3, so their sum is 2 × 3.)',
+  },
+  {
+    kind: 'numeric',
+    id: 'gre-lin-words',
+    lessonId: 'gre-linear',
+    difficulty: 2,
+    prompt: 'Concert tickets cost $25 for adults and $10 for students. If 200 tickets were sold for a total of $3,500, how many adult tickets were sold?',
+    answer: 100,
+    answerDisplay: '100',
+    explanation: 'a + s = 200 and 25a + 10s = 3,500. Substitute s = 200 − a: 25a + 2,000 − 10a = 3,500 → 15a = 1,500 → a = **100**.',
+  },
+];

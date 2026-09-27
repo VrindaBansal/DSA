@@ -2,7 +2,7 @@
 
 my own personal coursera/duolingo/khan academy.
 
-Single-user web app that teaches technical subjects through interactive text
+Single-user web app that teaches through interactive text
 lectures, lockstep code-and-animation visuals, inline comprehension checks,
 in-browser Python exercises, an AI tutor, and a spaced repetition queue.
 Started from `dsa-portal-spec.md` (codename "Grok", renamed **Invariant**) and
@@ -10,7 +10,7 @@ grew into a **multi-course** platform.
 
 ## Courses
 
-Three courses ship today, all built the same way (concept-first, real-world
+Four courses ship today, all built the same way (concept-first, real-world
 anchors, tested constantly):
 
 - **Data structures & algorithms** — 12 modules, 16 lessons, fully authored.
@@ -27,6 +27,46 @@ anchors, tested constantly):
   LeetCode-Hard problems into patterns you already know. ~28 in-browser coding
   exercises ramping Easy → Hard, each with hidden tests, hints, a gated
   solution, and a complexity self-check.
+- **GRE prep** — 13 modules, 29 lessons, Quant and Verbal interleaved so each
+  week mixes both, plus the Issue essay and test-day strategy. Starts with a
+  format overview and a **study plan** (pinned on the dashboard). Every lesson
+  follows the same loop: intuition → concept → worked **examples** → "try it
+  first" **solutions** → checks with per-choice feedback → a named trap → a
+  cheatsheet. 104 hand-written checks use the real GRE formats (5-choice,
+  quantitative comparison, numeric entry, select-all, 2–3 blank text
+  completion, sentence equivalence). The vocabulary is taught as **word
+  families** (184 families, 764 words), not a flat list.
+  - **Practice bank** (`/course/gre/bank`) — **11,773 questions** (6,750 Quant ·
+    5,023 Verbal) in 589 numbered sets of ~20, tiered Foundation → Core →
+    Advanced. Run a set in **practice** mode (feedback after each question)
+    or as a **timed section** at real GRE pace (review at the end). Topic
+    drills serve unanswered and missed questions first. A mistakes list lets
+    you redo misses, and every miss joins the spaced review queue. Review
+    serves a fresh variant of the same problem so you can't just memorize
+    the answer.
+  - **Five full-length practice tests** (`/course/gre/tests`) that run like the
+    real exam: the Issue essay (30 min, no spell-check), then two Verbal
+    sections (12 questions/18 min, 15/23) and two Quant sections (12/21, 15/26)
+    in the official layout. Inside a section you can go back, **mark**, and use
+    a **review** screen; Quant has an on-screen **calculator** with Transfer
+    Display. Each measure’s second section comes in an **easier** and a
+    **harder** version, and the first section’s score decides which one you
+    get. Results show **estimated 130–170 scores** (a ±3 band, since ETS
+    doesn’t publish its conversion), time per section, breakdowns by question
+    type and topic, an explanation for every question, a button that sends
+    misses to the review queue, and tutor feedback on the essay. The 420
+    questions are original, written to match real GRE formats, topic mix,
+    difficulty, and traps. They include bar, line, and pie charts, data
+    tables, geometry figures, and select-in-passage questions. The attempt is
+    saved as you go, so a reload resumes where you left off.
+  - How the bank is built: Quant questions come from 66 seeded,
+    deterministic generators, one per GRE skill (percent change, work
+    rates, special triangles, standard deviation, QC with variables, …).
+    Verbal questions are assembled from the word families (meanings,
+    synonyms, antonyms, one-blank completion, sentence equivalence), 105
+    multi-blank templates, 26 reading passages, and 36 argument
+    (critical-reasoning) passages. Each question has an explanation, and most
+    say why the tempting wrong answer is wrong.
 
 Adding a course = drop a folder under `content/courses/<id>/` and register it in
 `lib/courses.ts`. Adding a lesson = drop a directory under that course's
@@ -80,10 +120,20 @@ content/courses/<course>/lessons/<id>/cheatsheet.ts per-lesson cheatsheet (DSA)
 content/courses/<course>/questions.ts   course-level question bank (LLM)
 content/courses/<course>/cheatsheets.ts course-level cheatsheets (LLM)
 content/courses/<course>/tradeoffs.ts   course tradeoff tables
+content/courses/gre/bank/            GRE practice-bank generators (quant/, verbal/)
+                                     + index.ts (sets, tiers, variants, lookup)
+content/courses/gre/tests/           the 5 full-length practice tests: pt<N>/
+                                     verbal.ts + quant.ts, author.ts (builders,
+                                     figures), scoring.ts (routing + estimates)
+components/tests/                    practice-test runner, calculator, results
 content/questions/index.ts           GLOBAL aggregator of every course's banks
 content/cheatsheets.ts               GLOBAL aggregator of every cheatsheet
 content/tradeoffs.ts                 GLOBAL aggregator of every tradeoff table
-components/blocks/                   the authoring primitives
+components/blocks/                   the authoring primitives (incl. <Example>,
+                                     <Solution>, <Gotcha title>, <WordFamilies>)
+components/quiz/                     answer cards: MCQ, short, multi (select-all /
+                                     select-2), numeric entry, multi-blank, and
+                                     QuestionCard, which dispatches between them
 components/visuals/                  DSA visuals + shared engine
 components/visuals/llm/              LLM visuals (BPE, cosine, attention, RAG, agent loop)
 lib/progress/repo.ts                 THE persistence swap point (see below)
@@ -92,6 +142,10 @@ lib/progress/repo.ts                 THE persistence swap point (see below)
 Routes: `/` is the **course picker**; `/course/[courseId]` is a course
 dashboard; `/module/[slug]` and `/lesson/[slug]` use globally-unique slugs;
 `/practice`, `/review`, and `/reference` span all courses with a course filter;
+`/course/[courseId]/bank` is a course's practice bank (GRE only, via
+`bank: true` in `lib/courses.ts`); `/course/[courseId]/tests` lists its
+full-length practice tests and `/course/[courseId]/tests/[testId]` runs one
+(`tests: true`);
 `/playground` is a standalone Python **IDE** (CodeMirror + Pyodide) for testing
 any idea, with real stdout/stderr. Every coding exercise also has an in-place
 **▶ run (print-debug)** button next to "run tests" so you can `print()` and
@@ -120,7 +174,9 @@ relevant registry. No routing changes — the course is derived from the path.
 ## Persistence
 
 Progress lives behind `ProgressRepo` (`lib/progress/repo.ts`) — the one-file
-swap point required by §3:
+swap point required by §3. Practice-bank answers are stored compactly
+(`bank.answers`: question id → 0/1, `bank.sets`: set id → last result), so
+10k+ questions don't bloat the state:
 
 - **default**: browser `localStorage` — zero setup, survives restarts.
 - **`NEXT_PUBLIC_PERSIST=sqlite`**: server-side SQLite via `/api/progress`
@@ -130,7 +186,7 @@ swap point required by §3:
 ## Tests
 
 ```bash
-npm test              # content integrity + code-exercise validation
+npm test              # content integrity + code exercises + GRE bank + practice tests
 npm run test:content    # every Check/Exercise/Visual/TradeoffTable reference
                         # resolves; frontmatter valid; cheatsheet terminal +
                         # registered; question ids unique; prereqs exist
@@ -138,14 +194,40 @@ npm run test:exercises  # runs every code exercise's SOLUTION against its
                         # hidden tests with real Python (same contract as the
                         # in-browser Pyodide harness), asserts the starter
                         # FAILS them, and that a complexity check exists
-npm run test:e2e        # full browser sweep: all 49 routes load with zero
+npm run test:bank       # builds all 11,773 GRE bank questions and checks
+                        # each one (structure, answer consistency, no broken
+                        # text, no duplicates), the set partition, review
+                        # variants, and every hand-written GRE check.
+                        # `node scripts/check-gre-bank.mjs --sample 10 tc-`
+                        # prints random questions for a read-through
+npm run test:tests      # checks the 5 practice tests against the real test's
+                        # blueprint (section sizes, minutes, question-type
+                        # order), checks every question's structure, and
+                        # checks that each keyed answer grades as correct
+                        # through the app's own grading code. Also checks
+                        # that harder second sections are harder, that ids
+                        # and content are unique, and that the scoring model
+                        # is monotonic. `--print 3 v2h` prints a section
+npm run test:e2e        # full browser sweep: all 214 routes load with zero
                         # page errors, visual stepping + drive-it-yourself,
                         # MCQ grading, progress persistence across reload,
-                        # review-queue round trip, print stylesheet, progress
-                        # API roundtrip, grade API error hygiene, rate guard
+                        # review-queue round trip, every GRE answer format,
+                        # the practice bank (practice + timed sets, results,
+                        # review of a bank question), a full practice test
+                        # (essay, keyed answers → harder route, mark/review,
+                        # save & resume, calculator transfer, results,
+                        # misses → review queue), print stylesheet,
+                        # progress API roundtrip, grade API error hygiene,
+                        # rate guard
 ```
 
-`test` needs only Node + Python 3. `test:e2e` additionally needs a
+`content/courses/gre/questions.ts` is generated: after adding a GRE lesson
+(its `questions.ts` exports `QUESTIONS`), run
+`python3 scripts/gen-gre-questions.py` to regenerate the aggregator in
+curriculum order.
+
+`test` needs only Node ≥ 22.18 (the bank check runs the TypeScript
+generators with Node's built-in type stripping) + Python 3. `test:e2e` additionally needs a
 production build (`npm run build`), `playwright-core`
 (`npm i --no-save playwright-core`), and a Chromium binary — point
 `CHROMIUM_PATH` at one if it isn't in the default location.

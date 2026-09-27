@@ -29,6 +29,8 @@ interface TutorApi {
   toggleDrawer: () => void;
   /** "Explain this" from a text selection — forces the lesson tab open. */
   askInLesson: (question: string) => void;
+  /** Send a prepared question to the General tab (e.g. "critique my essay"). */
+  askGeneral: (question: string) => void;
   consumePendingAsk: () => void;
 }
 
@@ -66,6 +68,12 @@ export function TutorProvider({ children }: { children: React.ReactNode }) {
     setPendingAsk(question);
   }, []);
 
+  const askGeneral = useCallback((question: string) => {
+    setTabState('general');
+    setOpen(true);
+    setPendingAsk(question);
+  }, []);
+
   const consumePendingAsk = useCallback(() => setPendingAsk(null), []);
 
   const api = useMemo<TutorApi>(
@@ -80,6 +88,7 @@ export function TutorProvider({ children }: { children: React.ReactNode }) {
       closeDrawer,
       toggleDrawer,
       askInLesson,
+      askGeneral,
       consumePendingAsk,
     }),
     [
@@ -93,6 +102,7 @@ export function TutorProvider({ children }: { children: React.ReactNode }) {
       closeDrawer,
       toggleDrawer,
       askInLesson,
+      askGeneral,
       consumePendingAsk,
     ],
   );

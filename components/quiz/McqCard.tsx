@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import type { McqQuestion, ComplexityCheck } from '@/lib/types';
+import { RichText } from './RichText';
+import { StimulusAbove, StimulusQuantities } from './Stimulus';
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
 
@@ -13,10 +15,13 @@ export function McqCard({
   q,
   onAnswered,
   priorAnswer,
+  hideFeedback,
 }: {
   q: McqQuestion | (ComplexityCheck & { id: string });
   onAnswered?: (correct: boolean, answerText: string) => void;
   priorAnswer?: string;
+  /** Timed-section mode: lock the answer in without revealing right/wrong. */
+  hideFeedback?: boolean;
 }) {
   const priorIndex =
     priorAnswer != null ? q.options.findIndex((o) => o === priorAnswer) : -1;
@@ -33,16 +38,25 @@ export function McqCard({
   };
 
   const distractorNotes = 'distractorNotes' in q ? q.distractorNotes : undefined;
+  const stimulus = 'stimulus' in q ? q.stimulus : undefined;
 
   return (
     <div>
-      <p className="mb-3 font-body text-[15.5px] leading-relaxed">{q.prompt}</p>
+      <StimulusAbove s={stimulus} />
+      {q.prompt && (
+        <p className="mb-3 font-body text-[15.5px] leading-relaxed">
+          <RichText text={q.prompt} />
+        </p>
+      )}
+      <StimulusQuantities s={stimulus} />
       <div className="flex flex-col gap-1.5">
         {q.options.map((opt, i) => {
           const isCorrect = i === q.correctIndex;
           const isSelected = i === selected;
           let cls = 'border-line bg-panel hover:border-line-strong';
-          if (answered) {
+          if (answered && hideFeedback) {
+            cls = isSelected ? 'border-active bg-active-wash' : 'border-line bg-panel opacity-60';
+          } else if (answered) {
             if (isCorrect) cls = 'border-done bg-done-wash';
             else if (isSelected) cls = 'border-alert bg-alert-wash';
             else cls = 'border-line bg-panel opacity-60';
@@ -56,7 +70,9 @@ export function McqCard({
             >
               <span
                 className={`mt-px font-mono text-[11px] font-semibold ${
-                  answered && isCorrect
+                  hideFeedback
+                    ? 'text-muted'
+                    : answered && isCorrect
                     ? 'text-done'
                     : answered && isSelected
                       ? 'text-alert'
@@ -65,11 +81,13 @@ export function McqCard({
               >
                 {LETTERS[i]}
               </span>
-              <span className="text-[14px] leading-snug">{opt}</span>
-              {answered && isCorrect && (
+              <span className="text-[14px] leading-snug">
+                <RichText text={opt} />
+              </span>
+              {answered && !hideFeedback && isCorrect && (
                 <span className="ml-auto font-mono text-[11px] text-done">✓</span>
               )}
-              {answered && isSelected && !isCorrect && (
+              {answered && !hideFeedback && isSelected && !isCorrect && (
                 <span className="ml-auto font-mono text-[11px] text-alert">✗</span>
               )}
             </button>
@@ -77,7 +95,11 @@ export function McqCard({
         })}
       </div>
 
-      {answered && (
+      {answered && hideFeedback && (
+        <p className="mt-3 font-mono text-[11px] text-muted">answer locked in — review comes at the end</p>
+      )}
+
+      {answered && !hideFeedback && (
         <div className="mt-3 space-y-2.5">
           <div
             className={`rounded border-l-2 py-2 pl-3 pr-2 text-[13.5px] leading-relaxed ${
@@ -89,7 +111,7 @@ export function McqCard({
             <span className="mr-2 font-mono text-[10px] font-semibold uppercase tracking-wider">
               {selected === q.correctIndex ? 'Correct' : 'Wrong'}
             </span>
-            {q.explanation}
+            <RichText text={q.explanation} />
           </div>
           {distractorNotes && distractorNotes.length > 0 && (
             <div className="rounded border border-line bg-paper px-3 py-2">
@@ -102,7 +124,9 @@ export function McqCard({
                     <span className="font-mono text-[10.5px] text-faint">
                       {LETTERS[i]}
                     </span>
-                    <span>{n}</span>
+                    <span>
+                      <RichText text={n} />
+                    </span>
                   </li>
                 ))}
               </ul>

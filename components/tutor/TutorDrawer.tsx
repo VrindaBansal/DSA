@@ -139,9 +139,10 @@ export function TutorDrawer() {
     }
   };
 
-  // "Explain this" selections arrive here — always the lesson tab.
+  // Prepared questions arrive here: "explain this" selections (lesson tab)
+  // and page actions like "critique my essay" (general tab).
   useEffect(() => {
-    if (pendingAsk && open && tab === 'lesson' && !busyRef.current) {
+    if (pendingAsk && open && !busyRef.current) {
       consumePendingAsk();
       void send(pendingAsk);
     }

@@ -1,0 +1,47 @@
+import type { Question } from '@/lib/types';
+
+export const QUESTIONS: Question[] = [
+  {
+    kind: 'numeric',
+    id: 'gre-tri-angles',
+    lessonId: 'gre-lines-triangles',
+    difficulty: 1,
+    prompt: 'In triangle ABC, the exterior angle at C measures 130°, and angle A measures 55°. What is the measure of angle B, in degrees?',
+    answer: 75,
+    answerDisplay: '75',
+    suffix: 'degrees',
+    explanation: 'An exterior angle equals the sum of the two remote interior angles: 130° = 55° + B → B = **75°**. (Interior angle C is 50°, and 55 + 75 + 50 = 180 ✓.)',
+  },
+  {
+    kind: 'mcq',
+    id: 'gre-tri-special',
+    lessonId: 'gre-lines-triangles',
+    difficulty: 2,
+    prompt: 'The diagonal of a square is 8. What is the area of the square?',
+    options: ['16', '32', '32√2', '64', '16√2'],
+    correctIndex: 1,
+    explanation: 'The diagonal splits the square into two 45-45-90 triangles: side = 8/√2 = 4√2, so area = (4√2)² = **32**. Shortcut: area of a square = diagonal² ÷ 2 = 64 ÷ 2.',
+    distractorNotes: ['Used side = 4.', 'Correct.', 'Left a √2 in the area.', 'Squared the diagonal without halving.', 'Not a valid step.'],
+  },
+  {
+    kind: 'multi',
+    id: 'gre-tri-ineq',
+    lessonId: 'gre-lines-triangles',
+    difficulty: 2,
+    prompt: 'Two sides of a triangle have lengths 5 and 11. Which of the following could be the length of the third side?\n\nIndicate all such lengths.',
+    options: ['5', '6', '7', '15', '16'],
+    correctIndices: [2, 3],
+    explanation: 'The third side must satisfy 11 − 5 < x < 11 + 5, i.e. **6 < x < 16** — strictly. Only 7 and 15 qualify.',
+    distractorNotes: ['✗ less than 6.', '✗ equal to the difference — the triangle would be flat.', '✓ between 6 and 16.', '✓ between 6 and 16.', '✗ equal to the sum — flat.'],
+  },
+  {
+    kind: 'numeric',
+    id: 'gre-tri-similar',
+    lessonId: 'gre-lines-triangles',
+    difficulty: 2,
+    prompt: 'Two similar triangles have corresponding sides of length 3 and 7.5. If the smaller triangle has area 12, what is the area of the larger?',
+    answer: 75,
+    answerDisplay: '75',
+    explanation: 'Side ratio = 7.5 / 3 = 2.5. Area ratio = 2.5² = 6.25. Larger area = 12 × 6.25 = **75**.',
+  },
+];

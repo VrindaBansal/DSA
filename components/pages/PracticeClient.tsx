@@ -5,8 +5,7 @@ import React, { useMemo, useState } from 'react';
 import type { LessonMeta, Question } from '@/lib/types';
 import { ALL_QUESTIONS } from '@/content/questions';
 import { useProgress } from '@/lib/progress/provider';
-import { McqCard } from '@/components/quiz/McqCard';
-import { ShortCard } from '@/components/quiz/ShortCard';
+import { QuestionCard } from '@/components/quiz/QuestionCard';
 import { getModule } from '@/lib/modules';
 import { COURSES } from '@/lib/courses';
 
@@ -170,17 +169,8 @@ export function PracticeClient({
             </span>
             <span>d{q.difficulty}</span>
           </div>
-          {q.kind === 'mcq' && (
-            <McqCard key={q.id + seed} q={q} onAnswered={onAnswered} />
-          )}
-          {q.kind === 'short' && (
-            <ShortCard
-              key={q.id + seed}
-              q={q}
-              onGraded={(verdict, answer) =>
-                onAnswered(verdict === 'correct', answer)
-              }
-            />
+          {q.kind !== 'code' && (
+            <QuestionCard key={q.id + seed} q={q} onAnswered={onAnswered} />
           )}
           {answeredCurrent && (
             <div className="mt-4 flex justify-end">

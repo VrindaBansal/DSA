@@ -2,8 +2,7 @@
 
 import React from 'react';
 import { BlockShell } from './BlockShell';
-import { McqCard } from '@/components/quiz/McqCard';
-import { ShortCard } from '@/components/quiz/ShortCard';
+import { QuestionCard } from '@/components/quiz/QuestionCard';
 import { QUESTION_BY_ID } from '@/content/questions';
 import { useProgress, useLessonProgress } from '@/lib/progress/provider';
 
@@ -52,21 +51,12 @@ export function CheckBlock({
             )}
           </span>
         </div>
-        {q.kind === 'mcq' && (
-          <McqCard
+        {q.kind !== 'code' && (
+          <QuestionCard
             q={q}
             priorAnswer={prior?.answer}
             onAnswered={(correct, answer) =>
               recordCheck(lessonId, q, correct, answer)
-            }
-          />
-        )}
-        {q.kind === 'short' && (
-          <ShortCard
-            q={q}
-            onGraded={(verdict, answer) =>
-              // strict: partial does not count as knowing it (spec §5.2)
-              recordCheck(lessonId, q, verdict === 'correct', answer)
             }
           />
         )}

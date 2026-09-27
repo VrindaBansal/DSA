@@ -11,8 +11,10 @@ import React, {
 } from 'react';
 import type {
   AppState,
+  BankSetResult,
   ChatMessage,
   LessonProgress,
+  PracticeTestResult,
   Question,
   ReviewItem,
 } from '../types';
@@ -42,6 +44,13 @@ interface ProgressApi {
     answerText: string,
   ) => void;
   answerReview: (item: ReviewItem, correct: boolean) => void;
+  /** Practice-bank answer: compact record + misses enter the review queue. */
+  recordBankAnswer: (question: Question, correct: boolean) => void;
+  recordBankSet: (setId: string, result: BankSetResult) => void;
+  /** A finished full-length practice test (kept as a history per test). */
+  recordPracticeTest: (result: PracticeTestResult) => void;
+  /** Put questions into the review queue as misses (due tomorrow). */
+  queueForReview: (items: { id: string; lessonId: string }[]) => void;
   appendChat: (lessonId: string, msg: ChatMessage) => void;
   clearChat: (lessonId: string) => void;
   appendGeneralChat: (msg: ChatMessage) => void;
@@ -279,6 +288,39 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
     }));
   }, []);
 
+  const recordBankAnswer = useCallback((question: Question, correct: boolean) => {
+    setState((s) => ({
+      ...s,
+      bank: {
+        ...s.bank,
+        answers: { ...s.bank.answers, [question.id]: correct ? 1 : 0 },
+      },
+      review: applyAnswer(s.review, question.id, question.lessonId, correct),
+    }));
+  }, []);
+
+  const recordBankSet = useCallback((setId: string, result: BankSetResult) => {
+    setState((s) => ({
+      ...s,
+      bank: { ...s.bank, sets: { ...s.bank.sets, [setId]: result } },
+    }));
+  }, []);
+
+  const recordPracticeTest = useCallback((result: PracticeTestResult) => {
+    setState((s) => ({
+      ...s,
+      tests: { ...s.tests, [result.testId]: [...(s.tests?.[result.testId] ?? []), result].slice(-10) },
+    }));
+  }, []);
+
+  const queueForReview = useCallback((items: { id: string; lessonId: string }[]) => {
+    setState((s) => {
+      let review = s.review;
+      for (const it of items) review = applyAnswer(review, it.id, it.lessonId, false);
+      return { ...s, review };
+    });
+  }, []);
+
   const appendChat = useCallback(
     (lessonId: string, msg: ChatMessage) => {
       updateLesson(lessonId, (lp) => ({ ...lp, chat: [...lp.chat, msg] }));
@@ -333,6 +375,10 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
       revealSolution,
       recordComplexityCheck,
       answerReview,
+      recordBankAnswer,
+      recordBankSet,
+      recordPracticeTest,
+      queueForReview,
       appendChat,
       clearChat,
       appendGeneralChat,
@@ -353,6 +399,10 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
       revealSolution,
       recordComplexityCheck,
       answerReview,
+      recordBankAnswer,
+      recordBankSet,
+      recordPracticeTest,
+      queueForReview,
       appendChat,
       clearChat,
       appendGeneralChat,

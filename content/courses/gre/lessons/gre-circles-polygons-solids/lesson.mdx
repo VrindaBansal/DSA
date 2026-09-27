@@ -1,0 +1,90 @@
+---
+id: gre-circles-polygons-solids
+module: gre-geometry
+title: Circles, polygons & solids
+order: 2
+estimatedMinutes: 35
+prerequisites: [gre-lines-triangles]
+objectives:
+  - Move between radius, diameter, circumference, and area of a circle
+  - Find arc lengths and sector areas as a fraction of the whole circle
+  - Use the interior-angle formula for polygons and the rectangle/square facts
+  - Find volume and surface area of boxes, cubes, and cylinders
+tags: [gre, quant, geometry, circles, solids]
+---
+
+<Intuition>
+Everything about a circle comes from its radius. Everything about an arc or sector is a
+fraction of the whole circle — the central angle over 360°. Polygons reduce to triangles,
+and solids reduce to “area of the base times height.” Learn those four ideas and most of
+this topic is arithmetic.
+</Intuition>
+
+<Concept>
+## Circles
+
+- Diameter d = 2r. Circumference C = 2πr = πd. Area A = πr².
+- **Arc length** = (θ/360) × 2πr and **sector area** = (θ/360) × πr², where θ is the
+  central angle.
+- An angle inscribed in a semicircle is a right angle. A tangent is perpendicular to the
+  radius at the point of contact.
+- Answers are usually left in terms of π: “36π,” not 113.1.
+</Concept>
+
+<Example title="A sector">
+A circle has area 64π. What is the area of a sector with a 45° central angle?
+
+<Solution>
+πr² = 64π → r = 8 (you don’t even need r). 45° is 45/360 = ⅛ of the circle.
+Sector area = ⅛ × 64π = **8π**.
+</Solution>
+</Example>
+
+<Check id="gre-circ-sector" />
+
+<Concept>
+## Polygons
+
+- Sum of interior angles of an n-sided polygon = **(n − 2) × 180°** (it splits into n − 2
+  triangles).
+- Each interior angle of a regular polygon = (n − 2) × 180° ÷ n. Each **exterior** angle
+  = 360° ÷ n — often the faster route.
+- Rectangle: area = lw; diagonal = √(l² + w²). Square: area = s² = diagonal² ÷ 2.
+- Parallelogram: area = base × height (the perpendicular height, not the slanted side).
+  Trapezoid: area = ½(b₁ + b₂)h.
+</Concept>
+
+<Check id="gre-circ-polygon" />
+
+<Concept>
+## Solids
+
+- Rectangular box: V = lwh; surface area = 2(lw + lh + wh); longest diagonal
+  = √(l² + w² + h²).
+- Cube: V = s³; surface area = 6s².
+- Cylinder: V = πr²h (area of the base × height); curved surface area = 2πrh.
+
+**Scaling:** multiply every length by k and volume multiplies by k³. Double a cylinder’s
+radius only and its volume multiplies by 4.
+</Concept>
+
+<Example title="Box diagonal">
+What is the length of the longest segment that fits inside a 3 × 4 × 12 box?
+
+<Solution>
+√(3² + 4² + 12²) = √(9 + 16 + 144) = √169 = **13**.
+
+(It is two Pythagorean steps: the base diagonal is 5, then √(5² + 12²) = 13.)
+</Solution>
+</Example>
+
+<Gotcha title="Trap — radius or diameter?">
+Circle questions often give the diameter while the formulas use the radius. Before you
+square anything, write down r.
+</Gotcha>
+
+<Check id="gre-circ-solid" />
+
+<Cheatsheet>
+Practice bank topic drills: Circles — area & circumference · Arcs & sectors · Polygons · Rectangles & squares · Boxes, cubes & cylinders.
+</Cheatsheet>

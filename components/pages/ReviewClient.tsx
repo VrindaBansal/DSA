@@ -1,12 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import type { LessonMeta, ReviewItem } from '@/lib/types';
 import { QUESTION_BY_ID } from '@/content/questions';
 import { useProgress } from '@/lib/progress/provider';
 import { McqCard } from '@/components/quiz/McqCard';
-import { ShortCard } from '@/components/quiz/ShortCard';
+import { QuestionCard } from '@/components/quiz/QuestionCard';
 import { GROWTH } from '@/lib/review';
 
 /**
@@ -20,6 +20,18 @@ export function ReviewClient({ lessons }: { lessons: LessonMeta[] }) {
   const [idx, setIdx] = useState(0);
   const [answered, setAnswered] = useState(false);
   const [nCorrect, setNCorrect] = useState(0);
+  // The GRE practice bank is large, so load it only when the queue needs it.
+  const [bank, setBank] = useState<typeof import('@/content/courses/gre/bank') | null>(null);
+  useEffect(() => {
+    if (!bank && queue?.some((i) => i.questionId.startsWith('gre.')))
+      import('@/content/courses/gre/bank').then(setBank);
+  }, [queue, bank]);
+  // Same for missed questions from the full-length practice tests.
+  const [tests, setTests] = useState<typeof import('@/content/courses/gre/tests') | null>(null);
+  useEffect(() => {
+    if (!tests && queue?.some((i) => i.questionId.startsWith('gre-pt')))
+      import('@/content/courses/gre/tests').then(setTests);
+  }, [queue, tests]);
 
   const due = ready ? dueReview() : [];
   const lessonById = useMemo(
@@ -73,7 +85,16 @@ export function ReviewClient({ lessons }: { lessons: LessonMeta[] }) {
 
   const finished = idx >= queue.length;
   const item = queue[idx];
-  const q = item ? QUESTION_BY_ID[item.questionId] : undefined;
+  const isBank = !!item && item.questionId.startsWith('gre.');
+  const isTest = !!item && !QUESTION_BY_ID[item.questionId] && item.questionId.startsWith('gre-pt');
+  // Bank misses come back as a fresh variant when the generator supports it:
+  // same skill and difficulty, new numbers — so review tests the method.
+  const q = item
+    ? (QUESTION_BY_ID[item.questionId] ??
+      (isBank && bank ? bank.bankVariant(item.questionId, item.reps + item.lapses) : undefined) ??
+      (isTest && tests ? tests.TEST_QUESTION_BY_ID[item.questionId] : undefined))
+    : undefined;
+  const bankLoading = (isBank && !bank) || (isTest && !tests);
 
   const record = (correct: boolean) => {
     if (!item) return;
@@ -110,6 +131,8 @@ export function ReviewClient({ lessons }: { lessons: LessonMeta[] }) {
             → dashboard
           </Link>
         </div>
+      ) : bankLoading ? (
+        <p className="font-mono text-[12px] text-muted">loading {isTest ? 'the practice test' : 'the practice bank'}…</p>
       ) : !q ? (
         // orphaned id (content edited) — skip it
         <div className="rounded border border-line bg-panel p-5">
@@ -131,6 +154,8 @@ export function ReviewClient({ lessons }: { lessons: LessonMeta[] }) {
           <div className="mb-3 flex items-center justify-between font-mono text-[10px] uppercase tracking-wider text-faint">
             <span>
               {item.asComplexityCheck && 'complexity re-check · '}
+              {isBank && q && q.id !== item.questionId && 'fresh variant · '}
+              {isTest && 'practice test miss · '}
               from{' '}
               <Link
                 href={`/lesson/${q.lessonId}`}
@@ -150,17 +175,11 @@ export function ReviewClient({ lessons }: { lessons: LessonMeta[] }) {
               q={{ ...q.complexityCheck, id: q.id }}
               onAnswered={(correct) => record(correct)}
             />
-          ) : q.kind === 'mcq' ? (
-            <McqCard
+          ) : q.kind !== 'code' ? (
+            <QuestionCard
               key={q.id + String(idx)}
               q={q}
               onAnswered={(correct) => record(correct)}
-            />
-          ) : q.kind === 'short' ? (
-            <ShortCard
-              key={q.id + String(idx)}
-              q={q}
-              onGraded={(verdict) => record(verdict === 'correct')}
             />
           ) : (
             <p className="font-mono text-[12px] text-muted">

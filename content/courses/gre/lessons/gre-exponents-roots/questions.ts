@@ -1,0 +1,52 @@
+import type { Question } from '@/lib/types';
+
+export const QUESTIONS: Question[] = [
+  {
+    kind: 'numeric',
+    id: 'gre-exp-base',
+    lessonId: 'gre-exponents-roots',
+    difficulty: 2,
+    prompt: 'If 9^(x − 1) = 27^x, what is the value of x?',
+    answer: -2,
+    answerDisplay: '−2',
+    explanation: 'Write both as powers of 3: 9^(x−1) = 3^(2x − 2) and 27^x = 3^(3x). Set exponents equal: 2x − 2 = 3x → x = **−2**. Check: 9^(−3) = 1/729 and 27^(−2) = 1/729 ✓.',
+  },
+  {
+    kind: 'mcq',
+    id: 'gre-exp-root',
+    lessonId: 'gre-exponents-roots',
+    difficulty: 1,
+    prompt: 'Which of the following is equal to √98?',
+    options: ['7√2', '2√7', '49√2', '14', '9.8'],
+    correctIndex: 0,
+    explanation: '98 = 49 × 2 and 49 is a perfect square, so √98 = √49 · √2 = **7√2** (≈ 9.9).',
+    distractorNotes: ['Correct.', 'Inside and outside swapped: 2√7 = √28.', 'Pulled out 49 instead of √49 = 7.', '14² = 196, not 98.', '9.8 is 98 ÷ 10, not √98.'],
+  },
+  {
+    kind: 'mcq',
+    id: 'gre-exp-fraction',
+    lessonId: 'gre-exponents-roots',
+    difficulty: 2,
+    prompt: 'If 0 < x < 1, which of the following is greatest?',
+    options: ['x', 'x²', 'x³', '√x', 'x/2'],
+    correctIndex: 3,
+    explanation: 'Try x = ¼: x = 0.25, x² = 0.0625, x³ ≈ 0.016, √x = 0.5, x/2 = 0.125. Between 0 and 1, roots make numbers bigger and powers make them smaller, so **√x** is greatest.',
+    distractorNotes: [
+      'Bigger than its powers, but smaller than its root.',
+      'Squaring a fraction shrinks it.',
+      'Cubing shrinks it even more.',
+      'Correct.',
+      'Halving shrinks it.',
+    ],
+  },
+  {
+    kind: 'numeric',
+    id: 'gre-exp-units',
+    lessonId: 'gre-exponents-roots',
+    difficulty: 2,
+    prompt: 'What is the units digit of 3⁵⁰?',
+    answer: 9,
+    answerDisplay: '9',
+    explanation: 'Powers of 3 end in 3, 9, 7, 1 (cycle of 4). 50 ÷ 4 = 12 remainder 2 → second in the cycle → **9**.',
+  },
+];
