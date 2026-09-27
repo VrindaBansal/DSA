@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { moduleLabel } from '@/lib/modules';
 import type { LessonMeta, ModuleMeta } from '@/lib/types';
 import { useProgress } from '@/lib/progress/provider';
 import { questionsForLesson } from '@/content/questions';
@@ -27,7 +28,7 @@ export function ModuleClient({
         </Link>
       </div>
       <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted">
-        Module {String(mod.number).padStart(2, '0')}
+        {moduleLabel(mod)}
       </div>
       <h1 className="mt-1 font-display text-[2rem] font-bold tracking-tight">
         {mod.title}

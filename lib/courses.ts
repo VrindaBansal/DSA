@@ -2,6 +2,16 @@
 // content/courses/<id>/. Adding a course = drop a folder + one entry here.
 // Pure data — safe on client and server.
 
+/** A named group of modules on a course dashboard (e.g. GRE Math vs English). */
+export interface CourseSection {
+  id: string;
+  title: string;
+  /** Shown under the title for subject sections. */
+  subtitle?: string;
+  /** A subject track (full header with progress and next lesson) vs a small framing group. */
+  subject?: boolean;
+}
+
 export interface CourseMeta {
   id: string;
   title: string;
@@ -17,6 +27,8 @@ export interface CourseMeta {
   tests?: boolean;
   /** Lesson that lays out the week-by-week plan, linked from the dashboard. */
   planLessonId?: string;
+  /** Group modules into sections, in dashboard order. Modules name their section. */
+  sections?: CourseSection[];
 }
 
 export const COURSES: CourseMeta[] = [
@@ -52,12 +64,18 @@ export const COURSES: CourseMeta[] = [
     title: 'GRE prep',
     tagline: 'Quant + Verbal + Writing, taught by worked example — then 11,000+ practice questions and 5 full-length practice tests.',
     blurb:
-      'A complete, follow-along GRE course. Every quant topic and every verbal question type is taught with worked examples you try first, checked with questions that explain every answer choice, and backed by a practice bank of 11,000+ questions organized into numbered sets that ramp from Foundation to Advanced, plus five full-length practice tests that run like the real exam — timed sections, adaptive second sections, and estimated scores.',
+      'A complete, follow-along GRE course in two sections — Math and English — that you work through side by side. Every quant topic and every verbal question type is taught with worked examples you try first, checked with questions that explain every answer choice, and backed by a practice bank of 11,000+ questions organized into numbered sets that ramp from Foundation to Advanced, plus five full-length practice tests that run like the real exam — timed sections, adaptive second sections, and estimated scores.',
     outcome:
       'Finish it and you know exactly what the GRE tests and how it tests it, have a method for every question type, and have drilled each skill to the point where test day feels like one more practice set.',
     bank: true,
     tests: true,
     planLessonId: 'gre-study-plan',
+    sections: [
+      { id: 'start', title: 'Getting started' },
+      { id: 'math', title: 'Math', subtitle: 'Quantitative Reasoning', subject: true },
+      { id: 'english', title: 'English', subtitle: 'Verbal Reasoning & Analytical Writing', subject: true },
+      { id: 'final', title: 'Test day' },
+    ],
   },
 ];
 

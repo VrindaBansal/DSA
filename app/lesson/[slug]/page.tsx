@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import remarkGfm from 'remark-gfm';
 import { getAllLessons, getLesson, getLessonNeighbors } from '@/lib/content';
-import { getModule } from '@/lib/modules';
+import { getModule, moduleLabel } from '@/lib/modules';
 import { makeMdxComponents } from '@/components/blocks/mdx-components';
 import { LessonShell } from '@/components/lesson/LessonShell';
 
@@ -49,7 +49,7 @@ export default async function LessonPage({
               href={`/module/${mod.slug}`}
               className="font-mono text-[11px] uppercase tracking-[0.14em] text-active"
             >
-              Module {String(mod.number).padStart(2, '0')} · {mod.title}
+              {moduleLabel(mod)} · {mod.title}
             </Link>
           )}
           <h1 className="mt-2 font-display text-[2.3rem] font-bold leading-[1.12] tracking-tight">

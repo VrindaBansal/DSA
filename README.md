@@ -27,9 +27,13 @@ anchors, tested constantly):
   LeetCode-Hard problems into patterns you already know. ~28 in-browser coding
   exercises ramping Easy → Hard, each with hidden tests, hints, a gated
   solution, and a complexity self-check.
-- **GRE prep** — 13 modules, 29 lessons, Quant and Verbal interleaved so each
-  week mixes both, plus the Issue essay and test-day strategy. Starts with a
-  format overview and a **study plan** (pinned on the dashboard). Every lesson
+- **GRE prep** — 13 modules, 29 lessons, in two sections shown side by side on
+  the dashboard: **Math** (Quantitative Reasoning, 6 modules) and **English**
+  (Verbal Reasoning and the Issue essay, 5 modules), plus a Getting started
+  module and a Test day module. Each section shows its own progress and next
+  lesson, and the **study plan** (pinned on the dashboard) schedules both every
+  week. Sections are generic: a course lists `sections` in `lib/courses.ts`
+  and each module names its `section` in `lib/modules.ts`. Every lesson
   follows the same loop: intuition → concept → worked **examples** → "try it
   first" **solutions** → checks with per-choice feedback → a named trap → a
   cheatsheet. 104 hand-written checks use the real GRE formats (5-choice,

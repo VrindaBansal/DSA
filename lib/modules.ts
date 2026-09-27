@@ -1,4 +1,5 @@
 import type { ModuleMeta } from './types';
+import { getCourse } from './courses';
 
 // The 12-module curriculum (spec §6). Pure data — safe on client and server.
 export const MODULES: ModuleMeta[] = [
@@ -323,87 +324,53 @@ export const MODULES: ModuleMeta[] = [
   {
     slug: 'gre-start',
     courseId: 'gre',
+    section: 'start',
     number: 1,
     title: 'The GRE, decoded',
     blurb: 'Format, timing & scoring · section-level adaptivity · the question types · your 8-week study plan',
     anchors: ['Why “no penalty for guessing” changes your strategy', 'The shorter GRE: 1 hour 58 minutes'],
   },
   {
-    slug: 'gre-vocab',
-    courseId: 'gre',
-    number: 2,
-    title: 'Vocabulary that actually gets tested',
-    blurb: 'Learn words in families · roots & context clues · charge (+/−) · tricky second meanings · the core word list',
-    anchors: ['“Qualify” doesn’t mean “be eligible”', 'Why synonym pairs win sentence equivalence'],
-  },
-  {
     slug: 'gre-arithmetic',
     courseId: 'gre',
-    number: 3,
+    section: 'math',
+    number: 2,
     title: 'Numbers & arithmetic',
     blurb: 'Integers · divisibility · primes · remainders · exponents & roots · fractions & decimals',
     anchors: ['Counting factors with prime exponents', 'Why (0.5)² is smaller than 0.5'],
   },
   {
-    slug: 'gre-text-completion',
-    courseId: 'gre',
-    number: 4,
-    title: 'Text completion',
-    blurb: 'Cover the choices · find the clue and the signal words · predict, then match · two- and three-blank logic',
-    anchors: ['“Although” flips the meaning', 'Fill the easiest blank first'],
-  },
-  {
     slug: 'gre-quant-strategy',
     courseId: 'gre',
-    number: 5,
+    section: 'math',
+    number: 3,
     title: 'Quant question types & tactics',
     blurb: 'Quantitative comparison · plugging in numbers · backsolving · estimation · the calculator · pacing',
     anchors: ['When two tests disagree, the answer is D', 'The calculator is a trap for estimation questions'],
   },
   {
-    slug: 'gre-sentence-equivalence',
-    courseId: 'gre',
-    number: 6,
-    title: 'Sentence equivalence',
-    blurb: 'Predict first · the pair must fit AND match · the synonym-pair trap',
-    anchors: ['Two words that mean the same thing can both be wrong'],
-  },
-  {
     slug: 'gre-word-problems',
     courseId: 'gre',
-    number: 7,
+    section: 'math',
+    number: 4,
     title: 'Percents, ratios & rates',
     blurb: 'Percent change · successive percents · reverse percents · ratios · rates, work & mixtures',
     anchors: ['A 20% gain then a 20% loss is a 4% loss', 'Average speed is not the average of speeds'],
   },
   {
-    slug: 'gre-reading',
-    courseId: 'gre',
-    number: 8,
-    title: 'Reading comprehension',
-    blurb: 'Passage mapping · main idea, detail, inference, function · select-all · argument questions',
-    anchors: ['The answer is in the passage — prove it', 'Correlation is not causation'],
-  },
-  {
     slug: 'gre-algebra',
     courseId: 'gre',
-    number: 9,
+    section: 'math',
+    number: 5,
     title: 'Algebra',
     blurb: 'Linear equations & systems · inequalities · absolute value · quadratics · functions & sequences',
     anchors: ['x² = 16 has two answers', 'Add the equations instead of solving them'],
   },
   {
-    slug: 'gre-writing',
-    courseId: 'gre',
-    number: 10,
-    title: 'Analytical writing',
-    blurb: 'The Issue task · the scoring rubric · a reusable structure · a 30-minute plan',
-    anchors: ['A clear position plus the strongest counterargument', 'Specific examples beat big vocabulary'],
-  },
-  {
     slug: 'gre-geometry',
     courseId: 'gre',
-    number: 11,
+    section: 'math',
+    number: 6,
     title: 'Geometry',
     blurb: 'Angles & triangles · special right triangles · circles & polygons · solids · coordinate geometry',
     anchors: ['Memorize 3-4-5 and 5-12-13', 'Never trust the figure'],
@@ -411,14 +378,61 @@ export const MODULES: ModuleMeta[] = [
   {
     slug: 'gre-data',
     courseId: 'gre',
-    number: 12,
+    section: 'math',
+    number: 7,
     title: 'Data analysis',
     blurb: 'Mean, median & standard deviation · the normal curve · counting & probability · tables and data interpretation',
     anchors: ['Percent change from a table', '“At least one” = 1 − “none”'],
   },
   {
+    slug: 'gre-vocab',
+    courseId: 'gre',
+    section: 'english',
+    number: 8,
+    title: 'Vocabulary that actually gets tested',
+    blurb: 'Learn words in families · roots & context clues · charge (+/−) · tricky second meanings · the core word list',
+    anchors: ['“Qualify” doesn’t mean “be eligible”', 'Why synonym pairs win sentence equivalence'],
+  },
+  {
+    slug: 'gre-text-completion',
+    courseId: 'gre',
+    section: 'english',
+    number: 9,
+    title: 'Text completion',
+    blurb: 'Cover the choices · find the clue and the signal words · predict, then match · two- and three-blank logic',
+    anchors: ['“Although” flips the meaning', 'Fill the easiest blank first'],
+  },
+  {
+    slug: 'gre-sentence-equivalence',
+    courseId: 'gre',
+    section: 'english',
+    number: 10,
+    title: 'Sentence equivalence',
+    blurb: 'Predict first · the pair must fit AND match · the synonym-pair trap',
+    anchors: ['Two words that mean the same thing can both be wrong'],
+  },
+  {
+    slug: 'gre-reading',
+    courseId: 'gre',
+    section: 'english',
+    number: 11,
+    title: 'Reading comprehension',
+    blurb: 'Passage mapping · main idea, detail, inference, function · select-all · argument questions',
+    anchors: ['The answer is in the passage — prove it', 'Correlation is not causation'],
+  },
+  {
+    slug: 'gre-writing',
+    courseId: 'gre',
+    section: 'english',
+    number: 12,
+    title: 'Analytical writing',
+    blurb: 'The Issue task · the scoring rubric · a reusable structure · a 30-minute plan',
+    anchors: ['A clear position plus the strongest counterargument', 'Specific examples beat big vocabulary'],
+  },
+  {
     slug: 'gre-final',
     courseId: 'gre',
+    section: 'final',
     number: 13,
     title: 'Test day & the 11,000-question bank',
     blurb: 'Pacing and section strategy · test-day logistics · how to use the practice bank until test day',
@@ -430,7 +444,22 @@ export const getModule = (slug: string): ModuleMeta | undefined =>
   MODULES.find((m) => m.slug === slug);
 
 export const getModulesForCourse = (courseId: string): ModuleMeta[] =>
-  MODULES.filter((m) => m.courseId === courseId);
+  MODULES.filter((m) => m.courseId === courseId).sort((a, b) => a.number - b.number);
+
+/**
+ * How a module is numbered in the UI. Courses without sections use the
+ * course-wide number ("Module 03"). In sectioned courses modules are numbered
+ * within their section ("Math · Module 02"); a single-module section is just
+ * named ("Getting started").
+ */
+export function moduleLabel(m: ModuleMeta): string {
+  const course = getCourse(m.courseId);
+  const section = m.section && course?.sections?.find((s) => s.id === m.section);
+  if (!section) return `Module ${String(m.number).padStart(2, '0')}`;
+  const peers = getModulesForCourse(m.courseId).filter((x) => x.section === m.section);
+  if (peers.length === 1) return section.title;
+  return `${section.title} · Module ${String(peers.findIndex((x) => x.slug === m.slug) + 1).padStart(2, '0')}`;
+}
 
 /** Client-safe module slug → courseId lookup (used to scope nav/practice). */
 export const MODULE_COURSE: Record<string, string> = Object.fromEntries(
