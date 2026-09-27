@@ -41,4 +41,29 @@ export const QUESTIONS: Question[] = [
       'Consistent practice is how the gains stick.',
     ],
   },
+  {
+    kind: 'mcq',
+    id: 'gre-bank-routing',
+    lessonId: 'gre-practice-bank',
+    difficulty: 2,
+    prompt:
+      'On a full-length practice test you get 6 of 12 right in the first Quant section, so you are routed to the easier second section, where you get 14 of 15 right. What is the most useful conclusion?',
+    options: [
+      'Your Quant score will be near the top of the scale, since you almost aced the second section.',
+      'The first section cost you the most: the easier route limits how high your score can go, however well you do on it.',
+      'Easier and harder second sections are scored identically, so the route doesn’t matter.',
+      'You should leave the hardest first-section questions blank to save time.',
+      'Routing depends on your essay score, not on the first section.',
+    ],
+    correctIndex: 1,
+    explanation:
+      'The first section decides which second section you get, and the easier second section caps your score well below the top of the scale. Getting one more first-section question right would have routed you to the harder section. So the first section of each measure deserves your sharpest focus.',
+    distractorNotes: [
+      'Acing an easier section can’t lift you to the top of the scale — that’s the whole point of routing.',
+      'Correct.',
+      'The two routes lead to different score ranges.',
+      'Never leave a question blank — there is no penalty for guessing.',
+      'The essay is scored separately and doesn’t affect routing.',
+    ],
+  },
 ];

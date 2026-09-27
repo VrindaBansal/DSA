@@ -88,8 +88,8 @@ export function DashboardClient({
         </div>
       </div>
 
-      {(course.bank || course.planLessonId) && (
-        <div className="mb-6 grid gap-4 sm:grid-cols-2">
+      {(course.bank || course.planLessonId || course.tests) && (
+        <div className={`mb-6 grid gap-4 sm:grid-cols-2 ${course.tests ? 'lg:grid-cols-3' : ''}`}>
           {course.planLessonId && (
             <Link
               href={`/lesson/${course.planLessonId}`}
@@ -117,6 +117,26 @@ export function DashboardClient({
                 {ready
                   ? `${Object.keys(state.bank.answers).filter((id) => id.startsWith('gre.')).length.toLocaleString('en-US')} answered so far · feedback on every choice`
                   : 'feedback on every choice'}
+              </p>
+            </Link>
+          )}
+          {course.tests && (
+            <Link
+              href={`/course/${course.id}/tests`}
+              className="group rounded-md border-[1.5px] border-ink bg-panel p-5 transition-colors hover:bg-active-wash/30"
+            >
+              <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">Full-length tests</div>
+              <div className="mt-1 font-display text-[17px] font-semibold group-hover:text-active-deep">
+                5 timed practice tests, real GRE format →
+              </div>
+              <p className="mt-1 text-[13px] text-muted">
+                {ready && Object.values(state.tests ?? {}).some((h) => h.length)
+                  ? (() => {
+                      const all = Object.values(state.tests).flat().sort((a, b) => a.at - b.at);
+                      const last = all[all.length - 1];
+                      return `${Object.values(state.tests).filter((h) => h.length).length} of 5 taken · latest V ${last.verbal.scaled} · Q ${last.quant.scaled}`;
+                    })()
+                  : 'essay + 4 adaptive sections · estimated scores'}
               </p>
             </Link>
           )}

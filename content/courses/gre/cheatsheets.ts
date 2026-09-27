@@ -42,7 +42,7 @@ export const GRE_CHEATSHEETS: CheatsheetData[] = [
     useWhen: 'Deciding what to do today: review queue → next lesson in order → the day’s sets.',
     dontUseWhen: 'Skipping review or timed practice to “save time” — those two convert understanding into points.',
     stdlib: 'Practice bank → Numbered sets (next set highlighted)',
-    bullets: ['About 1½–2 hours a day, six days a week, for 8 weeks.', 'Official ETS POWERPREP practice tests in weeks 7–8.', 'Move up a tier when sets feel easy (85%+).'],
+    bullets: ['About 1½–2 hours a day, six days a week, for 8 weeks.', 'Full-length Practice Tests 1–5 in weeks 1, 4, 6, 7, and 8.', 'Official ETS POWERPREP practice tests in weeks 7–8.', 'Move up a tier when sets feel easy (85%+).'],
     gotchas: ['Read the note under every choice, even on questions you got right.'],
   },
   {

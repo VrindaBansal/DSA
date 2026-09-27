@@ -32,7 +32,7 @@ anchors, tested constantly):
   format overview and a **study plan** (pinned on the dashboard). Every lesson
   follows the same loop: intuition → concept → worked **examples** → "try it
   first" **solutions** → checks with per-choice feedback → a named trap → a
-  cheatsheet. 103 hand-written checks use the real GRE formats (5-choice,
+  cheatsheet. 104 hand-written checks use the real GRE formats (5-choice,
   quantitative comparison, numeric entry, select-all, 2–3 blank text
   completion, sentence equivalence). The vocabulary is taught as **word
   families** (184 families, 764 words), not a flat list.
@@ -44,6 +44,21 @@ anchors, tested constantly):
     you redo misses, and every miss joins the spaced review queue. Review
     serves a fresh variant of the same problem so you can't just memorize
     the answer.
+  - **Five full-length practice tests** (`/course/gre/tests`) that run like the
+    real exam: the Issue essay (30 min, no spell-check), then two Verbal
+    sections (12 questions/18 min, 15/23) and two Quant sections (12/21, 15/26)
+    in the official layout. Inside a section you can go back, **mark**, and use
+    a **review** screen; Quant has an on-screen **calculator** with Transfer
+    Display. Each measure’s second section comes in an **easier** and a
+    **harder** version, and the first section’s score decides which one you
+    get. Results show **estimated 130–170 scores** (a ±3 band, since ETS
+    doesn’t publish its conversion), time per section, breakdowns by question
+    type and topic, an explanation for every question, a button that sends
+    misses to the review queue, and tutor feedback on the essay. The 420
+    questions are original, written to match real GRE formats, topic mix,
+    difficulty, and traps. They include bar, line, and pie charts, data
+    tables, geometry figures, and select-in-passage questions. The attempt is
+    saved as you go, so a reload resumes where you left off.
   - How the bank is built: Quant questions come from 66 seeded,
     deterministic generators, one per GRE skill (percent change, work
     rates, special triangles, standard deviation, QC with variables, …).
@@ -107,6 +122,10 @@ content/courses/<course>/cheatsheets.ts course-level cheatsheets (LLM)
 content/courses/<course>/tradeoffs.ts   course tradeoff tables
 content/courses/gre/bank/            GRE practice-bank generators (quant/, verbal/)
                                      + index.ts (sets, tiers, variants, lookup)
+content/courses/gre/tests/           the 5 full-length practice tests: pt<N>/
+                                     verbal.ts + quant.ts, author.ts (builders,
+                                     figures), scoring.ts (routing + estimates)
+components/tests/                    practice-test runner, calculator, results
 content/questions/index.ts           GLOBAL aggregator of every course's banks
 content/cheatsheets.ts               GLOBAL aggregator of every cheatsheet
 content/tradeoffs.ts                 GLOBAL aggregator of every tradeoff table
@@ -124,7 +143,9 @@ Routes: `/` is the **course picker**; `/course/[courseId]` is a course
 dashboard; `/module/[slug]` and `/lesson/[slug]` use globally-unique slugs;
 `/practice`, `/review`, and `/reference` span all courses with a course filter;
 `/course/[courseId]/bank` is a course's practice bank (GRE only, via
-`bank: true` in `lib/courses.ts`);
+`bank: true` in `lib/courses.ts`); `/course/[courseId]/tests` lists its
+full-length practice tests and `/course/[courseId]/tests/[testId]` runs one
+(`tests: true`);
 `/playground` is a standalone Python **IDE** (CodeMirror + Pyodide) for testing
 any idea, with real stdout/stderr. Every coding exercise also has an in-place
 **▶ run (print-debug)** button next to "run tests" so you can `print()` and
@@ -165,7 +186,7 @@ swap point required by §3. Practice-bank answers are stored compactly
 ## Tests
 
 ```bash
-npm test              # content integrity + code exercises + GRE bank
+npm test              # content integrity + code exercises + GRE bank + practice tests
 npm run test:content    # every Check/Exercise/Visual/TradeoffTable reference
                         # resolves; frontmatter valid; cheatsheet terminal +
                         # registered; question ids unique; prereqs exist
@@ -179,12 +200,23 @@ npm run test:bank       # builds all 11,773 GRE bank questions and checks
                         # variants, and every hand-written GRE check.
                         # `node scripts/check-gre-bank.mjs --sample 10 tc-`
                         # prints random questions for a read-through
-npm run test:e2e        # full browser sweep: all 208 routes load with zero
+npm run test:tests      # checks the 5 practice tests against the real test's
+                        # blueprint (section sizes, minutes, question-type
+                        # order), checks every question's structure, and
+                        # checks that each keyed answer grades as correct
+                        # through the app's own grading code. Also checks
+                        # that harder second sections are harder, that ids
+                        # and content are unique, and that the scoring model
+                        # is monotonic. `--print 3 v2h` prints a section
+npm run test:e2e        # full browser sweep: all 214 routes load with zero
                         # page errors, visual stepping + drive-it-yourself,
                         # MCQ grading, progress persistence across reload,
                         # review-queue round trip, every GRE answer format,
                         # the practice bank (practice + timed sets, results,
-                        # review of a bank question), print stylesheet,
+                        # review of a bank question), a full practice test
+                        # (essay, keyed answers → harder route, mark/review,
+                        # save & resume, calculator transfer, results,
+                        # misses → review queue), print stylesheet,
                         # progress API roundtrip, grade API error hygiene,
                         # rate guard
 ```

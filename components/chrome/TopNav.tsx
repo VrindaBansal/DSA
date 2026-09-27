@@ -21,8 +21,8 @@ export function TopNav() {
 
   return (
     <header className="no-print sticky top-0 z-40 border-b border-line bg-panel/95 backdrop-blur-sm">
-      <div className="mx-auto flex h-12 max-w-6xl items-center gap-8 px-5">
-        <Link href="/" className="flex items-baseline gap-2">
+      <div className="mx-auto flex h-12 max-w-6xl items-center gap-4 px-5 sm:gap-8">
+        <Link href="/" className="flex shrink-0 items-baseline gap-2">
           <span className="font-display text-[15px] font-semibold tracking-tight">
             Invariant
           </span>
@@ -30,7 +30,7 @@ export function TopNav() {
             learn
           </span>
         </Link>
-        <nav className="flex items-center gap-1 font-mono text-[12px]">
+        <nav className="-mr-5 flex min-w-0 items-center gap-1 overflow-x-auto pr-5 font-mono text-[12px] sm:mr-0 sm:pr-0">
           {LINKS.map(({ href, label }) => {
             const active =
               href === '/' ? pathname === '/' : pathname.startsWith(href);
@@ -38,7 +38,7 @@ export function TopNav() {
               <Link
                 key={href}
                 href={href}
-                className={`rounded px-2.5 py-1 transition-colors ${
+                className={`shrink-0 whitespace-nowrap rounded px-2 py-1 transition-colors sm:px-2.5 ${
                   active
                     ? 'bg-active-wash text-active-deep'
                     : 'text-muted hover:text-ink'

@@ -33,15 +33,39 @@ export interface ModuleMeta {
 
 // --- Question model (spec §5.2) --------------------------------------------
 
+/** A bar, line, or pie chart for data-interpretation questions. */
+export interface ChartData {
+  type: 'bar' | 'line' | 'pie';
+  title: string;
+  /** x-axis categories (bar/line) or slice labels (pie). */
+  categories: string[];
+  /** One or more series; a pie uses the first series only. */
+  series: { name: string; values: number[] }[];
+  yLabel?: string;
+  xLabel?: string;
+  /** y-axis maximum and gridline step (bar/line). */
+  yMax?: number;
+  yStep?: number;
+  /** Appended to value labels, e.g. "%". */
+  unit?: string;
+  /** Print each value on its bar/point/slice (default: true for pie only). */
+  showValues?: boolean;
+}
+
 /**
  * Material shown above a question's prompt — a reading passage, a data
- * table, or the two columns of a GRE quantitative comparison.
+ * table or chart, a geometry figure, or the two columns of a GRE
+ * quantitative comparison.
  */
 export interface Stimulus {
   /** Reading passage or argument paragraph. */
   passage?: string;
   /** Data table (data interpretation). */
   table?: { caption?: string; columns: string[]; rows: string[][] };
+  /** Charts (data interpretation). */
+  charts?: ChartData[];
+  /** Geometry figure as inline SVG markup (authored content, not user input). */
+  figure?: { svg: string; note?: string };
   /** Quantitative comparison: Quantity A vs Quantity B. */
   quantities?: { a: string; b: string };
 }
@@ -256,6 +280,36 @@ export interface BankProgress {
   sets: Record<string, BankSetResult>;
 }
 
+/**
+ * A response on a full-length practice test, by question kind: option index
+ * (mcq), option indices (multi), raw typed text — "n/d" for fraction boxes —
+ * (numeric), or one option index per blank (blanks).
+ */
+export type TestResponse = number | number[] | string | (number | null)[];
+
+export interface TestMeasureResult {
+  firstCorrect: number;
+  firstTotal: number;
+  secondCorrect: number;
+  secondTotal: number;
+  /** Which second section the first section routed to. */
+  level: 'easier' | 'harder';
+  /** Estimated 130–170 score. */
+  scaled: number;
+}
+
+export interface PracticeTestResult {
+  testId: string;
+  at: number;
+  verbal: TestMeasureResult;
+  quant: TestMeasureResult;
+  /** questionId → response, for the answer review. */
+  responses: Record<string, TestResponse>;
+  /** section key → seconds used. */
+  seconds: Record<string, number>;
+  essay: string;
+}
+
 export interface AppState {
   lessons: Record<string, LessonProgress>;
   review: Record<string, ReviewItem>;
@@ -263,6 +317,8 @@ export interface AppState {
   /** The "General" tutor tab's thread — not scoped to any one lesson. */
   generalChat: ChatMessage[];
   bank: BankProgress;
+  /** Full-length practice tests: test id → finished attempts, oldest first. */
+  tests: Record<string, PracticeTestResult[]>;
 }
 
 export const emptyLessonProgress = (lessonId: string): LessonProgress => ({
@@ -279,4 +335,5 @@ export const emptyAppState = (): AppState => ({
   review: {},
   generalChat: [],
   bank: { answers: {}, sets: {} },
+  tests: {},
 });

@@ -15,6 +15,7 @@
 import { spawn, execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 const PORT = 3457;
 const BASE = `http://localhost:${PORT}`;
@@ -66,6 +67,16 @@ const routes = [
   ...[
     ...fs.readFileSync(path.join(root, 'lib', 'courses.ts'), 'utf8').matchAll(/id: '([^']+)',[^}]*?bank: true/gs),
   ].map((m) => `/course/${m[1]}/bank`),
+  // courses with full-length practice tests (`tests: true`), and each test
+  ...[
+    ...fs.readFileSync(path.join(root, 'lib', 'courses.ts'), 'utf8').matchAll(/id: '([^']+)',[^}]*?tests: true/gs),
+  ].flatMap((m) => [
+    `/course/${m[1]}/tests`,
+    ...fs
+      .readdirSync(path.join(coursesDir, m[1], 'tests'), { withFileTypes: true })
+      .filter((d) => d.isDirectory() && /^pt\d+$/.test(d.name))
+      .map((d) => `/course/${m[1]}/tests/pt-${d.name.slice(2)}`),
+  ]),
 ];
 
 // --- boot server -------------------------------------------------------------
@@ -488,6 +499,138 @@ await page.waitForTimeout(1500);
 if ((await page.locator('text=no longer exists').count()) === 0 && (await page.locator('text=divisors').count()) > 0)
   pass('review resolves a practice-bank question (lazy-loaded bank)');
 else fail('review could not load a practice-bank question');
+
+section('GRE full-length practice test');
+{
+  const T = await import(pathToFileURL(path.join(root, 'content/courses/gre/tests/index.ts')).href);
+  const test = T.TEST_BY_ID['pt-1'];
+  const exact = (t) => new RegExp('^' + t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$');
+  // Enter the keyed (correct) answer for whatever question is on screen.
+  const answerKeyed = async (q) => {
+    const box = page.locator(`[data-question-id="${q.id}"]`);
+    if (q.kind === 'numeric') {
+      if (q.fraction) {
+        const [n, d] = q.answerDisplay.split('/');
+        await box.getByLabel('numerator').fill(n);
+        await box.getByLabel('denominator').fill(d);
+      } else await box.getByLabel('answer').fill(q.answerDisplay);
+    } else if (q.kind === 'blanks') {
+      const cols = box.locator('div.min-w-\\[170px\\]');
+      for (let b = 0; b < q.blanks.length; b++)
+        await cols.nth(b).locator('button').filter({ hasText: exact(q.blanks[b].options[q.blanks[b].correctIndex]) }).click();
+    } else if (q.format === 'rc-select') {
+      await page.locator(`[data-sentence="${q.correctIndex}"]`).click();
+    } else {
+      const want = q.kind === 'mcq' ? [q.correctIndex] : q.correctIndices;
+      for (const i of want) await box.locator('button[aria-pressed]').filter({ hasText: exact(q.options[i]) }).click();
+    }
+  };
+
+  await page.goto(`${BASE}/course/gre/tests`, { waitUntil: 'networkidle' });
+  const listed = await page.locator('a', { hasText: /Practice Test \d/ }).count();
+  if (listed === T.TESTS.length && listed >= 5) pass(`tests page lists all ${listed} practice tests`);
+  else fail(`tests page lists ${listed} tests, expected ${T.TESTS.length}`);
+
+  await page.goto(`${BASE}/course/gre/tests/pt-1`, { waitUntil: 'networkidle' });
+  await page.getByRole('button', { name: /start test/ }).click();
+  await page.getByLabel('Your essay').fill('Struggle is where durable learning happens. '.repeat(12));
+  if ((await page.getByTestId('test-timer').count()) > 0 && /^30:00|^29:5/.test(await page.getByTestId('test-timer').textContent()))
+    pass('essay section runs on a 30-minute clock');
+  else fail('essay timer missing or wrong');
+  await page.getByRole('button', { name: 'next →' }).click();
+  await page.locator('.bg-alert-wash').getByRole('button', { name: 'end section' }).click();
+
+  // Verbal 1: answer every question with its key → should route to the harder second section
+  await page.getByRole('button', { name: /begin section/ }).click();
+  const v1 = test.sections.v1.questions;
+  for (let i = 0; i < v1.length; i++) {
+    await answerKeyed(v1[i]);
+    if (i === 1) await page.getByRole('button', { name: 'mark', exact: true }).click();
+    await page.getByRole('button', { name: 'next →' }).click();
+  }
+  const reviewText = await page.locator('main, body').first().innerText();
+  if (/end of this section/.test(reviewText) && !/Not answered|Incomplete/.test(reviewText))
+    pass('end-of-section review screen: all 12 answered');
+  else fail('end-of-section review screen shows unanswered questions after answering all');
+  if ((await page.locator('button', { hasText: /^2\s*Answered\s*✓$/ }).count()) === 1) pass('marked question shows in the review grid');
+  else fail('mark did not show in review grid');
+  await page.getByRole('button', { name: /end section & continue/ }).click();
+  await page.getByRole('button', { name: /begin section/ }).click();
+  const firstHarder = test.sections.v2h.questions[0];
+  if ((await page.locator(`[data-question-id="${firstHarder.id}"]`).count()) === 1)
+    pass('a strong first section routes to the harder second section');
+  else fail('routing did not select the harder second Verbal section');
+
+  // save & exit, then resume in place
+  await page.getByRole('button', { name: 'next →' }).click();
+  await page.getByRole('button', { name: /save & exit/ }).click();
+  await page.reload({ waitUntil: 'networkidle' });
+  await page.getByRole('button', { name: /resume test/ }).click();
+  if (/Question 2 of 15/.test(await page.getByTestId('question-counter').textContent()))
+    pass('save & exit resumes at the same question after a reload');
+  else fail('resume did not return to the same question');
+  await page.getByRole('button', { name: 'end section', exact: true }).click();
+  await page.locator('.bg-alert-wash').getByRole('button', { name: 'end section' }).click();
+
+  // Quant 1: calculator transfer into a numeric-entry box, then end with the rest blank
+  await page.getByRole('button', { name: /begin section/ }).click();
+  const q1 = test.sections.q1.questions;
+  const neIdx = q1.findIndex((q) => q.kind === 'numeric' && !q.fraction);
+  await page.getByRole('button', { name: 'review', exact: true }).click();
+  await page.locator('button', { hasText: new RegExp(`^${neIdx + 1}\\s*Not answered`) }).click();
+  await page.getByRole('button', { name: 'calculator', exact: true }).click();
+  for (const k of ['1', '2', '×', '4', '=']) await page.getByRole('button', { name: k, exact: true }).click();
+  await page.getByRole('button', { name: 'Transfer Display' }).click();
+  if ((await page.getByLabel('answer').inputValue()) === '48') pass('calculator computes and transfers into the answer box');
+  else fail(`calculator transfer gave "${await page.getByLabel('answer').inputValue()}"`);
+  await page.getByRole('button', { name: 'end section', exact: true }).click();
+  await page.locator('.bg-alert-wash').getByRole('button', { name: 'end section' }).click();
+  await page.getByRole('button', { name: /begin section/ }).click();
+  if ((await page.locator(`[data-question-id="${test.sections.q2e.questions[0].id}"]`).count()) === 1)
+    pass('a weak first section routes to the easier second section');
+  else fail('routing did not select the easier second Quant section');
+  await page.getByRole('button', { name: 'end section', exact: true }).click();
+  await page.locator('.bg-alert-wash').getByRole('button', { name: 'end section' }).click();
+  await page.waitForTimeout(1200);
+
+  const verbalCard = (await page.getByTestId('score-verbal').textContent()) ?? '';
+  const quantCard = (await page.getByTestId('score-quant').textContent()) ?? '';
+  if (/Section 1: 12\/12/.test(verbalCard) && /harder/.test(verbalCard) && /easier/.test(quantCard))
+    pass('results show section scores and the route taken');
+  else fail(`results cards unexpected: ${verbalCard.slice(0, 120)} | ${quantCard.slice(0, 120)}`);
+  const vScore = Number(verbalCard.match(/(1[3-7]\d)/)?.[1]);
+  if (vScore >= 130 && vScore <= 170) pass(`estimated Verbal score on the 130–170 scale (${vScore})`);
+  else fail('no valid estimated score');
+  await page.getByRole('button', { name: /add \d+ to review/ }).click();
+  await page.waitForTimeout(800);
+  const testState = await page.evaluate(() => {
+    const s = JSON.parse(localStorage.getItem('invariant.progress.v1') ?? '{}');
+    return {
+      attempts: s.tests?.['pt-1']?.length ?? 0,
+      essay: s.tests?.['pt-1']?.[0]?.essay?.length ?? 0,
+      queued: Object.keys(s.review ?? {}).filter((k) => k.startsWith('gre-pt1-')).length,
+      inProgress: !!localStorage.getItem('invariant.gre.test.pt-1'),
+    };
+  });
+  if (testState.attempts === 1 && testState.essay > 100 && !testState.inProgress) pass('finished attempt saved (with essay); in-progress state cleared');
+  else fail(`test state after finishing: ${JSON.stringify(testState)}`);
+  if (testState.queued > 20) pass(`misses sent to the review queue (${testState.queued})`);
+  else fail(`expected misses in review queue, found ${testState.queued}`);
+
+  // a practice-test miss resolves on the review page (lazy-loaded test content)
+  await page.evaluate(() => {
+    const s = JSON.parse(localStorage.getItem('invariant.progress.v1') ?? '{}');
+    const id = Object.keys(s.review ?? {}).find((k) => k.startsWith('gre-pt1-'));
+    s.review = { [id]: { ...s.review[id], due: Date.now() - 1000 } };
+    localStorage.setItem('invariant.progress.v1', JSON.stringify(s));
+  });
+  await page.goto(`${BASE}/review`, { waitUntil: 'networkidle' });
+  await page.getByRole('button', { name: 'start →' }).click();
+  await page.waitForTimeout(1500);
+  if ((await page.locator('text=no longer exists').count()) === 0 && (await page.locator('text=practice test miss').count()) > 0)
+    pass('review resolves a practice-test question');
+  else fail('review could not load a practice-test question');
+}
 
 section('print stylesheet on cheatsheet route');
 await page.goto(`${BASE}/lesson/queues/cheatsheet`, { waitUntil: 'networkidle' });
