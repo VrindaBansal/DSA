@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import type { ShortQuestion, GradeResult } from '@/lib/types';
+import { MathText } from '@/components/tutor/Markdown';
 
 /**
  * Short-response question, graded server-side against the rubric only
@@ -121,8 +122,8 @@ export function ShortCard({
               </div>
             )}
           </div>
-          <p className="text-[13.5px] leading-relaxed text-ink-soft">
-            {result.feedback}
+          <p className="md-feedback text-[13.5px] leading-relaxed text-ink-soft">
+            <MathText text={result.feedback} />
           </p>
           <div className="rounded border-l-2 border-line-strong bg-paper py-2 pl-3 pr-2">
             <div className="mb-1 font-mono text-[10px] uppercase tracking-wider text-muted">

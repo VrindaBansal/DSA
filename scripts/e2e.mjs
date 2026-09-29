@@ -237,6 +237,52 @@ else if ((await page.locator('text=thinking').count()) > 0)
 else fail('general chat send produced neither an error nor a pending state');
 await page.keyboard.press('Escape');
 
+section('tutor typesets math (mocked reply)');
+{
+  // A fresh context so the canned reply doesn't land in the main thread.
+  const mctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  await mctx.addCookies(authCookies);
+  const mpage = await mctx.newPage();
+  const mathErrors = [];
+  mpage.on('pageerror', (e) => mathErrors.push(e.message));
+  const reply = String.raw`1. If \( n \equiv 2 \pmod{5} \), then \( 3n + 4 \equiv 0 \pmod{5} \).
+   - Factor: \( 84 = 2^2 \times 3 \times 7 \)
+2. Divisors:
+\[ (2+1)(1+1)(1+1) = 12 \]
+
+A shirt costs $12 and a hat costs $15. Also $x^2 - 9 = (x-3)(x+3)$.`;
+  await mpage.route('**/api/chat', (r) =>
+    r.fulfill({ status: 200, contentType: 'text/plain; charset=utf-8', body: reply }),
+  );
+  await mpage.goto(`${BASE}/`, { waitUntil: 'networkidle' });
+  await mpage.getByLabel('open tutor').click();
+  await mpage.getByPlaceholder(/wait, why/).fill('remainders?');
+  await mpage.keyboard.press('Enter');
+  await mpage.waitForSelector('[aria-label="AI tutor"] .md .katex', { timeout: 10000 }).catch(() => {});
+  const m = await mpage.evaluate(() => {
+    const md = [...document.querySelectorAll('[aria-label="AI tutor"] .md')].pop();
+    if (!md) return null;
+    return {
+      inline: md.querySelectorAll('.katex').length,
+      display: md.querySelectorAll('.katex-display').length,
+      errors: md.querySelectorAll('.katex-error').length,
+      raw: /\\\(|\\\)|\\\[|\\\]/.test(md.innerText),
+      ol: md.querySelectorAll('ol > li').length,
+      nested: md.querySelectorAll('ol li ul li').length,
+      money: md.innerText.includes('$12') && md.innerText.includes('$15'),
+    };
+  });
+  if (m && m.inline >= 5 && m.display === 1 && m.errors === 0 && !m.raw)
+    pass(`LaTeX in \\( \\), \\[ \\] and $ $ typeset by KaTeX (${m.inline} spans, no raw delimiters)`);
+  else fail(`tutor math not typeset: ${JSON.stringify(m)}`);
+  if (m && m.money) pass('dollar amounts stay plain text, not math');
+  else fail('dollar amounts were swallowed as math');
+  if (m && m.ol === 2 && m.nested === 1) pass('numbered and nested bullet lists render as lists');
+  else fail(`tutor lists not rendered: ${JSON.stringify(m)}`);
+  if (mathErrors.length) fail(`math render page errors: ${mathErrors.join(' | ').slice(0, 200)}`);
+  await mctx.close();
+}
+
 section('global tutor — lesson tab appears + persists across pages');
 await page.goto(`${BASE}/lesson/queues`, { waitUntil: 'networkidle' });
 await page.keyboard.press('ControlOrMeta+k');

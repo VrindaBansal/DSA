@@ -55,7 +55,7 @@ For each rubric point decide: did the answer substantively hit it (paraphrase co
 - verdict "partial": at least one hit, at least one missed.
 - verdict "incorrect": no rubric point substantively hit, or the answer contains a fundamental misconception.
 - hitRubricPoints / missed: copy the rubric points verbatim into the right bucket.
-- feedback: 1-3 blunt, specific sentences. Name what was dodged or hand-waved. No praise padding, no "great job". If a misconception appears, name it explicitly.`;
+- feedback: 1-3 blunt, specific sentences. Name what was dodged or hand-waved. No praise padding, no "great job". If a misconception appears, name it explicitly. Write any math in LaTeX inside \\( … \\) (never $ … $, which means money).`;
 
   const user = `QUESTION: ${prompt}
 

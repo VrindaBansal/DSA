@@ -20,6 +20,7 @@
     "@uiw/react-codemirror": "^4.23.6",
     "framer-motion": "^11.15.0",
     "gray-matter": "^4.0.3",
+    "katex": "^0.16.47",
     "next": "^15.3.0",
     "next-mdx-remote": "^6.0.0",
     "react": "^19.0.0",
