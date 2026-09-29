@@ -3,96 +3,257 @@ id: gre-rates-work
 module: gre-word-problems
 title: Rates, work & mixtures
 order: 3
-estimatedMinutes: 35
+estimatedMinutes: 50
 prerequisites: [gre-ratios]
 objectives:
-  - Use distance = rate × time, and compute average speed as total distance over total time
-  - Solve meeting and catch-up problems by combining or subtracting rates
-  - Add work rates (not times) to find how long a shared job takes
-  - Solve mixtures by tracking the amount of pure substance
+  - Use distance = rate × time, converting minutes and hours correctly
+  - Find an average speed from total distance and total time — never by averaging speeds
+  - Solve problems with two people or vehicles moving toward or after each other
+  - Combine work rates to find how long a job takes together (or alone)
+  - Solve mixture problems by tracking the amount of the pure ingredient
 tags: [gre, quant, rates, work, mixtures]
 ---
 
 <Intuition>
-Rate problems have one engine: **amount = rate × time**. Distance, pages printed, a tank
-filled, a fence painted — all the same equation. The three traps are also the same every
-time: averaging speeds that were held for different amounts of time, adding times when you
-should add rates, and averaging concentrations when the volumes differ. In each case the fix
-is to go back to the totals.
+Speed, work, and mixture problems all run on the same idea: **a rate is an amount per unit of
+time** (miles per hour, pages per minute, tanks per hour). Once you write down each rate, the
+problems turn into simple multiplication and addition.
+
+The two mistakes to avoid are also the same across all three: **averaging things that shouldn't
+be averaged** (like two speeds, or two job times) and **losing track of units** (minutes vs.
+hours). This lesson shows the safe way around both.
 </Intuition>
 
 <Concept>
-## Average speed is total distance ÷ total time
+## 1. Distance = rate × time
 
-It is **not** the average of the speeds unless equal *times* were spent at each speed.
+$$
+\text{distance} = \text{rate} \times \text{time}
+$$
+
+Cover the one you want and the other two tell you how to get it:
+- distance = rate × time
+- rate = distance ÷ time
+- time = distance ÷ rate
+
+**Units have to match.** If the rate is in miles per **hour**, the time must be in **hours**.
+Convert minutes to hours by dividing by 60: 45 minutes = 45/60 = 0.75 hour; 20 minutes = ⅓ hour.
 </Concept>
 
-<Example title="The round trip">
-You drive to a lake at 30 mph and back along the same road at 60 mph. What is your average
-speed for the round trip?
+<Example title="Mixed units">
+A bus travels 18 miles in 24 minutes. What is its speed in miles per hour?
 
 <Solution>
-Pick a distance that divides easily: 60 miles each way.
-Out: 60 ÷ 30 = 2 hours. Back: 60 ÷ 60 = 1 hour. Total: 120 miles in 3 hours → **40 mph**.
+**Step 1 — Convert the time to hours.** 24 minutes = 24/60 = 0.4 hour.
 
-Not 45: you spent twice as long at the slower speed, so it counts more. (For equal
-distances, average speed = 2uv/(u + v).)
+**Step 2 — rate = distance ÷ time.** 18 ÷ 0.4 = **45 miles per hour**.
+
+**Another way:** 24 minutes is 2/5 of an hour, so in a full hour the bus goes 18 × 5/2 = 45 miles. ✓
+
+**The trap:** 18 ÷ 24 = 0.75 — that's miles per *minute*.
 </Solution>
 </Example>
 
-<Check id="gre-rw-avg" />
+<Check id="gre-rw-basic" />
+
+<Check id="gre-rw-units" />
 
 <Concept>
-## Two movers
+## 2. Average speed: total distance ÷ total time
 
-- **Toward each other:** the gap closes at the **sum** of the speeds.
-- **Same direction (catching up):** the gap closes at the **difference** of the speeds.
+If you drive to a city at 60 mph and back at 40 mph, your average speed is **not** 50 mph.
+Why? You spend **more time** at the slower speed, so it counts for more.
 
-Two cars 300 miles apart driving toward each other at 40 and 60 mph meet after
-300 ÷ 100 = 3 hours.
+**The only safe rule:**
+
+$$
+\text{average speed} = \frac{\text{total distance}}{\text{total time}}
+$$
+
+Find each leg's time, add them, and divide the total distance by the total time. If the problem
+doesn't give a distance, **pick a convenient one** — a number both speeds divide into.
 </Concept>
 
-<Concept>
-## Work: add rates, never times
-
-If A finishes a job in a hours, A does 1/a of the job per hour. Working together, rates add:
-1/a + 1/b. Time together = 1 ÷ (1/a + 1/b) = ab/(a + b).
-</Concept>
-
-<Example title="Working together">
-One painter can paint a room in 3 hours; another takes 6 hours. How long if they work
-together?
+<Example title="The round trip">
+A driver goes from A to B at 60 mph and returns along the same road at 40 mph. What is the
+average speed for the round trip?
 
 <Solution>
-Rates: 1/3 + 1/6 = 2/6 + 1/6 = 1/2 room per hour → **2 hours**.
+**Step 1 — Pick a distance.** No distance is given, so choose one that 60 and 40 both divide:
+say A to B is **120 miles**.
 
-Sanity check: together must be faster than the faster painter alone (3 hours). Averaging
-the times (4.5 hours) fails that check immediately.
+**Step 2 — Time for each leg.** There: 120 ÷ 60 = 2 hours. Back: 120 ÷ 40 = 3 hours.
+
+**Step 3 — Totals.** Distance: 240 miles. Time: 5 hours.
+
+**Step 4 — Average speed.** 240 ÷ 5 = **48 mph** — not 50.
+
+(Any distance gives 48. There's also a shortcut for equal distances:
+2 × 60 × 40 ÷ (60 + 40) = 48.)
+</Solution>
+</Example>
+
+<Gotcha title="Trap — averaging averages">
+Averaging two speeds only works if you spend **equal time** at each. When the **distances** are
+equal (as in a round trip), the slower leg takes longer, so the average is pulled below the
+midpoint. Always go back to total distance ÷ total time.
+</Gotcha>
+
+<Check id="gre-rw-avg" />
+
+<Check id="gre-rw-avg-two" />
+
+<Concept>
+## 3. Two things moving at once
+
+When two people or vehicles move at the same time, combine their speeds:
+
+- **Toward each other** (or away from each other): the gap closes (or opens) at the **sum** of their
+  speeds. Cars 300 miles apart driving toward each other at 70 and 50 mph close the gap at 120 mph:
+  300 ÷ 120 = 2.5 hours.
+- **Same direction, one chasing the other:** the gap closes at the **difference** of their speeds.
+  A car at 70 mph gains on a car at 50 mph at 20 mph.
+
+Then use **time = gap ÷ combined speed.**
+
+If one starts later, first figure out **how big the gap is** when the second one starts.
+</Concept>
+
+<Example title="Catching up">
+Train P leaves a station at noon traveling 60 mph. At 1:00 p.m., train Q leaves the same station
+on a parallel track in the same direction at 80 mph. At what time does Q catch up?
+
+<Solution>
+**Step 1 — The gap when Q starts.** By 1:00, P has traveled 60 miles. So Q starts 60 miles behind.
+
+**Step 2 — How fast Q closes the gap.** Same direction → subtract: 80 − 60 = 20 miles per hour.
+
+**Step 3 — Time to close it.** 60 ÷ 20 = 3 hours after 1:00 → **4:00 p.m.**
+
+**Check:** at 4:00, P has gone 4 × 60 = 240 miles and Q has gone 3 × 80 = 240 miles ✓.
+</Solution>
+</Example>
+
+<Check id="gre-rw-toward" />
+
+<Check id="gre-rw-meet" />
+
+<Concept>
+## 4. Work problems: add the rates
+
+"Alex can paint a room in 6 hours. Bea can paint it in 3 hours. How long if they work together?"
+The tempting answer is to average or add the times — both wrong. Instead, turn each time into a
+**rate**: how much of the job gets done **per hour**.
+
+- Alex: 1 room in 6 hours → **1/6 of a room per hour**.
+- Bea: 1 room in 3 hours → **1/3 of a room per hour**.
+
+**Working together, rates add:** 1/6 + 1/3 = 1/6 + 2/6 = 3/6 = **1/2 room per hour**. So the room
+takes **2 hours**.
+
+$$
+\text{time together} = \frac{1}{\text{rate}_1 + \text{rate}_2}
+$$
+
+A quick sanity check: working together must be **faster than the faster person alone**. (2 hours
+beats Bea's 3.) For exactly two workers, there's a shortcut: time = (a × b) ÷ (a + b) = 18 ÷ 9 = 2.
+
+**Working backward:** if you know the time together and one person's time, subtract rates to get
+the other person's rate.
+</Concept>
+
+<Example title="Find one worker's time">
+Working together, Kim and Lee can mow a lawn in 4 hours. Kim alone takes 6 hours. How long
+would Lee take alone?
+
+<Solution>
+**Step 1 — Rates you know.** Together: 1/4 of the lawn per hour. Kim: 1/6 per hour.
+
+**Step 2 — Lee's rate is the difference.** 1/4 − 1/6 = 3/12 − 2/12 = 1/12 of the lawn per hour.
+
+**Step 3 — Flip the rate into a time.** 1/12 per hour → **12 hours**.
+
+Sanity check: Lee is slower than Kim, and together they're faster than either alone ✓.
 </Solution>
 </Example>
 
 <Check id="gre-rw-work" />
 
+<Check id="gre-rw-work-two" />
+
 <Concept>
-## Mixtures: track the pure stuff
+## 5. Mixtures: track the pure ingredient
 
-Concentration = amount of substance ÷ total volume. Mixing adds **amounts** and adds
-**volumes**; it never adds or averages concentrations directly (unless the volumes are
-equal).
+In a mixture problem, focus on **how much of the pure substance** there is — the salt, the acid,
+the juice — not the percents.
 
-3 L of 20% salt solution + 1 L of 60% salt solution:
-salt = 0.6 + 0.6 = 1.2 L; volume = 4 L → **30%**.
+$$
+\text{amount of pure stuff} = \text{percent} \times \text{total amount}
+$$
+
+- 12 liters of a 30% acid solution contain 0.30 × 12 = **3.6 liters of acid**.
+- **Adding water** changes the total but **not the amount of acid.**
+- **Mixing two solutions:** the acid amounts add, and the totals add.
+
+Set up one equation: (acid in the final mix) = (final percent) × (final total), then solve.
 </Concept>
 
 <Gotcha title="Trap — adding pure water">
-Adding water changes the volume but not the amount of substance. To dilute 10 L of a 40%
-solution to 25%, keep the 4 L of substance fixed: 4 = 0.25 × (10 + w) → w = 6 L of water.
+Diluting a solution doesn't lower its percent by the amount of water you add. Adding 12 liters of
+water to 12 liters of 30% acid gives 3.6 liters of acid in 24 liters — **15%**, not "30% − something."
+Always recompute from the amount of the pure ingredient.
 </Gotcha>
+
+<Example title="Diluting a solution">
+How many liters of pure water must be added to 12 liters of a 30% acid solution to make a 20% acid
+solution?
+
+<Solution>
+**Step 1 — Acid stays fixed.** 0.30 × 12 = 3.6 liters of acid, before and after.
+
+**Step 2 — Write the new mixture.** Adding w liters of water makes (12 + w) liters, and 20% of it is acid:
+0.20 × (12 + w) = 3.6.
+
+**Step 3 — Solve.** 12 + w = 3.6 ÷ 0.20 = 18, so w = **6 liters**.
+
+**Check:** 3.6 liters of acid in 18 liters is 3.6/18 = 0.2 = 20% ✓.
+</Solution>
+</Example>
+
+<Example title="Mixing two solutions">
+How many liters of a 10% salt solution must be mixed with 10 liters of a 40% salt solution to make a
+20% salt solution?
+
+<Solution>
+**Step 1 — Salt from each part.** From the 40% solution: 0.40 × 10 = 4 liters. From x liters of the
+10% solution: 0.10x liters.
+
+**Step 2 — The final mix.** It has 10 + x liters, and 20% of it is salt: 4 + 0.10x = 0.20(10 + x).
+
+**Step 3 — Solve.** 4 + 0.1x = 2 + 0.2x → 2 = 0.1x → x = **20 liters**.
+
+**Check:** salt = 4 + 2 = 6 liters in 30 liters = 20% ✓.
+</Solution>
+</Example>
 
 <Check id="gre-rw-mix" />
 
-<Check id="gre-rw-meet" />
+<Check id="gre-rw-mix-two" />
+
+<Concept>
+## Recap
+
+| Type | Key idea | Example |
+|---|---|---|
+| distance, rate, time | d = r × t; match the units | 18 mi in 24 min → 45 mph |
+| average speed | total distance ÷ total time | 60 there, 40 back → 48 mph |
+| toward each other | add the speeds | 300 mi at 70 + 50 → 2.5 h |
+| catching up | subtract the speeds; find the head start | 60-mile head start at 20 mph → 3 h |
+| working together | add the rates (jobs per hour) | 1/6 + 1/3 = 1/2 → 2 h |
+| one worker's time | subtract rates | 1/4 − 1/6 = 1/12 → 12 h |
+| mixtures | track the pure ingredient | 3.6 L acid in 18 L = 20% |
+</Concept>
 
 <Cheatsheet>
-Practice bank topic drills: Average speed · Meeting & catching up · Work rates · Mixtures & concentrations.
+Practice bank topic drills: Distance-rate-time · Average speed · Work rates · Mixtures.
 </Cheatsheet>

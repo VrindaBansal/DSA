@@ -3,86 +3,241 @@ id: gre-ratios
 module: gre-word-problems
 title: Ratios & proportions
 order: 2
-estimatedMinutes: 30
+estimatedMinutes: 45
 prerequisites: [gre-percents]
 objectives:
-  - Turn a ratio into “parts” and find one part from a total or a difference
+  - Read a ratio as “parts,” and turn it into a fraction of the total
+  - Use the parts method when you know a total or a difference
   - Combine two ratios that share a term
-  - Solve ratio-change problems by tracking what stays fixed
-  - Scale rates proportionally (machines × time × output)
-tags: [gre, quant, ratios, proportions]
+  - Solve changing-ratio problems by finding the amount that doesn’t change
+  - Set up proportions, and tell “more means more” from “more means less”
+tags: [gre, quant, ratios]
 ---
 
 <Intuition>
-A ratio tells you the **shape** of a group, not its size. “Cats to dogs is 3 : 5” means
-the group can be cut into 8 equal parts: 3 are cats, 5 are dogs. Once you know the size of
-one part, everything else follows. Nearly every ratio problem is “find one part” in
-disguise.
+A ratio compares amounts. "The ratio of red to blue marbles is 5 : 3" doesn't tell you how
+many marbles there are — it tells you that for every 5 red there are 3 blue. There might be
+5 and 3, or 10 and 6, or 50 and 30.
+
+The single most useful way to think about a ratio is as **parts**: the jar is made of
+**equal-sized parts**, 5 of them red and 3 of them blue. Almost every ratio question on the GRE
+becomes easy once you ask **"how big is one part?"**
 </Intuition>
 
 <Concept>
-## Parts
+## 1. What a ratio tells you
 
-With a ratio a : b, the whole has a + b parts. If you know the total, one part = total ÷
-(a + b). If you know the difference, one part = difference ÷ (a − b).
+A ratio can be written three ways: **5 : 3**, **5 to 3**, or **5/3**. Order matters: "red to blue"
+is 5 : 3; "blue to red" is 3 : 5.
+
+**Part-to-part vs. part-to-whole.** A ratio of red to blue of 5 : 3 compares **parts**. The
+**whole** has 5 + 3 = **8 parts**. So:
+- red is **5/8** of the marbles, and blue is **3/8** of them;
+- red to total is 5 : 8.
+
+This is the step people skip: a ratio of 5 : 3 does **not** mean red is 5/3 of the jar. To get a
+fraction of the whole, first add the parts.
+
+**Simplifying a ratio** works like simplifying a fraction: divide both numbers by the same thing.
+12 : 18 = 2 : 3. With decimals or fractions, multiply to clear them: 0.5 : 2 = 1 : 4, and
+½ : ⅓ = 3 : 2 (multiply both by 6).
 </Concept>
 
-<Example title="Ratio to count">
-The ratio of fiction to nonfiction books on a shelf is 4 : 7. There are 66 books. How many
-are nonfiction?
+<Example title="Ratio to fraction">
+In a club, the ratio of members who are students to members who are not is 2 : 7. What fraction
+of the club's members are students?
 
 <Solution>
-4 + 7 = 11 parts; one part = 66 ÷ 11 = 6. Nonfiction = 7 × 6 = **42**.
+**Step 1 — Count all the parts.** 2 + 7 = 9 parts.
 
-Trap: 66 × 7/4 treats the ratio as a fraction of the total. The total has 11 parts, not 4.
+**Step 2 — Students are 2 of those parts.** Fraction = **2/9**.
+
+**The trap:** answering 2/7. That compares students to non-students, not students to everyone.
 </Solution>
 </Example>
+
+<Check id="gre-rat-fraction" />
+
+<Check id="gre-rat-simplify" />
+
+<Concept>
+## 2. The parts method
+
+When a problem gives a ratio plus **one real number** — a total, or a difference, or one of the
+amounts — do this:
+
+1. Write the ratio as parts, and figure out how many parts the real number stands for.
+2. Divide to find **one part**.
+3. Multiply to get whatever the question asks for.
+
+$$
+\text{one part} = \frac{\text{real amount}}{\text{number of parts it represents}}
+$$
+
+The real number can be the **total** (use the sum of the parts), a **difference** (use the
+difference of the parts), or **one of the amounts** (use its own parts).
+</Concept>
+
+<Example title="Ratio and a total">
+A school has 720 students, and the ratio of juniors to seniors is 4 : 5. How many seniors are there?
+
+<Solution>
+**Step 1 — Total parts.** 4 + 5 = 9 parts make 720 students.
+
+**Step 2 — One part.** 720 ÷ 9 = 80 students.
+
+**Step 3 — Seniors are 5 parts.** 5 × 80 = **400** seniors (and 320 juniors — check: 400 + 320 = 720 ✓).
+</Solution>
+</Example>
+
+<Example title="Ratio and a difference">
+The ratio of red to blue marbles in a jar is 5 : 3, and there are 14 more red marbles than blue.
+How many marbles are in the jar?
+
+<Solution>
+**Step 1 — What does 14 stand for?** The difference between red and blue: 5 − 3 = **2 parts**.
+
+**Step 2 — One part.** 14 ÷ 2 = 7 marbles.
+
+**Step 3 — The whole jar is 8 parts.** 8 × 7 = **56** marbles (35 red, 21 blue — and 35 − 21 = 14 ✓).
+</Solution>
+</Example>
+
+<Check id="gre-rat-parts-total" />
 
 <Check id="gre-rat-parts" />
 
 <Concept>
-## Combining ratios
+## 3. Combining two ratios
 
-If a : b = 2 : 3 and b : c = 4 : 5, make b the same in both. b is 3 in one and 4 in the
-other, so scale to 12: a : b = 8 : 12 and b : c = 12 : 15. Then a : b : c = 8 : 12 : 15, and
-a : c = **8 : 15**.
+"a : b = 2 : 3 and b : c = 4 : 5." You'd like one ratio a : b : c, but the two ratios use
+**different-sized parts** for b (3 in one, 4 in the other). Fix that first:
+
+1. Find the shared term (here, b).
+2. Scale each ratio so the shared term is the **same number** — use the least common multiple
+   of 3 and 4, which is 12.
+3. Read off the combined ratio.
+
+- a : b = 2 : 3 → multiply by 4 → **8 : 12**
+- b : c = 4 : 5 → multiply by 3 → **12 : 15**
+
+So **a : b : c = 8 : 12 : 15**, and a : c = 8 : 15.
 </Concept>
 
-<Check id="gre-rat-chain" />
-
-<Concept>
-## Ratios that change: find what stays fixed
-
-When something is added to only one part of a ratio, the other part is fixed. Write the
-original amounts as multiples of one unknown (3k and 5k), apply the change, and set up the
-new ratio.
-</Concept>
-
-<Example title="A changing ratio">
-The ratio of boys to girls in a club is 3 : 4. After 6 more boys join, the ratio is 1 : 1.
-How many girls are in the club?
+<Example title="Chain two ratios">
+If x : y = 3 : 4 and y : z = 6 : 5, what is x : z?
 
 <Solution>
-Boys = 3k, girls = 4k. After: (3k + 6) : 4k = 1 : 1 → 3k + 6 = 4k → k = 6.
-Girls = 4 × 6 = **24** (and boys go from 18 to 24 ✓).
+**Step 1 — The shared term is y.** It's 4 in the first ratio and 6 in the second; the LCM is 12.
+
+**Step 2 — Scale.** x : y = 3 : 4 → × 3 → 9 : 12. And y : z = 6 : 5 → × 2 → 12 : 10.
+
+**Step 3 — Combine.** x : y : z = 9 : 12 : 10, so **x : z = 9 : 10**.
+
+**The trap:** reading 3 and 5 straight off the two ratios (3 : 5) without matching y first.
 </Solution>
 </Example>
 
-<Concept>
-## Proportional scaling
+<Check id="gre-rat-chain" />
 
-If 4 machines make 60 widgets in 3 hours, one machine makes 60 ÷ (4 × 3) = 5 widgets per
-hour. Then any question is just 5 × machines × hours. More machines → more output; more
-time → more output.
+<Check id="gre-rat-chain-three" />
+
+<Concept>
+## 4. Ratios that change: find what stays the same
+
+"The ratio of boys to girls is 3 : 5. Then 6 more boys join, and the ratio becomes 1 : 1." Two
+things change (the boys and the ratio), but **one amount doesn't: the girls.** That's the key to
+every changing-ratio problem.
+
+**Method A — use a variable for one part.** Boys = 3k, girls = 5k. After 6 boys join:
+3k + 6 = 5k, so k = 3. Girls = 15, boys = 9 (then 15).
+
+**Method B — scale the ratios so the unchanged amount matches.** Girls are 5 parts before and 1
+part after. Rewrite 1 : 1 as 5 : 5 so girls are 5 parts in both. Boys went from 3 parts to 5 parts
+— up 2 parts — and that's the 6 new boys. So one part = 3, and girls = 5 × 3 = 15.
+
+Both methods work; pick whichever feels more natural.
 </Concept>
 
+<Example title="A changing ratio">
+A fruit bowl holds apples and oranges in the ratio 4 : 3. After 5 apples are eaten, the ratio is 3 : 3
+(that is, 1 : 1). How many oranges are in the bowl?
+
+<Solution>
+**Step 1 — What stays the same?** The oranges.
+
+**Step 2 — Use k for one part.** Apples = 4k, oranges = 3k.
+
+**Step 3 — Write the new situation.** Apples after eating: 4k − 5. Now apples = oranges:
+4k − 5 = 3k, so k = 5.
+
+**Step 4 — Answer.** Oranges = 3k = **15** (apples went from 20 to 15 ✓).
+</Solution>
+</Example>
+
+<Check id="gre-rat-change" />
+
+<Check id="gre-rat-mixture" />
+
+<Concept>
+## 5. Proportions and scaling
+
+A **proportion** says two ratios are equal. If 3 notebooks cost $4.50, then 7 notebooks cost x,
+where
+
+$$
+\frac{3}{4.50} = \frac{7}{x}
+$$
+
+**Cross-multiply:** 3x = 7 × 4.50 = 31.50, so x = $10.50. Or use the **unit rate**: one notebook
+costs $1.50, so 7 cost $10.50. The unit rate is usually faster.
+
+**Direct vs. inverse.** Before scaling, ask: when one thing goes up, does the other go **up** or
+**down**?
+- **More means more (direct):** more notebooks → more cost. Multiply the same way.
+- **More means less (inverse):** more workers → **fewer** days to finish a job. Here the
+  **total work** stays the same: workers × days = constant.
+</Concept>
+
+<Example title="More workers, fewer days">
+8 workers can paint a building in 15 days. Working at the same rate, how many days would 12
+workers take?
+
+<Solution>
+**Step 1 — Direct or inverse?** More workers finish **faster**, so it's inverse.
+
+**Step 2 — Find the total work.** 8 workers × 15 days = **120 worker-days** of painting.
+
+**Step 3 — Divide by the new crew.** 120 ÷ 12 = **10 days**.
+
+**The trap:** setting up 8/15 = 12/x, which gives 22.5 days — more workers taking *longer*.
+Always ask whether the answer should go up or down before you compute.
+</Solution>
+</Example>
+
 <Gotcha title="Trap — scaling the wrong way">
-When asked how LONG a job takes with more workers, time goes DOWN (inverse), while output
-in a fixed time goes UP (direct). Sanity-check the direction before you compute.
+Before cross-multiplying, predict the direction. If more machines should mean less time, an
+answer bigger than the original time is wrong — no matter how neat the arithmetic looks.
 </Gotcha>
+
+<Check id="gre-rat-proportion" />
 
 <Check id="gre-rat-scale" />
 
+<Concept>
+## Recap
+
+| Situation | Do this | Example |
+|---|---|---|
+| ratio → fraction | add the parts for the whole | 2 : 7 → students are 2/9 |
+| ratio + total | total ÷ (sum of parts) = one part | 720, 4 : 5 → one part = 80 |
+| ratio + difference | difference ÷ (difference of parts) | 14 more, 5 : 3 → one part = 7 |
+| two ratios | match the shared term with its LCM | 3 : 4 and 6 : 5 → 9 : 12 : 10 |
+| changing ratio | find the amount that doesn't change | 4k − 5 = 3k |
+| proportion | unit rate or cross-multiply | 3 for $4.50 → 7 for $10.50 |
+| more means less | keep the product constant | 8 × 15 = 12 × 10 |
+</Concept>
+
 <Cheatsheet>
-Practice bank topic drills: Ratios — parts and totals · Combining ratios · Ratios that change · Proportional reasoning.
+Practice bank topic drills: Ratio parts · Combining ratios · Changing ratios · Proportions.
 </Cheatsheet>

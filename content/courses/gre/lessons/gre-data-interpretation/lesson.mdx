@@ -3,46 +3,85 @@ id: gre-data-interpretation
 module: gre-data
 title: Data interpretation
 order: 3
-estimatedMinutes: 30
+estimatedMinutes: 40
 prerequisites: [gre-percents, gre-statistics]
 objectives:
-  - Read titles, labels, units, and scales before touching the numbers
-  - Compute percent changes, shares of a total, and averages from tables and charts
-  - Estimate aggressively when the choices are far apart, and compare ratios without computing them fully
+  - Read titles, units, and scales before touching the numbers
+  - Tell percent change apart from actual change
+  - Turn pie-chart percents into real amounts
+  - Handle a percent of a percent, and averages across a table
+  - Estimate when the answer choices are far apart, and compare fractions quickly
 tags: [gre, quant, data-interpretation, tables, graphs]
 ---
 
 <Intuition>
-Data interpretation questions come in small sets that share one table or graph. The math
-is rarely beyond percents and averages; the difficulty is **reading the display correctly**
-and doing that math quickly. Most errors come from misreading a label — thousands versus
-millions, a percent of the total versus an actual count, the wrong year. Spend the first
-fifteen seconds on the display itself, and the questions get much easier.
+Data interpretation questions come in sets of two or three that share one table or chart. The math is
+almost never harder than **percents and averages** — you already know it. What makes these questions
+hard is **reading the display wrong**: missing that the numbers are "in thousands," using a percent
+when the question wants a count, or grabbing the wrong year.
+
+So the skill here is mostly a habit: **spend the first 15 seconds understanding the display** before
+you look at any question. Then do simple math, and **estimate** whenever the answer choices let you.
 </Intuition>
 
 <Concept>
-## Read the display first
+## 1. Read the display first
 
-Before any question, check:
+Before answering anything, check these four things:
 
-1. **Title and units** — “sales in thousands of dollars,” “percent of total.”
-2. **What each row and column means**, and whether rows sum to a total.
-3. **Scales on graphs** — does the axis start at zero? Is it a percent or a count?
-4. **Footnotes** — they often hold the one fact a question depends on.
+1. **Title and units.** "Sales (in thousands of dollars)" means 450 is really $450,000.
+2. **What the numbers are.** Counts? Percents of a total? Percents of *what* total?
+3. **The scale.** What does each gridline stand for? Does the axis start at 0?
+4. **Footnotes and legends.** Which bar or line is which? Any note like "totals may not add to 100%
+   due to rounding"?
 </Concept>
+
+<Example title="Watch the units">
+<DataChart c={{
+  type: 'bar',
+  title: 'Museum Visitors by Month (thousands)',
+  categories: ['Jan', 'Feb', 'Mar', 'Apr'],
+  series: [{ name: 'Visitors', values: [12.5, 9.8, 15.2, 18.0] }],
+  yLabel: 'Visitors (thousands)',
+  yMax: 20,
+  yStep: 5,
+  showValues: true,
+}} />
+
+How many more people visited the museum in April than in February?
+
+<Solution>
+**Step 1 — Read the units.** The title says **thousands**, so April is 18,000 visitors and February is
+9,800.
+
+**Step 2 — Subtract.** 18,000 − 9,800 = **8,200** more visitors.
+
+Answering "8.2" is the trap — that's 8.2 *thousand*.
+</Solution>
+</Example>
+
+<Check id="gre-di-units" />
 
 <Concept>
-## The three computations
+## 2. Percent change vs. actual change
 
-- **Percent change** = (later − earlier) ÷ earlier.
-- **Share of total** = part ÷ total. If the table gives percents of a total, multiply by
-  the total to get counts.
-- **Average across rows** = sum ÷ number of rows.
+Two different questions that sound alike:
 
-For “which is greatest” questions, compare ratios roughly before computing any exactly.
+- **"By how much did it increase?"** → the **actual** change: new − old.
+- **"By what percent did it increase?"** → the **percent** change:
+
+$$
+\text{percent change} = \frac{\text{new} - \text{old}}{\text{old}} \times 100\%
+$$
+
+The same actual increase is a **bigger percent** when the starting number is **smaller**. Going from
+50 to 80 (+30) is a 60% increase, but going from 400 to 480 (+80, a bigger jump) is only 20%.
+
+**On a line graph,** the steepest segment has the biggest **actual** change. That's not always the
+biggest **percent** change — check the starting values.
 </Concept>
 
-<Example title="Percent increase vs. absolute increase">
+<Example title="Biggest percent increase">
 | Region | 2020 | 2022 |
 |---|---|---|
 | North | 200 | 260 |
@@ -52,21 +91,134 @@ For “which is greatest” questions, compare ratios roughly before computing a
 Which region had the greatest **percent** increase from 2020 to 2022?
 
 <Solution>
-North: 60/200 = 30%. South: 30/50 = **60%**. West: 80/400 = 20%.
+**Step 1 — Actual change for each.** North +60, South +30, West +80.
 
-South wins even though West had the largest *absolute* increase (80). Test-writers love
-that contrast — read which one the question asks for.
+**Step 2 — Divide by the starting value.** North: 60/200 = 30%. South: 30/50 = **60%**. West: 80/400 = 20%.
+
+**Answer: South** — even though West had the biggest actual increase. Test writers love this contrast,
+so always check which kind of change the question asks for.
 </Solution>
 </Example>
 
 <Check id="gre-di-change" />
 
-<Gotcha title="Trap — percent of a percent">
-If a graph shows that 30% of a company’s revenue comes from Europe and 40% of European
-revenue comes from France, France provides 0.3 × 0.4 = 12% of total revenue — not 40%.
-</Gotcha>
+<Check id="gre-di-line" />
+
+<Concept>
+## 3. Parts of a whole — pie charts and shares
+
+A **pie chart** shows each category as a **percent of a total**. To turn a slice into a real amount,
+you need that total (it's usually in the title or a note):
+
+$$
+\text{amount} = \text{percent} \times \text{total}
+$$
+
+**Comparing two slices?** Subtract the percents first, then multiply once. If Bus is 40% and Car is
+30% of 400 students, the difference is 10% of 400 = 40 — one multiplication instead of two.
+
+**Share of a total from a table:** add up the total, then divide: share = part ÷ total.
+</Concept>
+
+<Example title="From percents to people">
+<DataChart c={{
+  type: 'pie',
+  title: 'How 400 Students Get to School',
+  categories: ['Walk', 'Bus', 'Car', 'Bike'],
+  series: [{ name: 'Share', values: [15, 40, 30, 15] }],
+  unit: '%',
+}} />
+
+How many more students take the bus than walk?
+
+<Solution>
+**Step 1 — Difference in percents.** Bus 40% − Walk 15% = 25%.
+
+**Step 2 — Turn it into students.** 25% of 400 = 0.25 × 400 = **100** students.
+</Solution>
+</Example>
 
 <Check id="gre-di-share" />
+
+<Check id="gre-di-pie" />
+
+<Concept>
+## 4. A percent of a percent, and averages
+
+**Percent of a percent — multiply.** If 30% of a company's revenue comes from Europe, and 40% of
+the *European* revenue comes from France, then France provides 0.30 × 0.40 = 0.12 = **12%** of the
+total — not 40%. The 40% is a percent of Europe, not of everything.
+
+Always ask: **"percent of what?"** Then chain the percents together.
+
+**Averages from a display.** Add the values you need and divide by how many there are. To average
+one row of a table over 3 years, add its 3 values and divide by 3.
+</Concept>
+
+<Example title="Two layers of percent">
+A company has 2,000 employees. 45% of them work in sales, and 30% of the sales employees work remotely.
+How many sales employees work remotely?
+
+<Solution>
+**Step 1 — Sales employees.** 45% of 2,000 = 900.
+
+**Step 2 — Remote sales employees.** 30% of 900 = **270**.
+
+**Or in one step:** 0.45 × 0.30 × 2,000 = 0.135 × 2,000 = 270. So they're 13.5% of all employees.
+</Solution>
+</Example>
+
+<Gotcha title="Trap — percent vs. percentage points">
+If a rate goes from 10% to 15%, it rose by **5 percentage points** — but that's a **50% increase**
+(5 ÷ 10). Read carefully: "increased by how many percentage points" and "increased by what percent" are
+different questions.
+</Gotcha>
+
+<Check id="gre-di-nested" />
+
+<Check id="gre-di-average" />
+
+<Concept>
+## 5. Estimate and compare
+
+Most data questions don't need exact arithmetic. **Look at the answer choices first.** If they're far
+apart (like 20%, 30%, 40%, 50%), round the numbers and pick the closest.
+
+**Comparing fractions quickly:**
+- **Compare to a benchmark.** Is 198/612 more or less than ⅓? A third of 612 is 204, and 198 is less, so
+  198/612 is a bit under ⅓.
+- **Round both parts.** 289/1,012 ≈ 300/1,000 = 30%.
+- **When the tops are close, the smaller bottom wins.** 60/150 is bigger than 60/240.
+</Concept>
+
+<Example title="Which share is bigger?">
+Is 47/160 or 61/190 the larger fraction?
+
+<Solution>
+**Step 1 — Estimate each as a percent.** 47/160: 10% of 160 is 16, so 30% is 48 — 47 is just under
+30%. 61/190: 10% of 190 is 19, so 30% is 57 — 61 is a bit over 30% (about 32%).
+
+**Answer: 61/190 is larger.** No long division needed.
+</Solution>
+</Example>
+
+<Check id="gre-di-estimate" />
+
+<Check id="gre-di-ratio-qc" />
+
+<Concept>
+## Recap
+
+| Question type | What to do | Example |
+|---|---|---|
+| any display | title, units, scale, footnotes first | "(thousands)": 18.0 → 18,000 |
+| "by how much" | new − old | 50 → 80: +30 |
+| "by what percent" | (new − old) ÷ old | 50 → 80: +60% |
+| pie chart | percent × total; subtract percents first | 25% of 400 = 100 |
+| percent of a percent | multiply them | 30% of 40% = 12% |
+| "percentage points" | just subtract the percents | 10% → 15%: +5 points (a 50% increase) |
+| far-apart choices | round and estimate | 289/1,012 ≈ 30% |
+</Concept>
 
 <Cheatsheet>
 Practice bank topic drill: Data interpretation (tables). Each question shows its table.

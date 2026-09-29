@@ -3,108 +3,265 @@ id: gre-statistics
 module: gre-data
 title: Statistics — mean, median, spread & the normal curve
 order: 1
-estimatedMinutes: 35
+estimatedMinutes: 45
 prerequisites: [gre-fractions-decimals]
 objectives:
-  - Solve average problems by working with sums, including weighted averages
-  - Find median, mode, range, quartiles, and interquartile range
-  - Reason about standard deviation as spread — and how it changes when data shift or scale
+  - Solve average problems by switching to sums
+  - Combine groups of different sizes with weighted averages
+  - Find the median, mode, and range, and predict how an outlier moves them
+  - Find quartiles and the interquartile range
+  - Compare standard deviations without calculating them, and know how shifting or scaling data changes them
   - Use the 68-95-99.7 rule for normal distributions
 tags: [gre, quant, statistics, data-analysis]
 ---
 
 <Intuition>
-Most GRE statistics questions are about two ideas: **where the data sit** (mean, median)
-and **how spread out they are** (range, standard deviation). You almost never compute a
-standard deviation by hand — you compare spreads. And average problems become easy the
-moment you switch from averages to **sums**, because sums add and averages don’t.
+Statistics on the GRE asks two kinds of questions about a list of numbers:
+
+1. **Where is the middle?** — the mean (average) and the median.
+2. **How spread out are the numbers?** — the range, the interquartile range, and the standard deviation.
+
+You'll almost never calculate a standard deviation by hand. You'll **compare** spreads, which is much
+easier. And the single best trick for averages: **switch to sums.** Sums can be added and subtracted;
+averages can't.
 </Intuition>
 
 <Concept>
-## Averages: think in sums
+## 1. The mean — think in sums
 
-**Sum = average × count.** When numbers are added, removed, or combined, work with sums.
+The **mean** (average) is the sum divided by how many numbers there are. Flip that around and you get
+the most useful equation in this lesson:
+
+$$
+\text{sum} = \text{average} \times \text{count}
+$$
+
+Whenever numbers are **added to or removed from** a list, turn every average into a sum, do the adding
+or subtracting with the sums, then turn back into an average if needed.
 </Concept>
 
-<Example title="Adding a number">
-The average of 5 numbers is 12. When a sixth number is added, the average becomes 14. What
-is the sixth number?
+<Example title="Adding a number to a list">
+The average of 5 numbers is 12. When a sixth number is added, the average becomes 14. What is the sixth
+number?
 
 <Solution>
-Old sum = 5 × 12 = 60. New sum = 6 × 14 = 84. Sixth number = 84 − 60 = **24**.
+**Step 1 — Old sum.** 5 × 12 = 60.
 
-Intuition check: it must be 14 (the new average) plus 2 extra for each of the 5 old
-numbers it raises: 14 + 10 = 24 ✓.
+**Step 2 — New sum.** 6 × 14 = 84.
+
+**Step 3 — The difference is the new number.** 84 − 60 = **24**.
+
+**Sanity check:** the new number had to be above 14 to pull the average up, and it had to "pay" 2
+extra points to each of the 5 old numbers: 14 + 5 × 2 = 24 ✓.
 </Solution>
 </Example>
 
 <Check id="gre-stat-avg" />
 
-<Concept>
-## Weighted averages
-
-Combining groups of different sizes: combined average = (total of all values) ÷ (total
-count). The result lies between the group averages, **closer to the larger group’s**.
-
-20 students averaging 80 and 30 averaging 90: (1,600 + 2,700) ÷ 50 = 86 — not 85.
-</Concept>
+<Check id="gre-stat-avg-remove" />
 
 <Concept>
-## Median, mode, range, quartiles
+## 2. Weighted averages — combining groups
 
-- **Median:** sort, then take the middle value (or the average of the two middle values).
-- **Mode:** the most frequent value. **Range:** max − min.
-- **Quartiles:** Q1 is the median of the lower half, Q3 of the upper half.
-  **Interquartile range** = Q3 − Q1: the range of the middle half of the data.
-- Outliers pull the **mean** toward them; the median barely moves.
+When you combine two groups of **different sizes**, you **can't** just average the two averages. The
+bigger group has more say. Use sums again:
+
+$$
+\text{combined average} = \frac{\text{total of group 1} + \text{total of group 2}}{\text{total count}}
+$$
+
+**The picture:** the combined average always lands **between** the two group averages, **closer to
+the bigger group's**. If the groups are the same size, it's exactly halfway.
 </Concept>
 
-<Check id="gre-stat-median" />
-
-<Concept>
-## Standard deviation is spread
-
-Standard deviation (SD) measures how far values typically sit from the mean.
-
-- All values equal → SD = 0.
-- **Add** the same number to every value → the SD **doesn’t change** (everything shifts
-  together).
-- **Multiply** every value by k → the SD is multiplied by |k|.
-- To compare SDs, compare how spread out the values are relative to their own mean — not
-  how big they are. The lists 1, 2, 3 and 101, 102, 103 have the same SD.
-</Concept>
-
-<Check id="gre-stat-sd" />
-
-<Concept>
-## The normal distribution
-
-For data that are approximately normal (a symmetric bell curve):
-
-- about **68%** fall within 1 SD of the mean,
-- about **95%** within 2 SDs,
-- about **99.7%** within 3 SDs.
-
-Split into regions: 34% between the mean and 1 SD (each side), 13.5% between 1 and 2 SDs,
-and 2.5% beyond 2 SDs (each side). So about 16% are above +1 SD, and about 84% are below it.
-</Concept>
-
-<Example title="Normal distribution">
-Test scores are normally distributed with mean 500 and SD 100. About what percent of
-scores are between 400 and 700?
+<Example title="Two classes">
+One class of 20 students averages 80 on a test, and another class of 30 students averages 90. What is
+the average for all 50 students?
 
 <Solution>
-400 is −1 SD; 700 is +2 SD. From −1 to the mean: 34%. From the mean to +2: 34% + 13.5% = 47.5%.
-Total ≈ **81.5%**.
+**Step 1 — Totals.** Class 1: 20 × 80 = 1,600. Class 2: 30 × 90 = 2,700.
+
+**Step 2 — Combine.** (1,600 + 2,700) ÷ 50 = 4,300 ÷ 50 = **86**.
+
+**Check the picture:** 86 is between 80 and 90, and closer to 90 — the bigger class's average ✓. Just
+averaging 80 and 90 would give 85, which is wrong.
 </Solution>
 </Example>
 
-<Gotcha title="Trap — averaging averages">
-The average of two group averages equals the overall average only if the groups are the
-same size. Otherwise, weight by the counts.
+<Check id="gre-stat-weighted" />
+
+<Check id="gre-stat-weighted-qc" />
+
+<Concept>
+## 3. Median, mode, and range
+
+- **Median** — the middle number **after sorting**. With an **even** count, there are two middle
+  numbers; the median is their average.
+- **Mode** — the number that appears **most often**.
+- **Range** — **biggest minus smallest**.
+
+For 3, 9, 4, 9, 20 → sorted 3, 4, 9, 9, 20: median 9, mode 9, range 20 − 3 = 17.
+
+**Outliers** (numbers far from the rest) pull the **mean** strongly toward them and stretch the
+**range**, but the **median** barely moves — it only cares about the order of the numbers, not how
+extreme the end ones are.
+</Concept>
+
+<Example title="Median with an even count">
+What is the median of 8, 15, 3, 12, 20, 6?
+
+<Solution>
+**Step 1 — Sort.** 3, 6, 8, 12, 15, 20.
+
+**Step 2 — Find the middle.** Six numbers, so the middle two are the 3rd and 4th: 8 and 12.
+
+**Step 3 — Average them.** (8 + 12) ÷ 2 = **10**.
+</Solution>
+</Example>
+
+<Check id="gre-stat-median" />
+
+<Check id="gre-stat-outlier" />
+
+<Concept>
+## 4. Quartiles and the interquartile range
+
+The median cuts the sorted data in half. **Quartiles** cut it into **four equal parts**:
+
+- **Q1** (first quartile) — the median of the **lower half**.
+- **Q2** — the median itself.
+- **Q3** (third quartile) — the median of the **upper half**.
+
+So about 25% of the data is below Q1, 50% is below the median, and 75% is below Q3.
+
+The **interquartile range** (IQR) is **Q3 − Q1**: how spread out the **middle half** of the data is.
+Unlike the range, it ignores extreme values at the ends.
+
+A **percentile** says what percent of the data is at or below a value. Q1 is about the 25th
+percentile, the median the 50th, and Q3 the 75th.
+</Concept>
+
+<Example title="Finding the IQR">
+Find the interquartile range of 1, 3, 4, 6, 8, 9, 12, 15.
+
+<Solution>
+**Step 1 — Split in half.** Eight numbers (already sorted): lower half 1, 3, 4, 6; upper half 8, 9, 12, 15.
+
+**Step 2 — Median of each half.** Q1 = (3 + 4) ÷ 2 = 3.5. Q3 = (9 + 12) ÷ 2 = 10.5.
+
+**Step 3 — Subtract.** IQR = 10.5 − 3.5 = **7**.
+</Solution>
+</Example>
+
+<Check id="gre-stat-iqr" />
+
+<Check id="gre-stat-quartile-share" />
+
+<Concept>
+## 5. Standard deviation — how spread out?
+
+The **standard deviation** (SD) measures how far the numbers **typically are from their mean**.
+Numbers bunched close together → small SD. Numbers spread far apart → big SD. You'll almost never need
+the formula; you need these facts:
+
+- If all the numbers are the **same**, the SD is **0**.
+- **Adding** the same amount to every number **doesn't change** the SD. (Everything slides over
+  together; the gaps stay the same.)
+- **Multiplying** every number by k multiplies the SD by k (ignoring any minus sign).
+- **Size doesn't matter, spacing does.** 1, 2, 3 and 101, 102, 103 have the **same** SD. And 2, 4, 6
+  has a bigger SD than 1, 2, 3 — its gaps are twice as wide.
+
+**To compare SDs:** look at how far the numbers sit from their own middle.
+</Concept>
+
+<Example title="Shift and stretch">
+A list of numbers has mean 20 and SD 3. Every number is doubled, and then 5 is added to each. What are
+the new mean and SD?
+
+<Solution>
+**Step 1 — Mean.** The mean follows every operation: 20 × 2 + 5 = **45**.
+
+**Step 2 — SD.** Doubling doubles the spread: 3 × 2 = 6. Adding 5 slides everything over without
+changing the gaps, so the SD stays **6**.
+</Solution>
+</Example>
+
+<Check id="gre-stat-sd" />
+
+<Check id="gre-stat-sd-compare" />
+
+<Concept>
+## 6. The normal distribution
+
+Many kinds of data (heights, test scores) follow a **normal distribution** — a symmetric bell curve
+centered on the mean. For any normal distribution, the SD marks off the same percentages:
+
+<svg viewBox="0 0 400 195" width="100%" style={{maxWidth: '420px'}} role="img" aria-label="A bell curve. Between the mean and one standard deviation on each side: 34 percent. Between one and two standard deviations on each side: 13.5 percent. Beyond two standard deviations on each side: 2.5 percent.">
+  <polyline points="20,158.7 26,158.2 32,157.6 38,156.9 44,155.9 50,154.7 56,153.3 62,151.5 68,149.3 74,146.8 80,143.8 86,140.3 92,136.3 98,131.7 104,126.6 110,121.0 116,115.0 122,108.5 128,101.6 134,94.5 140,87.2 146,80.0 152,72.9 158,66.1 164,59.8 170,54.1 176,49.2 182,45.3 188,42.4 194,40.6 200,40.0 206,40.6 212,42.4 218,45.3 224,49.2 230,54.1 236,59.8 242,66.1 248,72.9 254,80.0 260,87.2 266,94.5 272,101.6 278,108.5 284,115.0 290,121.0 296,126.6 302,131.7 308,136.3 314,140.3 320,143.8 326,146.8 332,149.3 338,151.5 344,153.3 350,154.7 356,155.9 362,156.9 368,157.6 374,158.2 380,158.7" fill="none" stroke="currentColor" strokeWidth="1.8" />
+  <line x1="20" y1="160" x2="380" y2="160" stroke="currentColor" strokeWidth="1" />
+  <line x1="80" y1="160" x2="80" y2="143.8" stroke="currentColor" strokeWidth="1" strokeDasharray="3 2" />
+  <line x1="140" y1="160" x2="140" y2="87.2" stroke="currentColor" strokeWidth="1" strokeDasharray="3 2" />
+  <line x1="200" y1="160" x2="200" y2="40" stroke="currentColor" strokeWidth="1" strokeDasharray="3 2" />
+  <line x1="260" y1="160" x2="260" y2="87.2" stroke="currentColor" strokeWidth="1" strokeDasharray="3 2" />
+  <line x1="320" y1="160" x2="320" y2="143.8" stroke="currentColor" strokeWidth="1" strokeDasharray="3 2" />
+  <text x="170" y="128" fontSize="13" fill="currentColor" textAnchor="middle">34%</text>
+  <text x="230" y="128" fontSize="13" fill="currentColor" textAnchor="middle">34%</text>
+  <text x="112" y="150" fontSize="11" fill="currentColor" textAnchor="middle">13.5%</text>
+  <text x="288" y="150" fontSize="11" fill="currentColor" textAnchor="middle">13.5%</text>
+  <text x="44" y="146" fontSize="11" fill="currentColor" textAnchor="middle">2.5%</text>
+  <text x="356" y="146" fontSize="11" fill="currentColor" textAnchor="middle">2.5%</text>
+  <text x="80" y="176" fontSize="11" fill="currentColor" textAnchor="middle">−2 SD</text>
+  <text x="140" y="176" fontSize="11" fill="currentColor" textAnchor="middle">−1 SD</text>
+  <text x="200" y="176" fontSize="11" fill="currentColor" textAnchor="middle">mean</text>
+  <text x="260" y="176" fontSize="11" fill="currentColor" textAnchor="middle">+1 SD</text>
+  <text x="320" y="176" fontSize="11" fill="currentColor" textAnchor="middle">+2 SD</text>
+</svg>
+
+Adding up the pieces gives the famous rule:
+- about **68%** of the data is within 1 SD of the mean (34 + 34),
+- about **95%** is within 2 SDs (13.5 + 34 + 34 + 13.5),
+- about **99.7%** is within 3 SDs.
+
+**The method:** turn each value into "how many SDs from the mean," then add up the pieces of the
+picture. Example: with mean 60 and SD 10, a value of 70 is +1 SD, so about 50% + 34% = 84% of the data
+is below 70, and 16% is above it.
+</Concept>
+
+<Example title="Between two values">
+Test scores are normally distributed with mean 500 and SD 100. About what percent of scores are between
+400 and 700?
+
+<Solution>
+**Step 1 — Convert to SDs.** 400 is 100 below the mean = −1 SD. 700 is 200 above = +2 SD.
+
+**Step 2 — Add the pieces from −1 SD to +2 SD.** 34% (−1 to mean) + 34% (mean to +1) + 13.5% (+1 to +2).
+
+**Step 3 — Total.** 34 + 34 + 13.5 = **81.5%**.
+</Solution>
+</Example>
+
+<Gotcha title="Trap — averaging the averages">
+The average of two group averages equals the overall average **only if the groups are the same size**.
+Otherwise, go through the totals.
 </Gotcha>
 
 <Check id="gre-stat-normal" />
+
+<Check id="gre-stat-normal-count" />
+
+<Concept>
+## Recap
+
+| Idea | Rule | Example |
+|---|---|---|
+| mean | sum = average × count | avg 12 of 5 → sum 60 |
+| weighted average | add the totals, divide by total count; lands nearer the bigger group | 20 at 80 + 30 at 90 → 86 |
+| median | sort; middle value, or average of the two middle | 3, 6, 8, 12, 15, 20 → 10 |
+| outlier | moves the mean and range a lot, the median a little | add 100 to 3, 5, 9: median 5 → 7, mean ≈ 5.7 → 29.25 |
+| quartiles / IQR | medians of the lower and upper halves; IQR = Q3 − Q1 | 1 … 15 above → IQR 7 |
+| SD | spacing, not size; + k: no change; × k: SD × k | 1, 2, 3 and 101, 102, 103: same SD |
+| normal curve | 34 / 13.5 / 2.5 on each side | 68% within 1 SD, 95% within 2 |
+</Concept>
 
 <Cheatsheet>
 Practice bank topic drills: Averages · Weighted averages · Median, mode & range · Standard deviation · Normal distribution · Quartiles & interquartile range.

@@ -51,14 +51,17 @@ export function TestResults({
       byTopic.set(q.lessonId, t);
     }
 
+  const timed = test.timed !== false;
   const words = result.essay.trim() ? result.essay.trim().split(/\s+/).length : 0;
-  const essayAsk = `Please score my practice GRE Issue essay (0–6) and critique it against the rubric — position, reasons and examples, counterarguments, organization, language. Quote specific sentences; don't rewrite it for me.
+  const essayAsk = test.essay
+    ? `Please score my practice GRE Issue essay (0–6) and critique it against the rubric — position, reasons and examples, counterarguments, organization, language. Quote specific sentences; don't rewrite it for me.
 
 Prompt: ${test.essay.claim}
 ${test.essay.task}
 
 My essay (${words} words, written in ${mins(result.seconds.awa ?? 1800)} min):
-${result.essay}`;
+${result.essay}`
+    : '';
 
   return (
     <div className="mx-auto max-w-4xl px-5 pb-24 pt-8">
@@ -77,15 +80,22 @@ ${result.essay}`;
           Scores are <strong>estimates</strong>. ETS doesn’t publish how raw answers convert to 130–170, so these come
           from a model of the real test (the harder second section unlocks the top of the scale). Read them as a band
           of about ±3. For an ETS-scored number, take the official POWERPREP tests.
+          {!timed && (
+            <>
+              {' '}
+              <strong>This test was untimed</strong>, so expect a somewhat lower score under the real clock — compare
+              your time per section with the real limits below.
+            </>
+          )}
         </p>
       </div>
 
       {/* Timing */}
       <h2 className="mb-2 mt-8 font-mono text-[10.5px] font-semibold uppercase tracking-[0.16em] text-muted">Timing</h2>
-      <div className="grid gap-2 sm:grid-cols-5">
-        <TimeTile label="Writing" used={result.seconds.awa ?? 0} limit={1800} />
+      <div className={`grid gap-2 ${test.essay ? 'sm:grid-cols-5' : 'sm:grid-cols-4'}`}>
+        {test.essay && <TimeTile label="Writing" used={result.seconds.awa ?? 0} limit={1800} timed={timed} />}
         {sections.map((s) => (
-          <TimeTile key={s.key} label={sectionName(s)} used={result.seconds[s.key] ?? 0} limit={s.minutes * 60} />
+          <TimeTile key={s.key} label={sectionName(s)} used={result.seconds[s.key] ?? 0} limit={s.minutes * 60} timed={timed} />
         ))}
       </div>
 
@@ -147,38 +157,42 @@ ${result.essay}`;
       )}
 
       {/* Essay */}
-      <h2 className="mb-2 mt-8 font-mono text-[10.5px] font-semibold uppercase tracking-[0.16em] text-muted">
-        Analytical Writing
-      </h2>
-      <div className="rounded-md border border-line bg-panel px-5 py-4">
-        <p className="font-body text-[14.5px] font-semibold">{test.essay.claim}</p>
-        <p className="mt-1 font-mono text-[11px] text-muted">
-          {words} words · {mins(result.seconds.awa ?? 0)} used
-        </p>
-        {words > 0 ? (
-          <>
-            <details className="mt-3">
-              <summary className="cursor-pointer font-mono text-[11.5px] text-active">show your essay</summary>
-              <div className="mt-2 whitespace-pre-wrap rounded border border-line bg-paper px-4 py-3 font-body text-[14.5px] leading-relaxed">
-                {result.essay}
-              </div>
-            </details>
-            <div className="mt-3 flex flex-wrap items-center gap-3">
-              <button
-                onClick={() => askGeneral(essayAsk)}
-                className="rounded border-[1.5px] border-ink bg-panel px-4 py-2 font-mono text-[12px] hover:bg-active-wash"
-              >
-                get tutor feedback &amp; a score estimate →
-              </button>
-              <Link href="/lesson/gre-issue-essay" className="font-mono text-[11px] text-active hover:underline">
-                score it yourself with the rubric →
-              </Link>
-            </div>
-          </>
-        ) : (
-          <p className="mt-2 text-[13.5px] text-ink-soft">No essay was written this time.</p>
-        )}
-      </div>
+      {test.essay && (
+        <>
+          <h2 className="mb-2 mt-8 font-mono text-[10.5px] font-semibold uppercase tracking-[0.16em] text-muted">
+            Analytical Writing
+          </h2>
+          <div className="rounded-md border border-line bg-panel px-5 py-4">
+            <p className="font-body text-[14.5px] font-semibold">{test.essay.claim}</p>
+            <p className="mt-1 font-mono text-[11px] text-muted">
+              {words} words · {mins(result.seconds.awa ?? 0)} used
+            </p>
+            {words > 0 ? (
+              <>
+                <details className="mt-3">
+                  <summary className="cursor-pointer font-mono text-[11.5px] text-active">show your essay</summary>
+                  <div className="mt-2 whitespace-pre-wrap rounded border border-line bg-paper px-4 py-3 font-body text-[14.5px] leading-relaxed">
+                    {result.essay}
+                  </div>
+                </details>
+                <div className="mt-3 flex flex-wrap items-center gap-3">
+                  <button
+                    onClick={() => askGeneral(essayAsk)}
+                    className="rounded border-[1.5px] border-ink bg-panel px-4 py-2 font-mono text-[12px] hover:bg-active-wash"
+                  >
+                    get tutor feedback &amp; a score estimate →
+                  </button>
+                  <Link href="/lesson/gre-issue-essay" className="font-mono text-[11px] text-active hover:underline">
+                    score it yourself with the rubric →
+                  </Link>
+                </div>
+              </>
+            ) : (
+              <p className="mt-2 text-[13.5px] text-ink-soft">No essay was written this time.</p>
+            )}
+          </div>
+        </>
+      )}
 
       {/* Answer review */}
       <h2 className="mb-2 mt-8 font-mono text-[10.5px] font-semibold uppercase tracking-[0.16em] text-muted">
@@ -217,15 +231,18 @@ function ScoreCard({ measure, m }: { measure: Measure; m: TestMeasureResult }) {
   );
 }
 
-function TimeTile({ label, used, limit }: { label: string; used: number; limit: number }) {
-  const out = used >= limit - 1;
+function TimeTile({ label, used, limit, timed }: { label: string; used: number; limit: number; timed: boolean }) {
+  // Timed: did the clock run out? Untimed: how does the time spent compare with the real limit?
+  const out = timed ? used >= limit - 1 : used > limit;
   return (
     <div className="rounded border border-line bg-panel px-3 py-2">
       <div className="font-mono text-[10px] uppercase tracking-wider text-muted">{label}</div>
       <div className={`font-mono text-[13px] ${out ? 'text-alert' : ''}`}>
-        {mins(used)} <span className="text-faint">/ {mins(limit)}</span>
+        {mins(used)} <span className="text-faint">{timed ? '/' : 'vs'} {mins(limit)}</span>
       </div>
-      {out && <div className="font-mono text-[9.5px] text-alert">ran out of time</div>}
+      {out && (
+        <div className="font-mono text-[9.5px] text-alert">{timed ? 'ran out of time' : 'over the real limit'}</div>
+      )}
     </div>
   );
 }

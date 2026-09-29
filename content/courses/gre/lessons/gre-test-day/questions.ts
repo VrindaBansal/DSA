@@ -15,7 +15,8 @@ export const QUESTIONS: Question[] = [
       'Stop answering and guess on everything',
     ],
     correctIndex: 1,
-    explanation: 'The halfway checkpoint is about question 8 at 13 minutes; you are well behind. Move faster with pass-1 discipline: answer quick questions, guess-and-mark the rest, then use leftover time on marked ones.',
+    explanation:
+      '**Step 1 — Checkpoint:** in Quant 2 you should reach about question 8 by 13 minutes.\n**Step 2 — Compare:** you’ve finished only 4 — well behind. 13 minutes remain for 11 questions, about 1.2 minutes each.\n**Step 3 — Act:** switch to pass-1 mode — answer quick questions, guess and mark the rest, then use leftover time on marked ones.\n**Answer:** **speed up and aim to see every question**.',
     distractorNotes: [
       'At this pace you would reach only about 8 of 15 questions.',
       'Correct.',
@@ -38,7 +39,8 @@ export const QUESTIONS: Question[] = [
       'Pick choice (C), which is always most common',
     ],
     correctIndex: 1,
-    explanation: 'A blank scores zero and a guess among three gives a one-in-three chance, with no penalty. Mark it in case you have time to return.',
+    explanation:
+      '**Step 1:** A blank scores zero. There’s no penalty for a wrong answer.\n**Step 2:** Guessing among the three remaining choices gives you a 1-in-3 chance.\n**Step 3:** Marking it lets you return if time allows.\n**Answer:** **guess among the three, mark it, and move on**.',
     distractorNotes: [
       'No penalty for wrong answers — blanks only lose.',
       'Correct.',
@@ -55,7 +57,8 @@ export const QUESTIONS: Question[] = [
     prompt: 'According to the lesson, when should you take your last full-length practice test?',
     options: ['The night before', 'The morning of the test', 'No later than 3–4 days before the test', 'Two months before', 'Never — practice tests cause stress'],
     correctIndex: 2,
-    explanation: 'A full test is tiring. Leave a few days to review what it shows and to rest.',
+    explanation:
+      '**Step 1:** A full test is tiring — you need to recover before the real one.\n**Step 2:** You also need time to review what it shows.\n**Answer:** **no later than 3–4 days before the test**.',
     distractorNotes: ['Too tiring, too late to use the results.', 'Far too tiring.', 'Correct.', 'Too early to measure your final level.', 'Timed full tests are the best preparation for pacing.'],
   },
 ];

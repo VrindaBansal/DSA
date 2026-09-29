@@ -3,69 +3,228 @@ id: gre-quadratics
 module: gre-algebra
 title: Quadratics & special products
 order: 2
-estimatedMinutes: 30
+estimatedMinutes: 45
 prerequisites: [gre-linear]
 objectives:
-  - Solve quadratics by factoring, and read the sum and product of roots from the equation
-  - Expand and factor the three special products on sight
-  - Use x² + y² = (x + y)² − 2xy style identities instead of solving for x and y
-  - Never divide both sides by a variable that could be zero
+  - Multiply out two binomials (FOIL) without dropping terms
+  - Factor x² + bx + c and solve by setting each factor to zero
+  - Get everything on one side first — and never divide by x
+  - Use the three special products to expand, factor, and do mental math
+  - Simplify algebraic fractions by factoring and canceling
 tags: [gre, quant, algebra, quadratics]
 ---
 
 <Intuition>
-GRE quadratics are almost always factorable with small integers, and the most useful facts
-are three identities you can recognize at a glance. The test likes giving you pieces — x + y
-and xy — and asking for something like x² + y², which you can get without ever knowing x
-or y. Spotting that saves minutes.
+A **quadratic** is an expression with an x² in it, like x² − 5x + 6. The GRE mostly asks you to do
+two things with them: **multiply out** (turn (x − 2)(x − 3) into x² − 5x + 6) and **factor** (go the
+other way). Factoring is how you solve quadratic equations, because of one simple fact:
+
+**If two numbers multiply to zero, at least one of them is zero.**
+
+So if (x − 2)(x − 3) = 0, then x − 2 = 0 or x − 3 = 0 — meaning x = 2 or x = 3. That's the whole
+strategy: get the equation to "something × something = 0," then set each piece to zero.
 </Intuition>
 
 <Concept>
-## Factoring
+## 1. Multiplying out: FOIL
 
-To solve x² + bx + c = 0, find two numbers that **multiply to c** and **add to b**.
+To multiply two binomials (two-term expressions), multiply **every term in the first by every term
+in the second** — four products in all. FOIL is a way to remember them: **F**irst, **O**uter,
+**I**nner, **L**ast.
 
-x² − 5x + 6 = 0 → (−2)(−3) = 6 and −2 + −3 = −5 → (x − 2)(x − 3) = 0 → x = 2 or x = 3.
+(x + 3)(x − 5):
+- **F**irst: x · x = x²
+- **O**uter: x · (−5) = −5x
+- **I**nner: 3 · x = 3x
+- **L**ast: 3 · (−5) = −15
 
-A product is zero only when a factor is zero — that’s why you set the equation equal to 0
-first.
+Add them and combine the middle terms: x² − 5x + 3x − 15 = **x² − 2x − 15**.
 
-**Shortcut:** for x² + bx + c = 0, the roots add to −b and multiply to c.
+Watch the signs — most errors are a dropped minus sign on the Last term.
 </Concept>
+
+<Example title="FOIL with a coefficient">
+Expand (2x − 1)(x + 4).
+
+<Solution>
+**First:** 2x · x = 2x². **Outer:** 2x · 4 = 8x. **Inner:** −1 · x = −x. **Last:** −1 · 4 = −4.
+
+**Combine:** 2x² + 8x − x − 4 = **2x² + 7x − 4**.
+
+**Check with a number,** say x = 1: (2 − 1)(1 + 4) = 5, and 2 + 7 − 4 = 5 ✓.
+Plugging in a simple number is a quick way to catch sign errors.
+</Solution>
+</Example>
+
+<Check id="gre-quad-expand" />
+
+<Check id="gre-quad-expand-qc" />
+
+<Concept>
+## 2. Factoring x² + bx + c
+
+Factoring undoes FOIL. For **x² + bx + c**, you're looking for **two numbers that multiply to c and
+add to b**. Then x² + bx + c = (x + first)(x + second).
+
+For **x² − 7x + 12**: we need two numbers that multiply to **12** and add to **−7**.
+Pairs that multiply to 12: 1 & 12, 2 & 6, 3 & 4 (and their negatives). −3 and −4 add to −7. ✓
+So x² − 7x + 12 = **(x − 3)(x − 4)**.
+
+**Sign hints:**
+- c positive → both numbers have the **same sign** (the sign of b).
+- c negative → the numbers have **opposite signs**, and the bigger one takes the sign of b.
+
+**To solve** x² − 7x + 12 = 0: factor, then set each factor to zero:
+(x − 3)(x − 4) = 0 → x = 3 or x = 4.
+</Concept>
+
+<Example title="Factor and solve">
+Solve x² + 2x − 24 = 0.
+
+<Solution>
+**Step 1 — Find the pair.** Multiply to −24, add to +2. The signs are opposite (c is negative), and the
+bigger number is positive (b is positive). Try pairs: 6 and −4 → product −24, sum 2 ✓.
+
+**Step 2 — Factor.** (x + 6)(x − 4) = 0.
+
+**Step 3 — Set each factor to zero.** x + 6 = 0 → x = −6. x − 4 = 0 → x = 4.
+
+**Answer: x = −6 or x = 4.** Check x = 4: 16 + 8 − 24 = 0 ✓.
+</Solution>
+</Example>
 
 <Check id="gre-quad-factor" />
 
+<Check id="gre-quad-positive-root" />
+
 <Concept>
-## The three special products
+## 3. Get it to "= 0" first — and never divide by x
 
-| Identity | Example |
-|---|---|
-| (x + y)² = x² + 2xy + y² | (a + 3)² = a² + 6a + 9 |
-| (x − y)² = x² − 2xy + y² | (a − 3)² = a² − 6a + 9 |
-| (x + y)(x − y) = x² − y² | 51 × 49 = 50² − 1² = 2,499 |
+The zero trick only works when one side is **zero**. So before factoring, move everything to one
+side.
 
-Recognize them in both directions: expanding **and** factoring.
+**Never divide both sides by x (or anything containing x).** It throws away the answer x = 0.
+
+- Wrong: x² = 5x → divide by x → x = 5. (Lost x = 0!)
+- Right: x² − 5x = 0 → x(x − 5) = 0 → **x = 0 or x = 5**.
+
+**When a square equals a number, take the square root and use ±.**
+(x − 2)² = 9 means x − 2 = 3 **or** x − 2 = −3, so x = 5 or x = −1.
 </Concept>
 
-<Example title="Use the identity, skip the solving">
+<Gotcha title="Trap — x² = 16 means x = 4 or x = −4">
+Both 4² and (−4)² equal 16. Whenever you "undo" a square in an equation, write ±. (The √ symbol by
+itself means only the positive root: √16 = 4. The equation x² = 16 has two solutions.)
+</Gotcha>
+
+<Example title="Move everything to one side">
+Solve 2x² = 18x.
+
+<Solution>
+**Step 1 — One side zero.** 2x² − 18x = 0.
+
+**Step 2 — Factor out what they share (2x).** 2x(x − 9) = 0.
+
+**Step 3 — Each factor to zero.** 2x = 0 → x = 0. x − 9 = 0 → x = 9.
+
+**Answer: x = 0 or x = 9.** Dividing by 2x at the start would have lost x = 0.
+</Solution>
+</Example>
+
+<Check id="gre-quad-divide" />
+
+<Check id="gre-quad-square-root" />
+
+<Concept>
+## 4. The three special products
+
+These three patterns show up constantly. Learn them in **both directions** — expanding and
+factoring.
+
+$$
+(a + b)^2 = a^2 + 2ab + b^2
+$$
+
+$$
+(a - b)^2 = a^2 - 2ab + b^2
+$$
+
+$$
+(a + b)(a - b) = a^2 - b^2
+$$
+
+The middle term 2ab is exactly what people forget: (a + b)² is **not** a² + b². Try a = 1, b = 2:
+(1 + 2)² = 9, but 1² + 2² = 5 — the missing 4 is the 2ab.
+
+**Where they help:**
+- **Given two facts, find a third.** If x + y = 7 and xy = 10, then x² + y² = (x + y)² − 2xy = 49 − 20 = 29.
+- **Difference of squares** factors instantly: x² − 49 = (x + 7)(x − 7).
+- **Mental math:** 41 × 39 = (40 + 1)(40 − 1) = 1,600 − 1 = 1,599. And 99² = (100 − 1)² = 10,000 − 200 + 1 = 9,801.
+</Concept>
+
+<Example title="Use an identity instead of solving">
 If x + y = 7 and xy = 10, what is x² + y²?
 
 <Solution>
-(x + y)² = x² + 2xy + y², so x² + y² = (x + y)² − 2xy = 49 − 20 = **29**.
+**Step 1 — Pick the identity that contains x² + y².** (x + y)² = x² + 2xy + y².
 
-(x and y are 2 and 5 — but you didn’t need to find them.)
+**Step 2 — Plug in what you know.** 7² = x² + y² + 2(10), so 49 = x² + y² + 20.
+
+**Step 3 — Solve.** x² + y² = **29**.
+
+(You could find x = 5, y = 2 and compute 25 + 4 = 29, but the identity works even when the numbers
+aren't nice.)
 </Solution>
 </Example>
 
 <Check id="gre-quad-identity" />
 
-<Gotcha title="Trap — dividing by a variable">
-From x² = 5x, dividing by x gives x = 5 and loses the solution x = 0. Instead, move
-everything to one side and factor: x² − 5x = 0 → x(x − 5) = 0 → x = 0 or x = 5.
-</Gotcha>
+<Check id="gre-quad-diff-squares" />
 
-<Check id="gre-quad-divide" />
+<Concept>
+## 5. Simplifying algebraic fractions
+
+To simplify a fraction with polynomials, **factor the top and bottom, then cancel matching
+factors** — whole factors only, never individual terms.
+
+$$
+\frac{x^2 - 9}{x - 3} = \frac{(x + 3)(x - 3)}{x - 3} = x + 3 \quad (x \neq 3)
+$$
+
+You can cancel (x − 3) because it's **multiplied** on top. You can't cancel the x's in (x + 3)/x —
+that x in the top is **added**, not multiplied.
+</Concept>
+
+<Example title="Factor, then cancel">
+For x ≠ −2, simplify (x² − x − 6)/(x + 2).
+
+<Solution>
+**Step 1 — Factor the top.** Multiply to −6, add to −1: −3 and 2. So x² − x − 6 = (x − 3)(x + 2).
+
+**Step 2 — Cancel the matching factor.** (x − 3)(x + 2)/(x + 2) = **x − 3**.
+
+**Check with x = 1:** top = 1 − 1 − 6 = −6, bottom = 3, fraction = −2; and x − 3 = −2 ✓.
+</Solution>
+</Example>
+
+<Check id="gre-quad-simplify" />
+
+<Check id="gre-quad-simplify-solve" />
+
+<Concept>
+## Recap
+
+| Tool | How | Example |
+|---|---|---|
+| FOIL | every term times every term | (x + 3)(x − 5) = x² − 2x − 15 |
+| factor x² + bx + c | two numbers: multiply to c, add to b | x² − 7x + 12 = (x − 3)(x − 4) |
+| solve | one side 0, factor, each factor = 0 | x = 3 or x = 4 |
+| never | divide by x | x² = 5x → x = 0 or 5 |
+| undo a square | use ± | (x − 2)² = 9 → x = 5 or −1 |
+| special products | (a ± b)² = a² ± 2ab + b²; (a + b)(a − b) = a² − b² | 41 × 39 = 1,599 |
+| algebraic fractions | factor, then cancel whole factors | (x² − 9)/(x − 3) = x + 3 |
+</Concept>
 
 <Cheatsheet>
-Practice bank topic drills: Solving quadratics · Special products.
+Practice bank topic drills: Factoring · Special products · Solving quadratics.
 </Cheatsheet>

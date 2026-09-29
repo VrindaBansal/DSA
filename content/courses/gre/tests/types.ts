@@ -46,8 +46,10 @@ export interface PracticeTest {
   id: string;
   number: number;
   title: string;
-  /** Issue task: the claim to respond to and the specific instructions. */
-  essay: { claim: string; task: string };
+  /** Issue task: the claim to respond to and the specific instructions. Omitted on essay-free tests. */
+  essay?: { claim: string; task: string };
+  /** Timed like the real exam (default). `false` = no clock, sections never end on their own. */
+  timed?: boolean;
   /** Running order of the scored sections after the essay. */
   order: Slot[];
   sections: Record<SectionKey, TestSection>;

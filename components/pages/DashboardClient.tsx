@@ -125,16 +125,16 @@ export function DashboardClient({
             >
               <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">Full-length tests</div>
               <div className="mt-1 font-display text-[17px] font-semibold group-hover:text-active-deep">
-                5 timed practice tests, real GRE format →
+                10 practice tests, real GRE format →
               </div>
               <p className="mt-1 text-[13px] text-muted">
                 {ready && Object.values(state.tests ?? {}).some((h) => h.length)
                   ? (() => {
                       const all = Object.values(state.tests).flat().sort((a, b) => a.at - b.at);
                       const last = all[all.length - 1];
-                      return `${Object.values(state.tests).filter((h) => h.length).length} of 5 taken · latest V ${last.verbal.scaled} · Q ${last.quant.scaled}`;
+                      return `${Object.values(state.tests).filter((h) => h.length).length} of 10 taken · latest V ${last.verbal.scaled} · Q ${last.quant.scaled}`;
                     })()
-                  : 'essay + 4 adaptive sections · estimated scores'}
+                  : '5 timed with essay · 5 untimed, no essay · estimated scores'}
               </p>
             </Link>
           )}

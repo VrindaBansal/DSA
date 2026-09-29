@@ -37,6 +37,8 @@ interface Attempt {
   remaining: Record<string, number>;
   /** Seconds used per finished section key. */
   seconds: Record<string, number>;
+  /** Untimed tests: seconds spent so far per section key (the clock counts up). */
+  elapsed?: Record<string, number>;
   essay: string;
 }
 
@@ -90,13 +92,13 @@ export function TestClient({
       v: 1,
       testId: test.id,
       startedAt: Date.now(),
-      phase: 'essay',
+      phase: test.essay ? 'essay' : 'intro',
       slot: 0,
       levels: {},
       responses: {},
       marked: [],
       current: 0,
-      remaining: { awa: ESSAY_SECONDS },
+      remaining: test.essay ? { awa: ESSAY_SECONDS } : {},
       seconds: {},
       essay: '',
     };
@@ -173,23 +175,26 @@ function TestHome({
   onDiscard: () => void;
   onOpenResult: (i: number) => void;
 }) {
+  const timed = test.timed !== false;
+  const offset = test.essay ? 2 : 1;
+  const total = test.order.length + offset - 1;
   const rows: [string, string, string][] = [
-    ['1', 'Analytical Writing — Analyze an Issue', '1 essay · 30 min'],
+    ...(test.essay ? [['1', 'Analytical Writing — Analyze an Issue', timed ? '1 essay · 30 min' : '1 essay'] as [string, string, string]] : []),
     ...test.order.map((slot, i): [string, string, string] => {
       const m: Measure = slot[0] === 'v' ? 'verbal' : 'quant';
       const n = slot.endsWith('1') ? 12 : 15;
       const min = m === 'verbal' ? (n === 12 ? 18 : 23) : n === 12 ? 21 : 26;
       return [
-        String(i + 2),
+        String(i + offset),
         `${MEASURE_LABEL[m]} — ${slot.endsWith('1') ? 'first section' : 'second section (adapts to your first)'}`,
-        `${n} questions · ${min} min`,
+        timed ? `${n} questions · ${min} min` : `${n} questions · untimed`,
       ];
     }),
   ];
   const where = attempt
     ? attempt.phase === 'essay'
       ? `Writing section, ${mmss(attempt.remaining.awa ?? ESSAY_SECONDS)} left`
-      : `section ${attempt.slot + 2} of 5`
+      : `section ${Math.min(attempt.slot, test.order.length - 1) + offset} of ${total}`
     : '';
 
   return (
@@ -201,9 +206,20 @@ function TestHome({
       </div>
       <h1 className="font-display text-[2rem] font-bold tracking-tight">{test.title}</h1>
       <p className="mt-1 max-w-[62ch] text-[14px] text-ink-soft">
-        A full-length GRE: about 1 hour 58 minutes, no scheduled break. Take it in one sitting, somewhere quiet, with
-        scratch paper. Answers aren’t checked until the end; then you get estimated scores, a breakdown by topic, and
-        an explanation for every question.
+        {timed ? (
+          <>
+            A full-length GRE: about 1 hour 58 minutes, no scheduled break. Take it in one sitting, somewhere quiet,
+            with scratch paper.
+          </>
+        ) : (
+          <>
+            An untimed practice test: the full Verbal and Quant sections of a GRE — same question types, same order,
+            same adaptive second sections — with no clock and no essay. Work carefully, and stop and come back whenever
+            you like.
+          </>
+        )}{' '}
+        Answers aren’t checked until the end; then you get estimated scores, a breakdown by topic, and an explanation
+        for every question.
       </p>
 
       <div className="mt-6 overflow-hidden rounded-md border border-line bg-panel">
@@ -220,7 +236,9 @@ function TestHome({
         {attempt ? (
           <>
             <div className="font-display text-[1.15rem] font-bold">Attempt in progress</div>
-            <p className="mt-1 font-mono text-[11.5px] text-muted">Stopped at: {where}. The clock resumes when you do.</p>
+            <p className="mt-1 font-mono text-[11.5px] text-muted">
+              Stopped at: {where}. {timed ? 'The clock resumes when you do.' : 'Pick up where you left off.'}
+            </p>
             <div className="mt-4 flex flex-wrap gap-2">
               <button
                 onClick={onResume}
@@ -239,7 +257,14 @@ function TestHome({
               {history.length ? 'Retake this test' : 'Ready when you are'}
             </div>
             <ul className="mt-2 list-disc space-y-1 pl-5 text-[13.5px] text-ink-soft">
-              <li>The clock starts as soon as each section starts. When time runs out, the section ends.</li>
+              {timed ? (
+                <li>The clock starts as soon as each section starts. When time runs out, the section ends.</li>
+              ) : (
+                <li>
+                  No time limit and no essay. The top bar shows how long you’ve spent, so you can see your pace —
+                  a section ends only when you end it.
+                </li>
+              )}
               <li>
                 Within a section you can go back, change answers, <strong>mark</strong> questions, and open the{' '}
                 <strong>review</strong> screen. Once a section ends you can’t return to it.
@@ -303,10 +328,14 @@ function Runner({
 }) {
   const slot = test.order[attempt.slot];
   const section = slot ? sectionForSlot(test, slot, attempt.levels) : undefined;
+  const timed = test.timed !== false;
   const activeKey = attempt.phase === 'essay' ? 'awa' : attempt.phase === 'section' && section ? section.key : null;
   const total = attempt.phase === 'essay' ? ESSAY_SECONDS : (section?.minutes ?? 0) * 60;
   const remaining = activeKey ? (attempt.remaining[activeKey] ?? total) : 0;
-  const sectionNo = attempt.phase === 'essay' ? 1 : attempt.slot + 2;
+  const elapsed = activeKey ? (attempt.elapsed?.[activeKey] ?? 0) : 0;
+  const clock: Clock = timed ? { mode: 'remaining', seconds: remaining } : { mode: 'elapsed', seconds: elapsed };
+  const sectionNo = attempt.phase === 'essay' ? 1 : attempt.slot + (test.essay ? 2 : 1);
+  const sectionCount = test.order.length + (test.essay ? 1 : 0);
 
   const update = useCallback(
     (fn: (a: Attempt) => Attempt) =>
@@ -319,9 +348,18 @@ function Runner({
     [setAttempt, test.id],
   );
 
-  // Clock: counts down from what was left when this section (re)started.
+  // Clock: timed tests count down from what was left when this section
+  // (re)started; untimed tests count up from the time already spent.
   useEffect(() => {
     if (!activeKey) return;
+    if (!timed) {
+      const origin = Date.now() - (attempt.elapsed?.[activeKey] ?? 0) * 1000;
+      const t = setInterval(() => {
+        const spent = Math.floor((Date.now() - origin) / 1000);
+        update((a) => ({ ...a, elapsed: { ...(a.elapsed ?? {}), [activeKey]: spent } }));
+      }, 1000);
+      return () => clearInterval(t);
+    }
     const startLeft = attempt.remaining[activeKey] ?? total;
     const deadline = Date.now() + startLeft * 1000;
     const t = setInterval(() => {
@@ -341,7 +379,8 @@ function Runner({
       const sl = test.order[a.slot];
       const sec = sectionForSlot(test, sl, a.levels)!;
       const left = a.remaining[sec.key] ?? sec.minutes * 60;
-      const seconds = { ...a.seconds, [sec.key]: sec.minutes * 60 - left };
+      const used = timed ? sec.minutes * 60 - left : (a.elapsed?.[sec.key] ?? 0);
+      const seconds = { ...a.seconds, [sec.key]: used };
       const levels = { ...a.levels };
       if (sec.stage === 1) {
         const right = sec.questions.filter((q) => isCorrect(q, a.responses[q.id])).length;
@@ -349,12 +388,12 @@ function Runner({
       }
       return { ...a, phase: 'intro', slot: a.slot + 1, current: 0, seconds, levels, remaining: { ...a.remaining, [sec.key]: left } };
     });
-  }, [test, update]);
+  }, [test, timed, update]);
 
-  // Time up → the section ends, exactly as on test day.
+  // Time up → the section ends, exactly as on test day. (Never on untimed tests.)
   useEffect(() => {
-    if (activeKey && remaining <= 0) endCurrent();
-  }, [activeKey, remaining, endCurrent]);
+    if (timed && activeKey && remaining <= 0) endCurrent();
+  }, [timed, activeKey, remaining, endCurrent]);
 
   // All four scored sections done → score it.
   const finished = attempt.phase === 'intro' && attempt.slot >= test.order.length;
@@ -380,7 +419,8 @@ function Runner({
       <EssayScreen
         test={test}
         essay={attempt.essay}
-        remaining={remaining}
+        clock={clock}
+        sectionCount={sectionCount}
         onChange={(essay) => update((a) => ({ ...a, essay }))}
         onEnd={endCurrent}
         onQuit={onQuit}
@@ -395,6 +435,7 @@ function Runner({
         test={test}
         section={section}
         sectionNo={sectionNo}
+        sectionCount={sectionCount}
         onBegin={() => update((a) => ({ ...a, phase: 'section', current: 0 }))}
         onQuit={onQuit}
       />
@@ -405,8 +446,9 @@ function Runner({
       test={test}
       section={section}
       sectionNo={sectionNo}
+      sectionCount={sectionCount}
       attempt={attempt}
-      remaining={remaining}
+      clock={clock}
       update={update}
       onEnd={endCurrent}
       onQuit={onQuit}
@@ -417,17 +459,22 @@ function Runner({
 // -----------------------------------------------------------------------------
 // Chrome shared by every timed screen
 
+/** Countdown on timed tests; time spent so far on untimed ones. */
+type Clock = { mode: 'remaining' | 'elapsed'; seconds: number };
+
 function TopBar({
   test,
   sectionNo,
+  sectionCount,
   label,
-  remaining,
+  clock,
   children,
 }: {
   test: PracticeTest;
   sectionNo: number;
+  sectionCount: number;
   label: string;
-  remaining: number;
+  clock: Clock;
   children: React.ReactNode;
 }) {
   const [hideTime, setHideTime] = useState(false);
@@ -437,17 +484,22 @@ function TopBar({
         <div className="font-mono text-[11.5px]">
           <span className="font-semibold">{test.title}</span>
           <span className="mx-2 opacity-50">|</span>
-          Section {sectionNo} of 5 · {label}
+          Section {sectionNo} of {sectionCount} · {label}
         </div>
         <div className="flex flex-wrap items-center gap-1.5">{children}</div>
       </div>
       <div className="border-t border-white/15 bg-[#2a2f37]">
         <div className="mx-auto flex max-w-6xl items-center justify-end gap-3 px-4 py-1 font-mono text-[11.5px]">
-          {!hideTime && (
-            <span className={remaining <= 300 ? 'text-[#ffb4a8]' : ''} aria-label="time remaining" data-testid="test-timer">
-              {mmss(remaining)}
-            </span>
-          )}
+          {!hideTime &&
+            (clock.mode === 'remaining' ? (
+              <span className={clock.seconds <= 300 ? 'text-[#ffb4a8]' : ''} aria-label="time remaining" data-testid="test-timer">
+                {mmss(clock.seconds)}
+              </span>
+            ) : (
+              <span aria-label="time elapsed" data-testid="test-timer">
+                untimed · {mmss(clock.seconds)} spent
+              </span>
+            ))}
           <button onClick={() => setHideTime((h) => !h)} className="underline opacity-75 hover:opacity-100">
             {hideTime ? 'show time' : 'hide time'}
           </button>
@@ -491,23 +543,27 @@ function BarButton({
 function EssayScreen({
   test,
   essay,
-  remaining,
+  clock,
+  sectionCount,
   onChange,
   onEnd,
   onQuit,
 }: {
   test: PracticeTest;
   essay: string;
-  remaining: number;
+  clock: Clock;
+  sectionCount: number;
   onChange: (s: string) => void;
   onEnd: () => void;
   onQuit: () => void;
 }) {
   const [confirm, setConfirm] = useState(false);
+  if (!test.essay) return null;
+  const remaining = clock.seconds;
   const words = essay.trim() ? essay.trim().split(/\s+/).length : 0;
   return (
     <div className="min-h-screen bg-paper">
-      <TopBar test={test} sectionNo={1} label="Analytical Writing" remaining={remaining}>
+      <TopBar test={test} sectionNo={1} sectionCount={sectionCount} label="Analytical Writing" clock={clock}>
         <BarButton onClick={onQuit}>save &amp; exit</BarButton>
         <BarButton onClick={() => setConfirm(true)}>next →</BarButton>
       </TopBar>
@@ -556,23 +612,26 @@ function SectionIntro({
   test,
   section,
   sectionNo,
+  sectionCount,
   onBegin,
   onQuit,
 }: {
   test: PracticeTest;
   section: TestSection;
   sectionNo: number;
+  sectionCount: number;
   onBegin: () => void;
   onQuit: () => void;
 }) {
   const quant = section.measure === 'quant';
+  const timed = test.timed !== false;
   return (
     <div className="min-h-screen bg-paper">
       <div className="border-b-[1.5px] border-ink bg-ink px-4 py-2 font-mono text-[11.5px] text-white">
         <div className="mx-auto flex max-w-6xl justify-between">
           <span>
             <span className="font-semibold">{test.title}</span>
-            <span className="mx-2 opacity-50">|</span>Section {sectionNo} of 5
+            <span className="mx-2 opacity-50">|</span>Section {sectionNo} of {sectionCount}
           </span>
           <button onClick={onQuit} className="underline opacity-80 hover:opacity-100">
             save &amp; exit
@@ -580,13 +639,19 @@ function SectionIntro({
         </div>
       </div>
       <div className="mx-auto max-w-2xl px-5 pt-14">
-        <div className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-muted">Section {sectionNo} of 5</div>
+        <div className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-muted">
+          Section {sectionNo} of {sectionCount}
+        </div>
         <h1 className="mt-1 font-display text-[1.9rem] font-bold tracking-tight">{MEASURE_LABEL[section.measure]}</h1>
         <p className="mt-1 font-mono text-[12.5px] text-ink-soft">
-          {section.questions.length} questions · {section.minutes} minutes
+          {section.questions.length} questions · {timed ? `${section.minutes} minutes` : `untimed (the real test allows ${section.minutes} minutes)`}
         </p>
         <ul className="mt-5 list-disc space-y-1.5 pl-5 text-[14px] text-ink-soft">
-          <li>The clock starts when you click Begin and the section ends when it reaches zero.</li>
+          {timed ? (
+            <li>The clock starts when you click Begin and the section ends when it reaches zero.</li>
+          ) : (
+            <li>No time limit — the top bar shows how long you’ve spent. End the section when you’re done.</li>
+          )}
           <li>Use Back and Next to move around, Mark to flag a question, and Review to see every question’s status.</li>
           {quant ? (
             <>
@@ -599,7 +664,10 @@ function SectionIntro({
           ) : (
             <li>Reading questions stay beside their passage. Blanks need every entry right to earn credit.</li>
           )}
-          <li>No penalty for wrong answers: before time runs out, make sure every question has an answer.</li>
+          <li>
+            No penalty for wrong answers: before {timed ? 'time runs out' : 'you end the section'}, make sure every
+            question has an answer.
+          </li>
         </ul>
         <button
           onClick={onBegin}
@@ -629,8 +697,9 @@ function SectionScreen({
   test,
   section,
   sectionNo,
+  sectionCount,
   attempt,
-  remaining,
+  clock,
   update,
   onEnd,
   onQuit,
@@ -638,8 +707,9 @@ function SectionScreen({
   test: PracticeTest;
   section: TestSection;
   sectionNo: number;
+  sectionCount: number;
   attempt: Attempt;
-  remaining: number;
+  clock: Clock;
   update: (fn: (a: Attempt) => Attempt) => void;
   onEnd: () => void;
   onQuit: () => void;
@@ -674,7 +744,7 @@ function SectionScreen({
 
   return (
     <div className="min-h-screen bg-paper">
-      <TopBar test={test} sectionNo={sectionNo} label={MEASURE_LABEL[section.measure]} remaining={remaining}>
+      <TopBar test={test} sectionNo={sectionNo} sectionCount={sectionCount} label={MEASURE_LABEL[section.measure]} clock={clock}>
         <BarButton onClick={onQuit}>save &amp; exit</BarButton>
         <BarButton onClick={() => setConfirm(true)}>end section</BarButton>
         <BarButton onClick={toggleMark} active={marked} label="mark">
@@ -710,7 +780,7 @@ function SectionScreen({
       {confirm && (
         <div className="mx-auto mt-4 max-w-3xl px-5">
           <div className="rounded-md border-[1.5px] border-alert bg-alert-wash px-4 py-3 text-[13.5px]">
-            End this section with {mmss(remaining)} left
+            End this section{clock.mode === 'remaining' ? ` with ${mmss(clock.seconds)} left` : ''}
             {unanswered ? ` and ${unanswered} question${unanswered === 1 ? '' : 's'} unanswered or incomplete` : ''}? You
             can’t return to it.
             <div className="mt-2 flex gap-2">
@@ -736,7 +806,7 @@ function SectionScreen({
           section={section}
           attempt={attempt}
           atEnd={reviewing === 'end'}
-          remaining={remaining}
+          clock={clock}
           onGo={go}
           onReturn={() => setReviewing(null)}
           onEnd={onEnd}
@@ -766,7 +836,7 @@ function ReviewScreen({
   section,
   attempt,
   atEnd,
-  remaining,
+  clock,
   onGo,
   onReturn,
   onEnd,
@@ -774,7 +844,7 @@ function ReviewScreen({
   section: TestSection;
   attempt: Attempt;
   atEnd: boolean;
-  remaining: number;
+  clock: Clock;
   onGo: (i: number) => void;
   onReturn: () => void;
   onEnd: () => void;
@@ -789,7 +859,13 @@ function ReviewScreen({
     <div className="mx-auto max-w-3xl px-5 pb-20 pt-6">
       {atEnd && (
         <div className="mb-4 rounded-md border-[1.5px] border-ink bg-panel px-4 py-3 text-[14px]">
-          You’ve reached the end of this section with <strong>{mmss(remaining)}</strong> left
+          You’ve reached the end of this section
+          {clock.mode === 'remaining' ? (
+            <>
+              {' '}
+              with <strong>{mmss(clock.seconds)}</strong> left
+            </>
+          ) : null}
           {open ? (
             <>
               {' '}

@@ -237,6 +237,52 @@ else if ((await page.locator('text=thinking').count()) > 0)
 else fail('general chat send produced neither an error nor a pending state');
 await page.keyboard.press('Escape');
 
+section('tutor typesets math (mocked reply)');
+{
+  // A fresh context so the canned reply doesn't land in the main thread.
+  const mctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  await mctx.addCookies(authCookies);
+  const mpage = await mctx.newPage();
+  const mathErrors = [];
+  mpage.on('pageerror', (e) => mathErrors.push(e.message));
+  const reply = String.raw`1. If \( n \equiv 2 \pmod{5} \), then \( 3n + 4 \equiv 0 \pmod{5} \).
+   - Factor: \( 84 = 2^2 \times 3 \times 7 \)
+2. Divisors:
+\[ (2+1)(1+1)(1+1) = 12 \]
+
+A shirt costs $12 and a hat costs $15. Also $x^2 - 9 = (x-3)(x+3)$.`;
+  await mpage.route('**/api/chat', (r) =>
+    r.fulfill({ status: 200, contentType: 'text/plain; charset=utf-8', body: reply }),
+  );
+  await mpage.goto(`${BASE}/`, { waitUntil: 'networkidle' });
+  await mpage.getByLabel('open tutor').click();
+  await mpage.getByPlaceholder(/wait, why/).fill('remainders?');
+  await mpage.keyboard.press('Enter');
+  await mpage.waitForSelector('[aria-label="AI tutor"] .md .katex', { timeout: 10000 }).catch(() => {});
+  const m = await mpage.evaluate(() => {
+    const md = [...document.querySelectorAll('[aria-label="AI tutor"] .md')].pop();
+    if (!md) return null;
+    return {
+      inline: md.querySelectorAll('.katex').length,
+      display: md.querySelectorAll('.katex-display').length,
+      errors: md.querySelectorAll('.katex-error').length,
+      raw: /\\\(|\\\)|\\\[|\\\]/.test(md.innerText),
+      ol: md.querySelectorAll('ol > li').length,
+      nested: md.querySelectorAll('ol li ul li').length,
+      money: md.innerText.includes('$12') && md.innerText.includes('$15'),
+    };
+  });
+  if (m && m.inline >= 5 && m.display === 1 && m.errors === 0 && !m.raw)
+    pass(`LaTeX in \\( \\), \\[ \\] and $ $ typeset by KaTeX (${m.inline} spans, no raw delimiters)`);
+  else fail(`tutor math not typeset: ${JSON.stringify(m)}`);
+  if (m && m.money) pass('dollar amounts stay plain text, not math');
+  else fail('dollar amounts were swallowed as math');
+  if (m && m.ol === 2 && m.nested === 1) pass('numbered and nested bullet lists render as lists');
+  else fail(`tutor lists not rendered: ${JSON.stringify(m)}`);
+  if (mathErrors.length) fail(`math render page errors: ${mathErrors.join(' | ').slice(0, 200)}`);
+  await mctx.close();
+}
+
 section('global tutor — lesson tab appears + persists across pages');
 await page.goto(`${BASE}/lesson/queues`, { waitUntil: 'networkidle' });
 await page.keyboard.press('ControlOrMeta+k');
@@ -630,6 +676,49 @@ section('GRE full-length practice test');
   if ((await page.locator('text=no longer exists').count()) === 0 && (await page.locator('text=practice test miss').count()) > 0)
     pass('review resolves a practice-test question');
   else fail('review could not load a practice-test question');
+
+  // An untimed, essay-free test: no essay screen, a count-up clock, no time-up.
+  const ut = T.TESTS.find((t) => t.timed === false);
+  await page.goto(`${BASE}/course/gre/tests/${ut.id}`, { waitUntil: 'networkidle' });
+  if ((await page.locator('text=No time limit and no essay').count()) > 0) pass(`${ut.title} is described as untimed with no essay`);
+  else fail(`${ut.title} home page doesn't describe it as untimed`);
+  await page.getByRole('button', { name: /start test/ }).click();
+  const introText = await page.locator('body').innerText();
+  if ((await page.getByLabel('Your essay').count()) === 0 && /Section 1 of 4/.test(introText) && /untimed/.test(introText))
+    pass('untimed test skips the essay and opens on Section 1 of 4');
+  else fail('untimed test showed an essay or the wrong section count');
+  await page.getByRole('button', { name: /begin section/ }).click();
+  const t0 = (await page.getByTestId('test-timer').textContent()) ?? '';
+  await page.waitForTimeout(2300);
+  const t1 = (await page.getByTestId('test-timer').textContent()) ?? '';
+  const secs = (t) => { const m = t.match(/(\d+):(\d\d) spent/); return m ? Number(m[1]) * 60 + Number(m[2]) : NaN; };
+  if (/untimed/.test(t0) && secs(t1) >= secs(t0) + 2) pass(`clock counts up on an untimed test (${t0.trim()} → ${t1.trim()})`);
+  else fail(`untimed clock: "${t0}" then "${t1}"`);
+  // First section: every question keyed → the harder second section of that measure
+  const firstKey = ut.order[0] === 'v1' ? 'v1' : 'q1';
+  const firstQs = ut.sections[firstKey].questions;
+  for (const q of firstQs) {
+    await answerKeyed(q);
+    await page.getByRole('button', { name: 'next →' }).click();
+  }
+  await page.getByRole('button', { name: /end section & continue/ }).click();
+  for (let k = 1; k < ut.order.length; k++) {
+    await page.getByRole('button', { name: /begin section/ }).click();
+    await page.getByRole('button', { name: 'end section', exact: true }).click();
+    await page.locator('.bg-alert-wash').getByRole('button', { name: 'end section' }).click();
+  }
+  await page.waitForTimeout(1200);
+  const resultsText = await page.locator('body').innerText();
+  if (/This test was untimed/.test(resultsText) && !/Your essay|Issue essay/.test(resultsText))
+    pass('untimed results: untimed note shown, no essay block');
+  else fail('untimed results page is missing the note or shows an essay section');
+  const utState = await page.evaluate((id) => {
+    const s = JSON.parse(localStorage.getItem('invariant.progress.v1') ?? '{}');
+    const a = s.tests?.[id]?.[0];
+    return { attempts: s.tests?.[id]?.length ?? 0, essay: a?.essay ?? null, route: a?.route ?? null };
+  }, ut.id);
+  if (utState.attempts === 1 && !utState.essay) pass('untimed attempt saved without an essay');
+  else fail(`untimed attempt state: ${JSON.stringify(utState)}`);
 }
 
 section('print stylesheet on cheatsheet route');

@@ -1,4 +1,5 @@
-// The five full-length GRE practice tests.
+// The ten full-length GRE practice tests: 1–5 run timed with the Issue
+// essay, like the real exam; 6–10 are untimed and skip the essay.
 //
 // Original questions written to match the real test: same section lengths
 // and timing, same question types in the same order, the same topic mix and
@@ -15,8 +16,13 @@ import { PT2 } from './pt2/index.ts';
 import { PT3 } from './pt3/index.ts';
 import { PT4 } from './pt4/index.ts';
 import { PT5 } from './pt5/index.ts';
+import { PT6 } from './pt6/index.ts';
+import { PT7 } from './pt7/index.ts';
+import { PT8 } from './pt8/index.ts';
+import { PT9 } from './pt9/index.ts';
+import { PT10 } from './pt10/index.ts';
 
-export const TESTS: PracticeTest[] = [PT1, PT2, PT3, PT4, PT5];
+export const TESTS: PracticeTest[] = [PT1, PT2, PT3, PT4, PT5, PT6, PT7, PT8, PT9, PT10];
 export const TEST_BY_ID: Record<string, PracticeTest> = Object.fromEntries(TESTS.map((t) => [t.id, t]));
 
 export const TEST_QUESTION_PREFIX = 'gre-pt';

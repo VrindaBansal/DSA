@@ -3,94 +3,248 @@ id: gre-functions-sequences
 module: gre-algebra
 title: Functions, defined symbols & sequences
 order: 3
-estimatedMinutes: 30
+estimatedMinutes: 45
 prerequisites: [gre-linear]
 objectives:
-  - Evaluate functions and compositions (inside first) carefully, especially with negatives
-  - Treat made-up symbols as ordinary two-input functions
-  - Find terms and sums of arithmetic sequences, and terms of geometric and recursive ones
-  - Solve direct and inverse variation problems
+  - Evaluate a function at a number or an expression, keeping every substitution in parentheses
+  - Work out f(g(x)) from the inside out
+  - Follow a made-up symbol's rule exactly as written
+  - Find any term, and the sum, of an arithmetic sequence
+  - Build geometric and recursive sequences term by term
+  - Use direct and inverse variation — including “varies with the square”
 tags: [gre, quant, algebra, functions, sequences]
 ---
 
 <Intuition>
-Function questions test **careful substitution**, not advanced theory. f(x) is a machine:
-put a number in wherever you see x. The GRE’s made-up symbols (“a ◆ b = 2a − b”) are the
-same machine with two inputs. And sequences are patterns you can almost always just write
-out. The way to lose points here is rushing — so the habit to build is parentheses around
-every substituted value.
+A **function** is a rule that turns an input into an output. f(x) = 2x + 1 says: "take whatever
+you're given, double it, and add 1." Nothing more mysterious than that.
+
+Most GRE questions in this area — functions, strange symbols like a ◆ b, and sequences — are
+**following-directions** questions. The math is easy; the danger is sloppiness. The one habit that
+prevents nearly every mistake: **when you substitute, put what you're substituting in parentheses.**
 </Intuition>
 
 <Concept>
-## Substitution with parentheses
+## 1. Function notation and substitution
 
-If f(x) = x² − 3x, then f(−2) = (−2)² − 3(−2) = 4 + 6 = 10. Without parentheses it is easy
-to write −2² = −4 or −3 × −2 = −6.
+**f(x) = x² − 3x** is a rule. **f(5)** means "use the rule with x = 5": replace **every** x with 5.
 
-**Composition** f(g(x)): work from the inside out. Compute g(x) first, then feed the result
-into f. Usually f(g(x)) ≠ g(f(x)).
+f(5) = (5)² − 3(5) = 25 − 15 = 10.
+
+**Parentheses matter most with negatives.** f(−2) = (−2)² − 3(−2) = 4 + 6 = **10**. Without
+parentheses, it's easy to write −2² = −4 or −3 − 2 and get it wrong.
+
+**The input can be an expression.** f(a + 1) means replace every x with (a + 1):
+f(a + 1) = (a + 1)² − 3(a + 1) = a² + 2a + 1 − 3a − 3 = a² − a − 2.
 </Concept>
 
-<Example title="Composition">
-f(x) = 2x + 1 and g(x) = x² − 3. Find f(g(2)) and g(f(2)).
+<Example title="Plug in a negative">
+If f(x) = 2x² − 3x + 4, what is f(−2)?
 
 <Solution>
-f(g(2)): g(2) = 4 − 3 = 1, then f(1) = 3 → **3**.
-g(f(2)): f(2) = 5, then g(5) = 25 − 3 = 22 → **22**.
+**Step 1 — Replace every x with (−2).** f(−2) = 2(−2)² − 3(−2) + 4.
 
-Same functions, different order, different answers.
+**Step 2 — Exponent first.** (−2)² = 4, so 2(4) = 8.
+
+**Step 3 — The rest.** −3(−2) = +6. So f(−2) = 8 + 6 + 4 = **18**.
+</Solution>
+</Example>
+
+<Check id="gre-fn-evaluate" />
+
+<Check id="gre-fn-expression" />
+
+<Concept>
+## 2. Functions inside functions
+
+**f(g(x))** means: first run x through g, then feed that result into f. Work **from the inside out**.
+
+With f(x) = x + 5 and g(x) = x²:
+- f(g(3)): g(3) = 9, then f(9) = **14**.
+- g(f(3)): f(3) = 8, then g(8) = **64**.
+
+The order matters — f(g(3)) and g(f(3)) are usually different.
+
+**Working backward.** If a question gives the output and asks for the input, set the rule equal to the
+output and solve. If h(x) = 4x − 1 and h(k) = 23, then 4k − 1 = 23 and k = 6.
+</Concept>
+
+<Example title="Inside out">
+If f(x) = x² − 1 and g(x) = 2x + 3, what is f(g(−1))?
+
+<Solution>
+**Step 1 — Inside: g(−1).** 2(−1) + 3 = 1.
+
+**Step 2 — Outside: f(1).** (1)² − 1 = **0**.
+
+**For contrast, g(f(−1)):** f(−1) = 1 − 1 = 0, then g(0) = 3. Different answer — order matters.
 </Solution>
 </Example>
 
 <Check id="gre-fn-compose" />
 
-<Concept>
-## Defined symbols
+<Check id="gre-fn-solve-for-input" />
 
-“For all numbers a and b, a ◆ b = a² − ab.” Just substitute: 3 ◆ 5 = 9 − 15 = −6. Keep the
-order (a first, b second), and do the parentheses first in nested expressions like
-(1 ◆ 2) ◆ 3.
+<Concept>
+## 3. Made-up symbols
+
+The GRE sometimes invents an operation: "For all numbers a and b, **a ◆ b = a² − 2b**." It looks
+strange, but it's just a function with two inputs. **Match the positions:** whatever is in the
+first spot plays the role of a, and whatever is in the second spot plays the role of b.
+
+- 3 ◆ 4 = 3² − 2(4) = 9 − 8 = **1**.
+- 4 ◆ 3 = 4² − 2(3) = 16 − 6 = **10**. (Order matters.)
+- With parentheses, like (1 ◆ 2) ◆ 5, do the inner one first.
+
+Don't bring in any outside meaning — the symbol means exactly what the rule says.
 </Concept>
+
+<Example title="A nested symbol">
+For all numbers a and b, a ◆ b = a² − 2b. What is (1 ◆ 2) ◆ 5?
+
+<Solution>
+**Step 1 — Inside first.** 1 ◆ 2 = 1² − 2(2) = 1 − 4 = −3.
+
+**Step 2 — Now (−3) ◆ 5.** (−3)² − 2(5) = 9 − 10 = **−1**.
+</Solution>
+</Example>
 
 <Check id="gre-fn-symbol" />
 
+<Check id="gre-fn-symbol-equation" />
+
 <Concept>
-## Sequences
+## 4. Arithmetic sequences: add the same amount
 
-- **Arithmetic** (add d each time): aₙ = a₁ + (n − 1)d. Sum of n terms = n × (first + last)/2.
-- **Geometric** (multiply by r each time): aₙ = a₁ × r^(n − 1).
-- **Recursive** (“aₙ = 2aₙ₋₁ + 1”): write the terms out; the GRE keeps these short.
+In an **arithmetic sequence** you **add** the same number (the **common difference**, d) each time:
+7, 11, 15, 19, … has d = 4.
 
-The (n − 1) is where most errors happen: to get from term 1 to term 10 you take 9 steps.
+**The nth term.** To get from the 1st term to the nth, you add d exactly **n − 1** times:
+
+$$
+a_n = a_1 + (n - 1)d
+$$
+
+So the 20th term of 7, 11, 15, … is 7 + 19 × 4 = **83**.
+
+**The sum of the first n terms** — the list is evenly spaced, so its average is the average of the
+first and last terms:
+
+$$
+\text{sum} = n \times \frac{\text{first} + \text{last}}{2}
+$$
+
+The first 20 terms add up to 20 × (7 + 83)/2 = 20 × 45 = **900**.
 </Concept>
 
-<Example title="Two known terms">
-In an arithmetic sequence, the 4th term is 17 and the 9th term is 42. What is the 20th term?
+<Example title="Two terms known">
+In an arithmetic sequence, the 4th term is 17 and the 9th term is 42. What is the 1st term?
 
 <Solution>
-From term 4 to term 9 is 5 steps and the value rises 25, so d = 5.
-From term 9 to term 20 is 11 more steps: 42 + 11 × 5 = **97**.
+**Step 1 — Count the steps between them.** From the 4th to the 9th term is 9 − 4 = 5 steps.
+
+**Step 2 — Find d.** The terms grew by 42 − 17 = 25 over 5 steps, so d = 5.
+
+**Step 3 — Step back to the 1st term.** From the 4th back to the 1st is 3 steps: 17 − 3 × 5 = **2**.
+
+**Check:** 2, 7, 12, 17 (4th ✓), 22, 27, 32, 37, 42 (9th ✓).
+</Solution>
+</Example>
+
+<Check id="gre-fn-arith" />
+
+<Check id="gre-fn-arith-find" />
+
+<Concept>
+## 5. Geometric and recursive sequences
+
+In a **geometric sequence** you **multiply** by the same number (the **ratio**, r) each time:
+2, 6, 18, 54, … has r = 3.
+
+$$
+a_n = a_1 \times r^{\,n-1}
+$$
+
+The 6th term of 2, 6, 18, … is 2 × 3⁵ = 2 × 243 = **486**.
+
+A **recursive** sequence defines each term using the one before it, like "a₁ = 1 and aₙ = 2aₙ₋₁ + 1."
+Read aₙ₋₁ as "the previous term." There's often no shortcut formula, so **just build the terms**:
+a₁ = 1, a₂ = 2(1) + 1 = 3, a₃ = 7, a₄ = 15, a₅ = 31. If you need a far-off term, write out five or six
+and look for a pattern.
+</Concept>
+
+<Example title="Build a recursive sequence">
+A sequence has a₁ = 4, and each term after the first is 3 less than twice the previous term.
+What is a₅?
+
+<Solution>
+**Step 1 — Translate the rule.** aₙ = 2aₙ₋₁ − 3.
+
+**Step 2 — Build the terms.**
+- a₁ = 4
+- a₂ = 2(4) − 3 = 5
+- a₃ = 2(5) − 3 = 7
+- a₄ = 2(7) − 3 = 11
+- a₅ = 2(11) − 3 = **19**
 </Solution>
 </Example>
 
 <Check id="gre-fn-sequence" />
 
+<Check id="gre-fn-recursive" />
+
 <Concept>
-## Variation
+## 6. Direct and inverse variation
 
-- **Direct:** y = kx. y/x stays constant. Double x → double y.
-- **Inverse:** y = k/x. xy stays constant. Double x → halve y.
+**Direct variation:** "y varies directly with x" means **y = kx** for some constant k. When x doubles,
+y doubles. The ratio **y/x stays the same**.
 
-Find k from the given pair, then use it. If y varies inversely as x and y = 12 when x = 3,
-then k = 36 and y = 4 when x = 9.
+**Inverse variation:** "y varies inversely with x" means **y = k/x**. When x doubles, y halves. The
+product **xy stays the same**.
+
+**With powers:** "y varies directly with the **square** of x" means y = kx². Now doubling x
+multiplies y by **4** (because 2² = 4); tripling x multiplies y by 9.
+
+**Method:** use the first pair of values to find k, then use k with the new value.
 </Concept>
 
 <Gotcha title="Trap — “varies with the square”">
-“y varies directly as the square of x” means y = kx². Doubling x multiplies y by 4, not 2.
+If y varies with x² and x triples, y becomes **9 times** as big, not 3 times. Find k from the first
+pair (k = y ÷ x²) and plug in — don't scale by the change in x alone.
 </Gotcha>
+
+<Example title="Inverse variation">
+The time it takes to fill a pool varies inversely with the number of hoses used. With 3 hoses it takes
+8 hours. How long with 4 hoses?
+
+<Solution>
+**Step 1 — Inverse means the product is constant.** hoses × hours = 3 × 8 = 24.
+
+**Step 2 — Use the new number of hoses.** 4 × hours = 24, so hours = **6**.
+
+Sanity check: more hoses, less time ✓.
+</Solution>
+</Example>
 
 <Check id="gre-fn-variation" />
 
+<Check id="gre-fn-variation-square" />
+
+<Concept>
+## Recap
+
+| Topic | Rule | Example |
+|---|---|---|
+| substitution | replace every x, in parentheses | f(−2) with x² − 3x → 4 + 6 = 10 |
+| f(g(x)) | inside first, then outside | g(3) = 9 → f(9) = 14 |
+| made-up symbols | match positions exactly | 3 ◆ 4 = 3² − 2(4) = 1 |
+| arithmetic sequence | aₙ = a₁ + (n − 1)d; sum = n × (first + last)/2 | 7, 11, 15, … 20th = 83 |
+| geometric sequence | aₙ = a₁ × rⁿ⁻¹ | 2, 6, 18, … 6th = 486 |
+| recursive | build the terms one by one | 1, 3, 7, 15, 31 |
+| direct / inverse | y = kx (ratio fixed) / y = k/x (product fixed) | 3 hoses × 8 h = 4 × 6 h |
+| with a square | y = kx²: double x → 4 × y | triple x → 9 × y |
+</Concept>
+
 <Cheatsheet>
-Practice bank topic drills: Functions · Defined operations · Sequences · Direct & inverse variation.
+Practice bank topic drills: Function evaluation · Composition · Defined operations · Sequences · Variation.
 </Cheatsheet>
