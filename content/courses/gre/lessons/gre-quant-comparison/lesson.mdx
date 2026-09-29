@@ -3,118 +3,247 @@ id: gre-quant-comparison
 module: gre-quant-strategy
 title: Quantitative comparison
 order: 1
-estimatedMinutes: 35
+estimatedMinutes: 45
 prerequisites: [gre-exponents-roots]
 objectives:
-  - Know what each of the four fixed answers means — especially D
-  - Decide variable comparisons by testing numbers from every zone the constraint allows
-  - Simplify both quantities the way you would an inequality, without flipping errors
-  - Recognize the classic traps — x² = k, percent points, “equal-looking” quantities
+  - Know exactly what the four answer choices mean — especially D
+  - Compare two numbers without finishing the calculation
+  - Simplify both quantities the way you would an equation, using only safe moves
+  - Test numbers from every zone the question allows
+  - Spot hidden cases — negative roots, negative factors, figures not drawn to scale
+  - Handle word-problem comparisons like percent vs. percentage points
 tags: [gre, quant, quantitative-comparison, strategy]
 ---
 
 <Intuition>
-Quantitative comparison (QC) questions don’t ask you to find a value — only to decide
-which of two quantities is bigger, or whether you **can’t tell**. That changes the game:
-you rarely need to finish a calculation, and when variables are involved, the fastest
-route is often to **try numbers**. If one allowed number makes A bigger and another makes
-B bigger, you’re done — the answer is D, no algebra required. QC is roughly a third of
-Quant, and it rewards exactly this kind of quick, skeptical testing.
+Quantitative comparison (QC) questions give you two quantities, A and B, and ask **which is bigger** —
+or whether you **can't tell**. They make up about a third of the Quant section.
+
+The big difference from regular math problems: **you don't need the exact values.** You only need to
+know which side is bigger. So you can simplify, estimate, and — when there are variables — **try
+numbers**. If one allowed number makes A bigger and another makes B bigger, you're done: the answer is
+"cannot be determined."
 </Intuition>
 
 <Concept>
-## The four answers never change
+## 1. The four answers — and comparing numbers
 
-- **A** — Quantity A is greater (for every allowed value).
-- **B** — Quantity B is greater (for every allowed value).
-- **C** — The two quantities are equal (for every allowed value).
-- **D** — The relationship cannot be determined from the information given.
+Every QC question has the same four choices:
 
-Two consequences. First, **if there are no variables** (both quantities are just numbers),
-D is impossible — two fixed numbers always compare one way. Second, A, B, or C are claims
-about **every** allowed case. One counterexample kills them.
+| Choice | Means |
+|---|---|
+| A | Quantity A is greater — **always**, for every allowed value |
+| B | Quantity B is greater — **always** |
+| C | The two are equal — **always** |
+| D | It **depends** — the relationship can't be determined |
+
+Two things follow from this:
+
+1. **If there are no variables** (both quantities are plain numbers), **D is impossible**. Two fixed
+   numbers always compare one way.
+2. A, B, and C are claims about **every** case. **One counterexample kills them.**
+
+**A routine for every QC question:**
+1. Are there variables? If not, D is out.
+2. Simplify both sides (next section).
+3. If variables are left, test numbers (section 3).
+
+**Comparing plain numbers:** don't grind out both values if you can see the structure. Look for ways to
+rewrite one side to look like the other.
 </Concept>
+
+<Example title="Spot the structure">
+| Quantity A | Quantity B |
+|---|---|
+| 17 × 19 | 18² |
+
+<Solution>
+**Step 1 — No variables,** so the answer is A, B, or C.
+
+**Step 2 — Rewrite A to look like B.** 17 × 19 = (18 − 1)(18 + 1) = 18² − 1 (difference of squares).
+
+**Step 3 — Compare.** 18² − 1 is less than 18². **Quantity B is greater.**
+
+(Checking the arithmetic: 323 vs. 324.)
+</Solution>
+</Example>
 
 <Check id="gre-qc-fixed" />
 
-<Concept>
-## Testing numbers: the zones
+<Check id="gre-qc-roots" />
 
-When a quantity has a variable, test values from each “zone” the constraint allows. Most
-wrong answers come from testing only positive integers.
+<Concept>
+## 2. Simplify both sides — safely
+
+Treat the two quantities like the two sides of an equation you're allowed to change, **as long as the
+change can't flip which one is bigger**:
+
+| Move | Safe? |
+|---|---|
+| add or subtract the same thing from both | ✓ always |
+| multiply or divide both by the same **positive** number | ✓ |
+| square both | ✓ only if both are known to be **non-negative** |
+| multiply or divide both by something that **could be negative or zero** | ✗ — it might flip the order |
+
+**Example:** A = 3x + 7 and B = 3x + 5. Subtract 3x from both: A = 7, B = 5. A is bigger **no matter
+what x is**.
+</Concept>
+
+<Example title="Expand, then cancel">
+| Quantity A | Quantity B |
+|---|---|
+| (x + 1)² | x² + 2x |
+
+<Solution>
+**Step 1 — Expand A.** (x + 1)² = x² + 2x + 1.
+
+**Step 2 — Subtract x² + 2x from both sides.** A becomes 1, B becomes 0.
+
+**Step 3 — Compare.** 1 > 0, for every x. **Quantity A is greater.**
+</Solution>
+</Example>
+
+<Check id="gre-qc-cancel" />
+
+<Check id="gre-qc-simplify" />
+
+<Concept>
+## 3. Test numbers — from every zone
+
+When a variable is left over, **plug in numbers** the question allows. The trick is to test
+**different kinds** of numbers, not just 2, 3, and 5. Numbers behave differently in different "zones":
 </Concept>
 
 <TradeoffTable id="gre-number-zones" />
 
-<Example title="Test the zones">
-Given: x ≠ 0.
+<Concept>
+**How to run the tests:**
+- Start with an easy number (like 2), then try the zones that behave strangely: **0, 1, a fraction, a
+  negative, a negative fraction**.
+- **As soon as two tests disagree, stop — the answer is D.**
+- If all your tests agree, look for the **reason** it always works. That's what confirms the answer
+  isn't D.
+</Concept>
 
-Quantity A: x²   ·   Quantity B: x³
+<Example title="Two tests disagree">
+x ≠ 0
+
+| Quantity A | Quantity B |
+|---|---|
+| x² | x³ |
 
 <Solution>
-Try x = 2: A = 4, B = 8 → **B** bigger.
-Try x = −1: A = 1, B = −1 → **A** bigger.
+**Test 1 — x = 2.** A = 4, B = 8 → **B** is bigger.
 
-Two allowed values disagree, so the answer is **D**. You can stop after the second test.
+**Test 2 — x = −1** (a negative). A = 1, B = −1 → **A** is bigger.
+
+**Two allowed values disagree, so the answer is D.** You can stop after the second test.
 </Solution>
 </Example>
 
-<Example title="When testing agrees">
-Given: 0 < x < 1.
+<Example title="Tests agree — find the reason">
+0 < x < 1
 
-Quantity A: x   ·   Quantity B: √x
+| Quantity A | Quantity B |
+|---|---|
+| x | √x |
 
 <Solution>
-Try x = ¼: A = 0.25, B = 0.5 → B bigger. Try x = 0.81: A = 0.81, B = 0.9 → B bigger.
-Try something near the edges, x = 0.01: A = 0.01, B = 0.1 → B bigger.
+**Test 1 — x = ¼.** A = 0.25, B = 0.5 → B bigger.
 
-Every test agrees, and the reason is general: for 0 < x < 1, the square root of a number is
-larger than the number. Answer: **B**.
+**Test 2 — near the edge, x = 0.81.** A = 0.81, B = 0.9 → B bigger.
 
-When your tests keep agreeing, look for the reason — that’s what confirms the answer isn’t D.
+**The reason:** for a number between 0 and 1, taking the square root makes it **bigger** (the opposite
+of squaring). So B wins every time. **Quantity B is greater.**
 </Solution>
 </Example>
 
 <Check id="gre-qc-zones" />
 
+<Check id="gre-qc-sign" />
+
 <Concept>
-## Simplify both sides like an inequality
+## 4. Hidden cases
 
-You can do the same thing to both quantities to make them easier to compare, **as long as
-it can’t change their order**:
+Many QC traps hide a second possibility the question never mentions:
 
-- add or subtract the same number ✓
-- multiply or divide by the same **positive** number ✓
-- square both ✓ only if both are known to be non-negative
-- multiply or divide by something that **could be negative** ✗ — that might flip the order,
-  and you won’t know which way
+- **Even powers hide the sign.** x² = 16 means x = 4 **or** x = −4.
+- **Products hide the signs.** If ab = 12, a and b could both be **negative**.
+- **Figures aren't drawn to scale.** Unless the question says so, don't assume a right angle, equal
+  sides, or parallel lines — even if the picture looks that way.
 
-Example: A = 3x + 7, B = 3x + 5 → subtract 3x from both → A = 7, B = 5 → **A**, whatever x is.
+Before you pick A, B, or C, ask: **"Is there another case I haven't tried?"**
 </Concept>
 
-<Gotcha title="Trap — x² = 16 means x = 4 or x = −4">
-Given x² = 16, compare x with 4. It is tempting to answer C. But x could be −4, which is
-less than 4. The answer is **D**. Even powers hide the sign; if the question doesn’t say
-x > 0, keep both roots.
+<Gotcha title="Trap — y² = 49 doesn't mean y = 7">
+It's tempting to answer C when you're told y² = 49 and asked to compare y with 7. But y could be −7.
+If the question doesn't say y is positive, keep both roots.
 </Gotcha>
+
+<Example title="A triangle that isn't known to be right">
+In triangle ABC, AB = 6 and BC = 8.
+
+| Quantity A | Quantity B |
+|---|---|
+| AC | 10 |
+
+<Solution>
+**Step 1 — Don't assume a right angle.** If angle B were 90°, AC would be 10 (a 6-8-10 triangle) — but
+nothing says it is.
+
+**Step 2 — What can AC be?** By the triangle rule, AC is between 8 − 6 = 2 and 8 + 6 = 14.
+
+**Step 3 — Compare.** AC could be 5 (B bigger), 10 (equal), or 12 (A bigger). **The answer is D.**
+</Solution>
+</Example>
 
 <Check id="gre-qc-square" />
 
-<Concept>
-## Word QCs: same trap, different clothes
+<Check id="gre-qc-hidden" />
 
-- **Percent vs. percentage points.** A rate going from 20% to 25% rose by 5 percentage
-  points — and by 25 **percent**.
-- **Averages.** If the average of x and y is 20 and x > 20, then y < 20 — no numbers needed.
-- **Equal-looking quantities.** 30% of 80 and 80% of 30 are equal (both 24). x% of y always
-  equals y% of x.
-- **Geometry without a figure you can trust.** Unless the question states it, don’t assume a
-  right angle, equal sides, or that a figure is drawn to scale.
+<Concept>
+## 5. Word-problem comparisons
+
+A few classic setups show up again and again:
+
+- **Percent vs. percentage points.** A rate going from 20% to 25% rose by **5 percentage points** —
+  but by **25 percent** (5 ÷ 20).
+- **Averages.** If the average of x and y is 20, then x + y = 40. So if x is **above** 20, y must be
+  **below** 20 by the same amount.
+- **Look-alikes that are equal.** 30% of 80 and 80% of 30 are both 24. In general, **x% of y always
+  equals y% of x.**
 </Concept>
+
+<Example title="Swap the percents">
+| Quantity A | Quantity B |
+|---|---|
+| 45% of 60 | 60% of 45 |
+
+<Solution>
+**Step 1 — Write both as multiplication.** A = 0.45 × 60. B = 0.60 × 45.
+
+**Step 2 — See the pattern.** Both are 45 × 60 ÷ 100 — the same numbers multiplied in a different order.
+
+**Answer: the quantities are equal** (both 27).
+</Solution>
+</Example>
 
 <Check id="gre-qc-points" />
 
-<Check id="gre-qc-simplify" />
+<Check id="gre-qc-average" />
+
+<Concept>
+## Recap
+
+| Situation | Do this |
+|---|---|
+| no variables | D is impossible; rewrite one side to look like the other |
+| same terms on both sides | cancel them (add/subtract, or × ÷ by a positive) |
+| variables left | test 2, then 0, 1, ½, −1, −½; two different results → D |
+| tests all agree | find the reason before choosing A, B, or C |
+| x² = k, ab = k, a figure | look for the hidden case (negatives, not to scale) |
+| percent changes | percentage points ≠ percent; x% of y = y% of x |
+</Concept>
 
 <Cheatsheet>
 Practice bank topic drills: QC — variables & constraints · QC — numbers only · QC — classic traps.

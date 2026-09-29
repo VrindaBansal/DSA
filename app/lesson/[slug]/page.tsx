@@ -3,6 +3,9 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 import { getAllLessons, getLesson, getLessonNeighbors } from '@/lib/content';
 import { getModule, moduleLabel } from '@/lib/modules';
 import { makeMdxComponents } from '@/components/blocks/mdx-components';
@@ -105,7 +108,12 @@ export default async function LessonPage({
             source={source}
             components={makeMdxComponents(meta.id)}
             options={{
-              mdxOptions: { remarkPlugins: [remarkGfm] },
+              // Math: $$…$$ only (inline or display). Single dollars stay
+              // literal so prices like $12 and $15 never turn into math.
+              mdxOptions: {
+                remarkPlugins: [remarkGfm, [remarkMath, { singleDollarTextMath: false }]],
+                rehypePlugins: [[rehypeKatex, { strict: 'ignore' }]],
+              },
               // Lessons are trusted, repository-owned content and use JS
               // expressions for structured component props (for example,
               // CodeWalk's lines array). Keep dangerous globals blocked.

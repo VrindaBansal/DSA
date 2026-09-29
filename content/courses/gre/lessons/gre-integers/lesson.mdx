@@ -3,98 +3,311 @@ id: gre-integers
 module: gre-arithmetic
 title: Integers, divisibility, primes & remainders
 order: 1
-estimatedMinutes: 35
+estimatedMinutes: 55
 prerequisites: [gre-overview]
 objectives:
-  - Prime-factorize quickly and use the factorization to count divisors, find GCD and LCM
-  - Solve remainder questions by picking the simplest number that fits
-  - Apply odd/even and positive/negative rules to “must be” questions
-  - Find the sum or the extremes of consecutive integers using the average
+  - Tell factors, multiples, and primes apart, and check whether a number is prime
+  - Break any number into prime factors, and use that to count its factors
+  - Find the greatest common factor and least common multiple, and know which a word problem wants
+  - Answer remainder questions by testing the smallest number that fits
+  - Decide whether an expression must be odd, even, positive, or negative by trying simple numbers
+  - Find the sum, the middle, or the ends of a list of consecutive numbers
 tags: [gre, quant, arithmetic, number-properties]
 ---
 
 <Intuition>
-Number-property questions look like puzzles, but nearly all of them fall to one move:
-**break the number into its prime factors.** Primes are the atoms of the integers —
-every factor, multiple, GCD, and LCM question is really a question about which primes
-are present and how many times. The other big idea is that for “must be” questions about
-odd/even or positive/negative, you don’t need algebra: you test a couple of simple numbers
-that satisfy the conditions.
+This lesson is about **whole numbers** — what divides into what, what's left over, and
+odd versus even. The GRE asks about these ideas on almost every test, usually disguised as
+a puzzle. The good news: you don't need any advanced math. You need a handful of simple
+habits, and the most important one is this:
+
+**When a question is about factors, multiples, or divisibility, break the number into
+its prime factors first.** Almost everything else in this lesson follows from that one move.
+
+Each idea below comes in the same order: a plain explanation, a worked example you can try
+before revealing the answer, and then one or two GRE-style questions to practice on.
 </Intuition>
 
 <Concept>
-## Prime factorization
+## 1. The words: integers, factors, multiples
 
-A **prime** has exactly two positive divisors: 1 and itself. The primes under 50 are
-2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47. Note that **1 is not prime**, and
-**2 is the only even prime**.
+Let's pin down the vocabulary first, because GRE questions use these words precisely.
 
-Factor by dividing out small primes until nothing is left:
+- An **integer** is a whole number with no fraction or decimal part. It can be positive,
+  negative, or zero: …, −3, −2, −1, 0, 1, 2, 3, …. (So 5 and −5 are integers; 2.5 and ½ are not.)
+- A **factor** (also called a **divisor**) of a number goes into it evenly, with nothing
+  left over. The factors of 12 are **1, 2, 3, 4, 6, 12**, because 12 ÷ 3 = 4 exactly,
+  but 12 ÷ 5 = 2.4 is not a whole number.
+- A **multiple** of a number is that number times any integer. The multiples of 12 are
+  **12, 24, 36, 48, …** (and also 0, −12, and so on).
 
-360 = 2 × 180 = 2 × 2 × 90 = 2 × 2 × 2 × 45 = 2³ × 3² × 5.
+A memory trick: **factors are few, multiples are many.** 12 has only six factors, but it has
+endless multiples. And the two ideas are mirror images: 3 is a factor of 12 exactly when 12
+is a multiple of 3. "12 is divisible by 3" means the same thing.
 
-**Divisibility shortcuts** speed this up: divisible by 3 if the digit sum is (e.g., 1,251 →
-1+2+5+1 = 9 ✓); by 4 if the last two digits are; by 5 if it ends in 0 or 5; by 9 if the
-digit sum is divisible by 9.
+Factors come in pairs that multiply to the number. For 36, start at 1 and walk up:
+
+| small factor | 1 | 2 | 3 | 4 | 6 |
+|---|---|---|---|---|---|
+| its partner | 36 | 18 | 12 | 9 | 6 |
+
+When the pairs meet in the middle (6 × 6), you've found them all: 1, 2, 3, 4, 6, 9, 12, 18, 36.
 </Concept>
 
 <Concept>
-## Counting divisors
+## 2. Prime numbers
 
-Write N = pᵃ × qᵇ × rᶜ (p, q, r distinct primes). Every divisor picks an exponent for each prime
-independently — from 0 up to the one in N. So the number of positive divisors is
+A **prime number** has **exactly two** factors: 1 and itself. 7 is prime (only 1 × 7 makes
+7). 9 is not prime, because 3 × 3 = 9 as well.
 
-**(a + 1)(b + 1)(c + 1)**.
+The primes you should know by heart:
+
+**2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47**
+
+Two facts the GRE loves to test:
+
+1. **1 is not prime.** It has only one factor (itself), not two.
+2. **2 is the only even prime.** Every other even number can be divided by 2.
+
+**How to check whether a bigger number is prime.** Try dividing it by the primes 2, 3, 5, 7,
+11, … — but you can stop once the prime you're trying, multiplied by itself, is bigger than
+your number. Why? If a number had a factor bigger than its square root, the partner
+factor would be smaller than the square root, and you would already have found it.
 </Concept>
 
-<Example title="Counting divisors">
-How many positive divisors does 360 have?
+<Example title="Is 91 prime?">
+Is 91 a prime number?
 
 <Solution>
-360 = 2³ × 3² × 5¹. A divisor can use 2⁰ through 2³ (4 choices), 3⁰ through 3² (3 choices),
-and 5⁰ or 5¹ (2 choices).
+**Step 1 — Decide how far to check.** 10 × 10 = 100 is bigger than 91, so we only need to try
+the primes below 10: 2, 3, 5, and 7.
 
-(3 + 1)(2 + 1)(1 + 1) = 4 × 3 × 2 = **24**.
+**Step 2 — Try each one.**
+- 2: 91 is odd, so no.
+- 3: the digits add to 9 + 1 = 10, which isn't divisible by 3, so no.
+- 5: 91 doesn't end in 0 or 5, so no.
+- 7: 7 × 13 = 91. **Yes!**
 
-The “+1” is the part people forget: an exponent of 0 is a choice — it is how 1 and the pure
-prime powers get counted.
+**Answer: 91 is not prime** — it equals 7 × 13. This is the GRE's favorite fake prime, because it
+"looks" prime. 51 (= 3 × 17) and 57 (= 3 × 19) are the other usual suspects.
+</Solution>
+</Example>
+
+<Check id="gre-int-prime" />
+
+<Check id="gre-int-prime-count" />
+
+<Concept>
+## 3. Prime factorization — a number's building blocks
+
+Every whole number bigger than 1 can be written as a product of primes in exactly one way.
+This is called its **prime factorization**, and it's like the number's DNA: once you have
+it, you can answer almost any factor question about the number.
+
+**How to do it: a factor tree.** Split the number into any two factors. Keep splitting
+anything that isn't prime. Stop when every branch ends in a prime.
+
+For 360:
+
+- 360 = 36 × 10
+- 36 = 6 × 6 = (2 × 3) × (2 × 3)
+- 10 = 2 × 5
+
+Collect the primes at the ends of the branches: 2, 3, 2, 3, 2, 5. Group the repeats with
+exponents (an exponent counts how many times a number is multiplied by itself):
+
+$$
+360 = 2 \times 2 \times 2 \times 3 \times 3 \times 5 = 2^3 \times 3^2 \times 5
+$$
+
+It doesn't matter how you split at the start — 360 = 4 × 90 or 360 = 2 × 180 lead to the
+same primes in the end.
+
+**Divisibility shortcuts** make the splitting fast:
+
+| A number is divisible by… | if… | example |
+|---|---|---|
+| 2 | its last digit is even | 358 ✓ |
+| 3 | its digits add up to a multiple of 3 | 1,251: 1+2+5+1 = 9 ✓ |
+| 4 | its last two digits form a multiple of 4 | 1,316: 16 ✓ |
+| 5 | it ends in 0 or 5 | 2,345 ✓ |
+| 6 | it passes both the 2 test and the 3 test | 234 ✓ |
+| 9 | its digits add up to a multiple of 9 | 3,735: 3+7+3+5 = 18 ✓ |
+| 10 | it ends in 0 | 780 ✓ |
+</Concept>
+
+<Example title="Divisible by 36?">
+Is 2,340 divisible by 36?
+
+<Solution>
+**Step 1 — Break the divisor into pieces you can test.** 36 = 4 × 9. (4 and 9 share no
+factor, so a number divisible by both is divisible by 36.)
+
+**Step 2 — Test for 4.** The last two digits are 40, and 40 ÷ 4 = 10. ✓
+
+**Step 3 — Test for 9.** The digits add up to 2 + 3 + 4 + 0 = 9, a multiple of 9. ✓
+
+**Answer: yes.** (Indeed, 2,340 ÷ 36 = 65.)
+
+Why not test 6 × 6? Because the two 6s share factors: a number divisible by 6 isn't
+automatically divisible by 36 (think of 6 itself). Always split into pieces with no
+common factor.
+</Solution>
+</Example>
+
+<Check id="gre-int-factorize" />
+
+<Check id="gre-int-exponents" />
+
+<Concept>
+## 4. Counting factors
+
+"How many factors does 72 have?" You could list them all, but for bigger numbers that's slow
+and easy to mess up. There's a shortcut, and it helps to see *why* it works on a small
+number first.
+
+Take **12 = 2² × 3**. Every factor of 12 is built from the same primes — you just decide
+**how many 2s** to use (zero, one, or two) and **how many 3s** (zero or one). In the grid below,
+the top row is the choice of 2s (2⁰ = 1, 2¹ = 2, 2² = 4), the left column is the choice of 3s
+(3⁰ = 1, 3¹ = 3), and each cell multiplies them:
+
+| × | 2⁰ = 1 | 2¹ = 2 | 2² = 4 |
+|---|---|---|---|
+| **3⁰ = 1** | 1 | 2 | 4 |
+| **3¹ = 3** | 3 | 6 | 12 |
+
+That's 3 choices for the 2s times 2 choices for the 3s: **3 × 2 = 6 factors.** Notice that the
+number of choices is always **one more than the exponent**, because "use none" is a choice too.
+
+**The rule:** write the prime factorization, **add 1 to each exponent, and multiply.**
+
+$$
+\text{If } N = p^a \times q^b \times r^c, \text{ then } N \text{ has } (a+1)(b+1)(c+1) \text{ factors.}
+$$
+
+(Here p, q, r stand for different primes.)
+</Concept>
+
+<Example title="How many factors does 360 have?">
+How many positive factors does 360 have?
+
+<Solution>
+**Step 1 — Prime-factorize.** From the factor tree above, 360 = 2³ × 3² × 5¹.
+(A prime that appears once has exponent 1 — don't forget it.)
+
+**Step 2 — Add 1 to each exponent.** 3 + 1 = 4, 2 + 1 = 3, 1 + 1 = 2.
+
+**Step 3 — Multiply.** 4 × 3 × 2 = **24 factors.**
+
+**The trap:** multiplying the exponents themselves (3 × 2 × 1 = 6) instead of the exponents
+plus one. The "+1" is the choice to use *none* of that prime — that's how 1 and numbers like 8
+or 9 get counted.
+</Solution>
+</Example>
+
+<Example title="Check the rule by listing">
+How many factors does 100 have? Use the rule, then list them to check.
+
+<Solution>
+**Step 1 — Factorize:** 100 = 4 × 25 = 2² × 5².
+
+**Step 2 — Apply the rule:** (2 + 1)(2 + 1) = 3 × 3 = **9 factors.**
+
+**Step 3 — Check by listing in pairs:** 1 × 100, 2 × 50, 4 × 25, 5 × 20, 10 × 10.
+That's 1, 2, 4, 5, 10, 20, 25, 50, 100 — nine factors. ✓ (10 × 10 counts only once, which is why a
+perfect square always has an **odd** number of factors.)
 </Solution>
 </Example>
 
 <Check id="gre-int-divisors" />
 
+<Check id="gre-int-most-divisors" />
+
 <Concept>
-## GCD and LCM
+## 5. Greatest common factor (GCF) and least common multiple (LCM)
 
-- **GCD** (greatest common divisor): the primes both numbers share, each at its **lowest**
-  power. Used for “cut into equal pieces as large as possible.”
-- **LCM** (least common multiple): every prime that appears in either number, at its
-  **highest** power. Used for “when will they coincide again.”
-- Handy identity: **GCD × LCM = the product of the two numbers.**
+These two ideas sound alike, so connect each one to a picture:
 
-For 24 = 2³ × 3 and 36 = 2² × 3²: GCD = 2² × 3 = 12; LCM = 2³ × 3² = 72; and 12 × 72 = 864 = 24 × 36 ✓.
+- **GCF** (also called GCD, greatest common divisor) — the **biggest number that divides
+  into both**. Picture cutting two ribbons into equal pieces that are as long as possible.
+- **LCM** (least common multiple) — the **smallest number that both divide into**. Picture two
+  blinking lights and asking when they'll next blink at the same moment.
+
+**For small numbers, just list.** For 12 and 18:
+- Factors of 12: 1, 2, 3, 4, **6**, 12. Factors of 18: 1, 2, 3, **6**, 9, 18. Biggest in common: **GCF = 6**.
+- Multiples of 12: 12, 24, **36**, 48. Multiples of 18: 18, **36**, 54. First in common: **LCM = 36**.
+
+**For bigger numbers, use prime factorizations:**
+- **GCF:** take only the primes **both** numbers share, each at its **smaller** power.
+- **LCM:** take **every** prime that appears in either number, each at its **larger** power.
+
+**How to tell which one a word problem wants:**
+
+| The question says… | You want… |
+|---|---|
+| "largest possible equal groups / pieces," "greatest number that divides both" | **GCF** |
+| "next time they happen together," "smallest number both go into" | **LCM** |
+
+A useful fact: for any two positive whole numbers, **GCF × LCM = the two numbers multiplied
+together.** (12 and 18: 6 × 36 = 216 = 12 × 18. ✓)
 </Concept>
 
-<Example title="When do they meet again?">
-One bus leaves the station every 12 minutes, another every 18 minutes. Both leave at 8:00.
-When do they next leave together?
+<Example title="GCF and LCM with prime factors">
+Find the GCF and the LCM of 24 and 36.
 
 <Solution>
-They coincide at common multiples of 12 and 18; the next time is the LCM.
-12 = 2² × 3 and 18 = 2 × 3² → LCM = 2² × 3² = 36.
+**Step 1 — Factorize both.** 24 = 2³ × 3 and 36 = 2² × 3².
 
-They next leave together at **8:36**.
+**Step 2 — GCF: shared primes, smaller power.** Both have 2s: the smaller power is 2². Both
+have 3s: the smaller power is 3¹. GCF = 2² × 3 = **12**.
+
+**Step 3 — LCM: all primes, larger power.** The 2s: larger power is 2³. The 3s: larger
+power is 3². LCM = 2³ × 3² = 8 × 9 = **72**.
+
+**Step 4 — Check with the product fact:** 12 × 72 = 864, and 24 × 36 = 864. ✓
 </Solution>
 </Example>
 
+<Example title="Which one does the story want?">
+A florist has 48 roses and 72 tulips. She wants to make identical bouquets using all the
+flowers, with each bouquet having the same number of roses and the same number of tulips.
+What is the greatest number of bouquets she can make, and what's in each one?
+
+<Solution>
+**Step 1 — Recognize the type.** "Greatest number of identical groups, using everything" is a
+**GCF** question: the number of bouquets must divide 48 and 72 evenly.
+
+**Step 2 — Find the GCF.** 48 = 2⁴ × 3 and 72 = 2³ × 3². Shared primes at their smaller
+powers: 2³ × 3 = **24**.
+
+**Step 3 — Describe each bouquet.** 48 ÷ 24 = 2 roses and 72 ÷ 24 = 3 tulips.
+
+**Answer: 24 bouquets, each with 2 roses and 3 tulips.**
+</Solution>
+</Example>
+
+<Check id="gre-int-lcm-lights" />
+
+<Check id="gre-int-gcf-lcm-product" />
+
 <Concept>
-## Remainders: pick the simplest number that works
+## 6. Remainders
 
-“When n is divided by 7, the remainder is 3” describes n = 3, 10, 17, 24, …. Any one of them
-answers a question about how n behaves, so **pick the smallest: n = 3.**
+When a division doesn't come out evenly, the **remainder** is what's left over:
 
-Why that is legitimate: n = 7q + 3, so 5n + 2 = 35q + 17. The 35q part is a multiple of 7,
-so only 17 matters for the remainder.
+- 17 ÷ 5 = 3, **remainder 2**, because 5 × 3 = 15 and 17 − 15 = 2.
+- Another way to write the same fact: **17 = 5 × 3 + 2.**
+
+Two things are always true: the remainder is **never negative**, and it's always **smaller than
+the number you divide by**. (Dividing by 5, the remainder can only be 0, 1, 2, 3, or 4.)
+
+**The GRE trick: pick the smallest number that fits.** A question might say "when n is
+divided by 7, the remainder is 3." Which numbers do that? 3, 10, 17, 24, 31, … — each one is 3
+more than a multiple of 7. The question works the same no matter which one n is, so pick the
+easiest: **n = 3** (the remainder itself), then just compute.
+
+Then, if you like, double-check with the next number on the list (n = 10). If both give the
+same answer, you're safe.
 </Concept>
 
 <Example title="A remainder question">
@@ -102,59 +315,166 @@ When the positive integer n is divided by 7, the remainder is 3. What is the rem
 5n + 2 is divided by 7?
 
 <Solution>
-Take n = 3. Then 5n + 2 = 17, and 17 = 2 × 7 + 3 → remainder **3**.
+**Step 1 — Pick the simplest n.** n = 3 leaves remainder 3 when divided by 7 (7 goes in 0
+times, 3 left over). So use n = 3.
 
-Check with another value, n = 10: 5(10) + 2 = 52 = 7 × 7 + 3 → remainder 3 again ✓.
+**Step 2 — Compute.** 5n + 2 = 5(3) + 2 = 17.
+
+**Step 3 — Divide.** 17 ÷ 7 = 2, remainder 3 (7 × 2 = 14, and 17 − 14 = 3).
+
+**Step 4 — Double-check with n = 10:** 5(10) + 2 = 52, and 52 = 7 × 7 + 3. Remainder 3 again. ✓
+
+**Answer: 3.**
+</Solution>
+</Example>
+
+<Example title="Two remainder conditions at once">
+When n is divided by 5, the remainder is 2. When n is divided by 3, the remainder is 1. What
+is the smallest positive value of n?
+
+<Solution>
+**Step 1 — List the numbers that fit the first condition.** Remainder 2 when divided by 5:
+2, 7, 12, 17, 22, …
+
+**Step 2 — Test each against the second condition** (remainder 1 when divided by 3):
+- 2 ÷ 3 → remainder 2 ✗
+- 7 ÷ 3 = 2, remainder 1 ✓
+
+**Answer: n = 7.** Listing is fast and safe here — no algebra needed.
 </Solution>
 </Example>
 
 <Check id="gre-int-remainder" />
 
+<Check id="gre-int-remainder-two" />
+
 <Concept>
-## Odd/even and positive/negative
+## 7. Odd and even, positive and negative
 
-You never need to memorize a table. **Test the simplest values** that satisfy the
-conditions: 1 and 2 for odd/even; −2, −½, ½, 2 for sign questions.
+Many GRE questions ask what **must be** true about odd/even numbers or about signs. You don't
+need to memorize rules — **try simple numbers**, and the rules show up on their own.
 
-The rules those tests reveal:
+**Odd and even.** Try 1 (odd) and 2 (even):
 
-- odd ± odd = even; even ± anything keeps that thing’s parity
-- odd × odd = odd; anything × even = even
-- a product is negative exactly when an **odd number** of its factors are negative
-- even powers are never negative; odd powers keep the sign
+| | result | try it |
+|---|---|---|
+| odd + odd | even | 1 + 1 = 2 |
+| even + even | even | 2 + 2 = 4 |
+| odd + even | odd | 1 + 2 = 3 |
+| odd × odd | odd | 1 × 1 = 1 |
+| even × anything | even | 2 × 1 = 2 |
 
-For a “**must be**” question, one counterexample eliminates a choice. For a “**could be**”
-question, one example confirms it.
+**Positive and negative.**
+- positive × positive = positive; negative × negative = **positive**; positive × negative = negative.
+- A product of several numbers is negative exactly when an **odd number** of them are negative.
+- A number squared (or raised to any even power) is **never negative**: (−3)² = 9.
+
+**"Must be" vs. "could be."**
+- "**Must be** true" means true for *every* number allowed. **One counterexample kills the choice.**
+- "**Could be** true" means true for *at least one* allowed number. **One example proves it.**
+
+When the question doesn't say "integer," remember that fractions (like ½) and negatives are
+allowed — and they're exactly where the surprises hide.
 </Concept>
 
-<Gotcha title="Trap — only testing positive integers">
-“If x² > x, then x must be greater than 1” sounds true until you try x = −1: (−1)² = 1 > −1.
-Whenever a question doesn’t say “positive integer,” test a negative and a fraction too.
+<Example title="A must-be question about signs">
+If a < 0 < b, which of the following must be negative?
+
+(A) a + b  (B) a/b  (C) a²b  (D) b − a  (E) ab²
+
+<Solution>
+**Step 1 — Pick numbers that fit.** a must be negative and b positive. Try a = −2 and b = 3.
+
+**Step 2 — Evaluate each choice.**
+- (A) a + b = −2 + 3 = 1, positive. But try a = −5, b = 1: that gives −4. It *could* be
+  either sign, so it's not "must." ✗
+- (B) a/b = −2/3, negative. A negative divided by a positive is always negative. ✓
+- (C) a²b = 4 × 3 = 12, positive. (a² is positive, times positive b.) ✗
+- (D) b − a = 3 − (−2) = 5, positive. Subtracting a negative adds. ✗
+- (E) ab² = −2 × 9 = −18, negative. b² is positive, times negative a is always negative. ✓
+
+**Answer: (B) and (E)** must be negative.
+</Solution>
+</Example>
+
+<Gotcha title="Trap — only testing positive whole numbers">
+"If x² > x, then x must be greater than 1." Sounds right — until you try x = −1: (−1)² = 1, which
+is bigger than −1. Whenever a question doesn't say "positive integer," test a **negative** and a
+**fraction** too. They are where "must be" statements break.
 </Gotcha>
 
 <Check id="gre-int-parity" />
 
-<Concept>
-## Consecutive integers
+<Check id="gre-int-signs" />
 
-For any evenly spaced list, **average = middle term = (first + last)/2**, and
-**sum = average × count**. So when you know the sum and the count, divide to get the
-middle, then step out to the ends.
+<Concept>
+## 8. Consecutive integers and evenly spaced lists
+
+**Consecutive integers** are whole numbers in a row: 11, 12, 13, 14. **Consecutive even
+integers** step by 2: 22, 24, 26. Any list that goes up by the same amount each time is
+**evenly spaced**, and evenly spaced lists have three handy properties:
+
+1. **The average is the middle number.** For 11, 12, 13, 14, 15, the average is 13.
+2. **The average also equals (first + last) ÷ 2.** (11 + 15) ÷ 2 = 13. This works even when
+   there's an even number of terms and no single middle.
+3. **Sum = average × number of terms.** 13 × 5 = 65.
+
+**Counting the terms:** how many integers are there from 11 to 15? Not 15 − 11 = 4 but **5** —
+you have to add 1, because both ends count. For a list that steps by more than 1:
+
+$$
+\text{number of terms} = \frac{\text{last} - \text{first}}{\text{step}} + 1
+$$
 </Concept>
 
-<Example title="Consecutive integers">
+<Example title="Sum of consecutive integers">
 The sum of 7 consecutive integers is 98. What is the greatest of them?
 
 <Solution>
-Average = 98 ÷ 7 = 14, which is the middle (4th) term. Three steps up: 15, 16, **17**.
+**Step 1 — Find the average.** Sum ÷ count = 98 ÷ 7 = 14.
 
-The list is 11, 12, 13, 14, 15, 16, 17, and 11 + … + 17 = 98 ✓.
+**Step 2 — The average is the middle number.** With 7 numbers, the middle is the 4th, so 14 is
+the 4th number, with three numbers below it and three above.
+
+**Step 3 — Step up three times:** 15, 16, **17**.
+
+**Check:** 11 + 12 + 13 + 14 + 15 + 16 + 17 = 98. ✓ **Answer: 17.**
+</Solution>
+</Example>
+
+<Example title="Counting and adding multiples">
+What is the sum of all the multiples of 4 from 20 to 100, inclusive?
+
+<Solution>
+**Step 1 — Count the terms.** The list is 20, 24, 28, …, 100, stepping by 4.
+Number of terms = (100 − 20) ÷ 4 + 1 = 20 + 1 = **21**.
+
+**Step 2 — Find the average.** (first + last) ÷ 2 = (20 + 100) ÷ 2 = 60.
+
+**Step 3 — Multiply.** Sum = 60 × 21 = **1,260**.
+
+**The trap:** forgetting the "+1" and using 20 terms, which gives 1,200.
 </Solution>
 </Example>
 
 <Check id="gre-int-consecutive" />
 
-<Check id="gre-int-prime" />
+<Check id="gre-int-count-multiples" />
+
+<Concept>
+## Recap
+
+| Idea | What to remember | Quick example |
+|---|---|---|
+| Factor vs. multiple | factors go **into** a number; multiples are the number **times** something | factors of 12: 1, 2, 3, 4, 6, 12 |
+| Prime | exactly two factors; 1 is not prime; 2 is the only even prime | 91 = 7 × 13 is **not** prime |
+| Prime factorization | factor tree until every branch is prime | 360 = 2³ × 3² × 5 |
+| Number of factors | add 1 to each exponent, multiply | 360 → 4 × 3 × 2 = 24 |
+| GCF / LCM | GCF: shared primes, smaller power. LCM: all primes, larger power | GCF(24, 36) = 12; LCM = 72 |
+| Remainders | pick n = the remainder, compute, double-check | n ÷ 7 rem 3 → try n = 3 |
+| Must be / could be | one counterexample kills "must"; try negatives and fractions | x² > x fails "x > 1" at x = −1 |
+| Evenly spaced lists | average = middle = (first + last) ÷ 2; count = (last − first) ÷ step + 1 | 20 to 100 by 4: 21 terms |
+</Concept>
 
 <Cheatsheet>
 Practice bank topic drills: Counting factors · GCD & LCM · Remainders · Odd/even & sign rules · Consecutive integers · Primes.

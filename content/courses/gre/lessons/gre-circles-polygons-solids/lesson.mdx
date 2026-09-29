@@ -3,87 +3,276 @@ id: gre-circles-polygons-solids
 module: gre-geometry
 title: Circles, polygons & solids
 order: 2
-estimatedMinutes: 35
+estimatedMinutes: 45
 prerequisites: [gre-lines-triangles]
 objectives:
   - Move between radius, diameter, circumference, and area of a circle
   - Find arc lengths and sector areas as a fraction of the whole circle
-  - Use the interior-angle formula for polygons and the rectangle/square facts
+  - Handle circles combined with squares and triangles, including shaded regions
+  - Find the angles of any polygon
+  - Find the area of rectangles, parallelograms, and trapezoids
   - Find volume and surface area of boxes, cubes, and cylinders
 tags: [gre, quant, geometry, circles, solids]
 ---
 
 <Intuition>
-Everything about a circle comes from its radius. Everything about an arc or sector is a
-fraction of the whole circle — the central angle over 360°. Polygons reduce to triangles,
-and solids reduce to “area of the base times height.” Learn those four ideas and most of
-this topic is arithmetic.
+This lesson has a lot of formulas, but they all come from a few simple ideas:
+
+- **Everything about a circle comes from its radius.** Find r first, every time.
+- **An arc or a sector is a fraction of the circle.** That fraction is the angle out of 360°.
+- **Polygons break into triangles**, and a triangle's angles add to 180°.
+- **A solid's volume is "base area × height"** for boxes and cylinders.
+
+Once you see those, the formulas stop being things to memorize and start being things you can
+rebuild.
 </Intuition>
 
 <Concept>
-## Circles
+## 1. Circle basics
 
-- Diameter d = 2r. Circumference C = 2πr = πd. Area A = πr².
-- **Arc length** = (θ/360) × 2πr and **sector area** = (θ/360) × πr², where θ is the
-  central angle.
-- An angle inscribed in a semicircle is a right angle. A tangent is perpendicular to the
-  radius at the point of contact.
-- Answers are usually left in terms of π: “36π,” not 113.1.
+The **radius** r goes from the center to the edge. The **diameter** d goes all the way across through
+the center, so **d = 2r**.
+
+$$
+C = 2\pi r \qquad\qquad A = \pi r^2
+$$
+
+- **Circumference** (C) is the distance around the circle.
+- **Area** (A) is the space inside.
+
+**The method: find r first.** Whatever you're given — diameter, circumference, or area — turn it into
+the radius, then use the formula you need.
+
+| You're given | Get r by | Example |
+|---|---|---|
+| diameter 10 | halve it | r = 5 |
+| circumference 12π | 2πr = 12π | r = 6 |
+| area 49π | πr² = 49π | r = 7 |
+
+GRE answers are usually left **in terms of π** ("36π", not 113.1).
 </Concept>
 
-<Example title="A sector">
-A circle has area 64π. What is the area of a sector with a 45° central angle?
+<Example title="Area to circumference">
+A circle has an area of 49π. What is its circumference?
 
 <Solution>
-πr² = 64π → r = 8 (you don’t even need r). 45° is 45/360 = ⅛ of the circle.
-Sector area = ⅛ × 64π = **8π**.
+**Step 1 — Find r.** πr² = 49π, so r² = 49 and r = 7.
+
+**Step 2 — Use the circumference formula.** C = 2π(7) = **14π**.
+</Solution>
+</Example>
+
+<Check id="gre-circ-area" />
+
+<Check id="gre-circ-compare" />
+
+<Concept>
+## 2. Arcs and sectors: a slice of the circle
+
+An **arc** is a piece of the circle's edge. A **sector** is a pizza-slice piece of its area. Both are
+set by the **central angle** θ (the angle at the center).
+
+The key idea: **the slice is the same fraction of the whole circle as θ is of 360°.** A 90° slice is
+¼ of the circle; a 60° slice is ⅙.
+
+$$
+\text{arc length} = \frac{\theta}{360} \times 2\pi r \qquad\qquad \text{sector area} = \frac{\theta}{360} \times \pi r^2
+$$
+
+It also works backward: if a sector is ⅕ of the circle's area, its central angle is ⅕ of 360°, which
+is 72°.
+</Concept>
+
+<Example title="Arc and sector from one angle">
+A circle has radius 9. A central angle of 80° cuts off an arc and a sector. Find the arc length and
+the sector area.
+
+<Solution>
+**Step 1 — What fraction of the circle?** 80/360 = 2/9.
+
+**Step 2 — Arc length.** The whole circumference is 2π(9) = 18π. Two-ninths of it: (2/9) × 18π = **4π**.
+
+**Step 3 — Sector area.** The whole area is π(9²) = 81π. Two-ninths of it: (2/9) × 81π = **18π**.
 </Solution>
 </Example>
 
 <Check id="gre-circ-sector" />
 
-<Concept>
-## Polygons
+<Check id="gre-circ-sector-angle" />
 
-- Sum of interior angles of an n-sided polygon = **(n − 2) × 180°** (it splits into n − 2
-  triangles).
-- Each interior angle of a regular polygon = (n − 2) × 180° ÷ n. Each **exterior** angle
-  = 360° ÷ n — often the faster route.
-- Rectangle: area = lw; diagonal = √(l² + w²). Square: area = s² = diagonal² ÷ 2.
-- Parallelogram: area = base × height (the perpendicular height, not the slanted side).
-  Trapezoid: area = ½(b₁ + b₂)h.
+<Concept>
+## 3. Circles with other shapes
+
+The GRE loves to put a circle and a square (or triangle) together. The trick is to find the **one
+length the two shapes share**:
+
+<svg viewBox="0 0 380 190" width="100%" style={{maxWidth: '380px'}} role="img" aria-label="Left: a square inside a circle with its corners on the circle; the square's diagonal is a diameter. Right: a circle inside a square touching all four sides; the circle's diameter equals the square's side.">
+  <circle cx="85" cy="80" r="60" fill="none" stroke="currentColor" strokeWidth="1.5" />
+  <polygon points="42.6,37.6 127.4,37.6 127.4,122.4 42.6,122.4" fill="none" stroke="currentColor" strokeWidth="1.5" />
+  <line x1="42.6" y1="122.4" x2="127.4" y2="37.6" stroke="currentColor" strokeWidth="1" strokeDasharray="4 3" />
+  <text x="85" y="162" fontSize="12" fill="currentColor" textAnchor="middle">square's diagonal</text>
+  <text x="85" y="178" fontSize="12" fill="currentColor" textAnchor="middle">= circle's diameter</text>
+  <rect x="235" y="20" width="120" height="120" fill="none" stroke="currentColor" strokeWidth="1.5" />
+  <circle cx="295" cy="80" r="60" fill="none" stroke="currentColor" strokeWidth="1.5" />
+  <line x1="235" y1="80" x2="355" y2="80" stroke="currentColor" strokeWidth="1" strokeDasharray="4 3" />
+  <text x="295" y="162" fontSize="12" fill="currentColor" textAnchor="middle">circle's diameter</text>
+  <text x="295" y="178" fontSize="12" fill="currentColor" textAnchor="middle">= square's side</text>
+</svg>
+
+- **Square inside a circle** (corners on the circle): the square's **diagonal** is a **diameter**.
+- **Circle inside a square** (touching all four sides): the circle's **diameter** equals the square's
+  **side**.
+- **Triangle with a diameter as one side** and its third corner on the circle: the angle at that
+  third corner is **90°**. So you can use the Pythagorean theorem.
+- A **tangent** line (touching the circle at one point) is **perpendicular** to the radius there.
+
+**Shaded regions:** area of the shaded part = **big shape − small shape**.
 </Concept>
+
+<Example title="Square inside a circle">
+A square is drawn inside a circle of radius 5 so that all four of its corners lie on the circle. What
+is the area of the region inside the circle but outside the square?
+
+<Solution>
+**Step 1 — Circle's area.** π(5²) = 25π.
+
+**Step 2 — Find the shared length.** The square's diagonal is a diameter: 2 × 5 = 10.
+
+**Step 3 — Square's area.** A square with diagonal 10 has side 10/√2 = 5√2, so its area is
+(5√2)² = 50. (Shortcut: square area = diagonal² ÷ 2 = 100 ÷ 2.)
+
+**Step 4 — Subtract.** Circle − square = **25π − 50** (about 28.5).
+</Solution>
+</Example>
+
+<Check id="gre-circ-shaded" />
+
+<Check id="gre-circ-semicircle" />
+
+<Concept>
+## 4. Angles in polygons
+
+Any polygon can be cut into triangles by drawing lines from one corner. A polygon with **n** sides
+splits into **n − 2** triangles, and each triangle has 180°:
+
+$$
+\text{sum of the interior angles} = (n - 2) \times 180^\circ
+$$
+
+| Shape | Sides | Sum of angles |
+|---|---|---|
+| triangle | 3 | 180° |
+| quadrilateral | 4 | 360° |
+| pentagon | 5 | 540° |
+| hexagon | 6 | 720° |
+
+In a **regular** polygon (all sides and angles equal), each angle is the sum ÷ n.
+
+**Faster route for regular polygons: the exterior angles.** The outside angles of any polygon always
+add to **360°**, so each exterior angle of a regular polygon is 360° ÷ n. And each inside angle is
+180° minus the outside angle.
+</Concept>
+
+<Example title="One angle of a regular hexagon">
+What is the measure of each interior angle of a regular hexagon?
+
+<Solution>
+**Method 1 — Angle sum.** (6 − 2) × 180° = 720°. Split evenly among 6 angles: 720 ÷ 6 = **120°**.
+
+**Method 2 — Exterior angle.** Each exterior angle is 360° ÷ 6 = 60°, so each interior angle is
+180° − 60° = **120°**.
+</Solution>
+</Example>
 
 <Check id="gre-circ-polygon" />
 
+<Check id="gre-circ-pentagon" />
+
 <Concept>
-## Solids
+## 5. Areas of four-sided shapes
 
-- Rectangular box: V = lwh; surface area = 2(lw + lh + wh); longest diagonal
-  = √(l² + w² + h²).
-- Cube: V = s³; surface area = 6s².
-- Cylinder: V = πr²h (area of the base × height); curved surface area = 2πrh.
+| Shape | Area | Note |
+|---|---|---|
+| rectangle | length × width | diagonal = √(l² + w²) |
+| square | side² | also diagonal² ÷ 2 |
+| parallelogram | base × height | height is **perpendicular**, not the slanted side |
+| trapezoid | ½ × (base₁ + base₂) × height | the bases are the two parallel sides |
 
-**Scaling:** multiply every length by k and volume multiplies by k³. Double a cylinder’s
-radius only and its volume multiplies by 4.
+**The height is always the straight-up-and-down distance** (at a right angle to the base). For a
+parallelogram or trapezoid, that's usually **not** one of the sides — you often find it with a right
+triangle.
+
+The trapezoid formula makes sense: average the two parallel sides, then treat it like a rectangle.
 </Concept>
 
-<Example title="Box diagonal">
-What is the length of the longest segment that fits inside a 3 × 4 × 12 box?
+<Example title="A trapezoid">
+A trapezoid has parallel sides of length 8 and 12, and the distance between them is 5. What is its
+area?
 
 <Solution>
-√(3² + 4² + 12²) = √(9 + 16 + 144) = √169 = **13**.
+**Step 1 — Average the parallel sides.** (8 + 12) ÷ 2 = 10.
 
-(It is two Pythagorean steps: the base diagonal is 5, then √(5² + 12²) = 13.)
+**Step 2 — Multiply by the height.** 10 × 5 = **50**.
+</Solution>
+</Example>
+
+<Check id="gre-circ-trapezoid" />
+
+<Check id="gre-circ-parallelogram" />
+
+<Concept>
+## 6. Boxes, cubes, and cylinders
+
+**Volume = area of the base × height** — for any box or cylinder.
+
+| Solid | Volume | Surface area |
+|---|---|---|
+| box (l × w × h) | lwh | 2(lw + lh + wh) — the six faces |
+| cube (side s) | s³ | 6s² — six equal square faces |
+| cylinder (radius r, height h) | πr²h | 2πr² + 2πrh — two circles plus the wrapped side |
+
+**Longest line inside a box** (corner to opposite corner): √(l² + w² + h²).
+
+**Scaling:** if every length is multiplied by k, the volume is multiplied by **k³**. But if only
+**one** measurement changes, just follow the formula — doubling a cylinder's radius multiplies its
+volume by 4 (because r is squared), while doubling its height only doubles the volume.
+</Concept>
+
+<Example title="Longest line in a box">
+What is the length of the longest straight segment that fits inside a box measuring 3 × 4 × 12?
+
+<Solution>
+**Step 1 — Use the formula.** √(3² + 4² + 12²) = √(9 + 16 + 144) = √169 = **13**.
+
+**Why it works:** it's two Pythagorean steps. The diagonal across the 3 × 4 floor is 5 (a 3-4-5
+triangle). Then that floor diagonal and the height 12 make another right triangle: √(5² + 12²) = 13.
 </Solution>
 </Example>
 
 <Gotcha title="Trap — radius or diameter?">
-Circle questions often give the diameter while the formulas use the radius. Before you
-square anything, write down r.
+Questions often give the **diameter** while every formula uses the **radius**. Before you square
+anything, write "r = ___" on your scratch paper.
 </Gotcha>
 
 <Check id="gre-circ-solid" />
+
+<Check id="gre-circ-cube" />
+
+<Concept>
+## Recap
+
+| Topic | Rule | Example |
+|---|---|---|
+| circle | find r first; C = 2πr, A = πr² | area 49π → r = 7 → C = 14π |
+| arc / sector | (θ/360) of the circumference / area | r = 9, 80° → arc 4π, sector 18π |
+| square in circle | square's diagonal = diameter | r = 5 → square area 50 |
+| circle in square | diameter = side | side 8 → r = 4 |
+| diameter as a triangle side | right angle opposite it | use a² + b² = c² |
+| polygon angles | (n − 2) × 180°; exterior angles sum to 360° | hexagon: 720°, each 120° |
+| parallelogram / trapezoid | base × height / average of bases × height | trapezoid 8, 12, h = 5 → 50 |
+| box / cylinder | base area × height | cylinder r = 2, h = 5 → 20π |
+| scaling all lengths by k | volume × k³ | double everything → × 8 |
+</Concept>
 
 <Cheatsheet>
 Practice bank topic drills: Circles — area & circumference · Arcs & sectors · Polygons · Rectangles & squares · Boxes, cubes & cylinders.

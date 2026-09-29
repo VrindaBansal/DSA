@@ -3,106 +3,304 @@ id: gre-percents
 module: gre-word-problems
 title: Percents
 order: 1
-estimatedMinutes: 35
+estimatedMinutes: 50
 prerequisites: [gre-fractions-decimals]
 objectives:
-  - Translate “what percent of what” sentences into equations
-  - Compute percent change from the ORIGINAL value, every time
-  - Combine successive percent changes by multiplying factors
-  - Undo a percent change (find the original) by dividing by the factor
-  - Handle simple and compound interest
-tags: [gre, quant, percents, word-problems]
+  - Switch between percents, decimals, and fractions, and do quick percents in your head
+  - Turn any percent sentence into an equation
+  - Find a percent increase or decrease — always dividing by the starting value
+  - Use multipliers (like × 1.2 or × 0.75) to handle one change or several in a row
+  - Work backward from a new value to the original
+  - Keep “percent of a percent” and “percentage points” straight
+  - Compute simple and compound interest
+tags: [gre, quant, percents]
 ---
 
 <Intuition>
-Almost every percent question becomes easy once you stop thinking of percents as
-something to add and subtract and start thinking of them as **multipliers**. A 20%
-increase multiplies by 1.2. A 15% decrease multiplies by 0.85. Two changes in a row?
-Multiply the two multipliers. Going backward to the original? Divide by the multiplier.
-That one idea removes the classic traps: adding percents that don’t add, and taking a
-percent of the wrong base.
+"Percent" literally means **"per hundred."** 30% is 30 out of every 100 — the fraction 30/100,
+or the decimal 0.30. That's the whole idea; everything else in this lesson is about using it
+without tripping.
+
+Percent questions trip people up in two predictable ways: dividing by the **wrong starting
+number**, and assuming that percents **add** when they actually multiply. We'll build one
+tool — the **multiplier** — that handles both.
 </Intuition>
 
 <Concept>
-## Translation
+## 1. Percents, decimals, and fractions
 
-“Percent” means “per hundred,” “of” means multiply, and “is” means equals.
+To switch forms:
 
-- 30% of 80 = 0.30 × 80 = 24
-- 12 is what percent of 48? → 12 = (p/100) × 48 → p = 25
-- 15% of what number is 9? → 0.15 × N = 9 → N = 60
+- **Percent → decimal:** divide by 100 (move the decimal point two places left). 35% = 0.35; 4% = 0.04; 0.5% = 0.005.
+- **Decimal → percent:** multiply by 100. 0.125 = 12.5%; 1.5 = 150%.
+- **Percent → fraction:** put it over 100 and simplify. 35% = 35/100 = 7/20.
+- **Fraction → percent:** divide, then × 100. 3/8 = 0.375 = 37.5%.
+
+**Doing percents in your head.** Build them from easy pieces:
+- **10%**: move the decimal one place left. 10% of 240 = 24.
+- **1%**: move it two places. 1% of 240 = 2.4.
+- **5%** is half of 10%; **20%** is double 10%; **25%** is a quarter; **50%** is half.
+- So 15% of 240 = 10% + 5% = 24 + 12 = **36**.
+
+A handy fact: **x% of y = y% of x.** 8% of 25 is hard; 25% of 8 is 2. Same answer.
 </Concept>
 
-<Check id="gre-pct-of" />
-
-<Concept>
-## Percent change: always divide by the original
-
-**Percent change = (new − old) ÷ old × 100.**
-
-From 40 to 50 is +25% (10 ÷ 40). From 50 to 40 is −20% (10 ÷ 50). Same 10-unit change,
-different percents, because the base differs.
-</Concept>
-
-<Example title="Percent change">
-A jacket’s price rose from $80 to $92. By what percent did it increase?
+<Example title="Convert and compute">
+(a) Write 3/8 as a percent. (b) Write 12.5% as a fraction. (c) What is 35% of 60?
 
 <Solution>
-Change = $12. Divide by the ORIGINAL price: 12 ÷ 80 = 0.15 → **15%**.
+**(a)** 3 ÷ 8 = 0.375, and 0.375 × 100 = **37.5%**.
 
-The trap is dividing by the new price: 12 ÷ 92 ≈ 13%.
+**(b)** 12.5% = 12.5/100 = 125/1,000 = **1/8** (divide top and bottom by 125).
+
+**(c)** Build it: 10% of 60 = 6, so 30% = 18, and 5% = 3. 35% = 18 + 3 = **21**.
 </Solution>
 </Example>
 
+<Check id="gre-pct-convert" />
+
+<Check id="gre-pct-mental" />
+
 <Concept>
-## Multipliers do all the work
+## 2. Translating percent sentences
+
+Almost every percent sentence can be turned into an equation word by word:
+
+| word | becomes |
+|---|---|
+| **percent** | ÷ 100 (or × 0.01) |
+| **of** | × (multiply) |
+| **is**, **was**, **equals** | = |
+| **what**, **what number** | x (the unknown) |
+
+There are only three kinds of basic percent questions, depending on which piece is missing:
+
+- **Find the part:** "What is 30% of 70?" → x = 0.30 × 70 = 21.
+- **Find the percent:** "12 is what percent of 48?" → 12 = (x/100) × 48 → x = 25.
+- **Find the whole:** "15 is 20% of what number?" → 15 = 0.20 × x → x = 75.
+
+A quick sanity check: the number after **"of"** is the whole — the base the percent is taken from.
+</Concept>
+
+<Example title="Find the whole">
+27 is 45% of what number?
+
+<Solution>
+**Step 1 — Translate.** "27 **is** 45% **of** what number" → 27 = 0.45 × x.
+
+**Step 2 — Solve.** x = 27 ÷ 0.45 = 2,700 ÷ 45 = **60**.
+
+**Check:** 45% of 60 = 0.45 × 60 = 27 ✓.
+</Solution>
+</Example>
+
+<Check id="gre-pct-of" />
+
+<Check id="gre-pct-whole" />
+
+<Concept>
+## 3. Percent change: divide by the starting value
+
+When something goes from an old value to a new one:
+
+$$
+\text{percent change} = \frac{\text{new} - \text{old}}{\text{old}} \times 100\%
+$$
+
+The key is the bottom: always divide by the **original** (the "from" value). A price that goes
+from $40 to $50 rose by $10, and $10 out of the original $40 is **25%**.
+
+**"More than" and "less than" are not symmetric.** If A = 50 and B = 40:
+- A is **25% more** than B (the difference, 10, divided by B = 40).
+- B is **20% less** than A (the same 10, divided by A = 50).
+
+Whatever comes after "than" is the number you divide by.
+</Concept>
+
+<Example title="Percent increase and decrease">
+A laptop's price rose from $800 to $920. Later it fell from $920 back to $800. What were the
+percent increase and the percent decrease?
+
+<Solution>
+**Step 1 — Increase.** Change = $120. Divide by the starting value, $800: 120/800 = 0.15 = **15%**.
+
+**Step 2 — Decrease.** Change = $120 again, but now the starting value is $920:
+120/920 ≈ 0.130 = about **13%**.
+
+Same dollar change, different percents — because the starting values differ. This is why a
+15% rise followed by a 15% drop does **not** get you back to where you started.
+</Solution>
+</Example>
+
+<Check id="gre-pct-change" />
+
+<Check id="gre-pct-more-less" />
+
+<Concept>
+## 4. Multipliers: the one tool you need
+
+Increasing something by 20% leaves you with the original 100% plus 20% more: 120% of it.
+So **"increase by 20%" means "multiply by 1.20."** Likewise, **"decrease by 20%" means
+"multiply by 0.80"** — you keep 80%.
+
+| change | multiply by |
+|---|---|
+| increase by p% | 1 + p/100 (e.g., +8% → × 1.08) |
+| decrease by p% | 1 − p/100 (e.g., −35% → × 0.65) |
+
+**Changes in a row multiply — they don't add.** A 10% increase followed by a 10% decrease is
+1.10 × 0.90 = **0.99** — a 1% loss overall, not zero. The second change is 10% of a *bigger*
+number, so it takes away more than the first added.
+
+To read the result: a total multiplier of 1.32 is a 32% increase; 0.91 is a 9% decrease.
 </Concept>
 
 <TradeoffTable id="gre-percent-tools" />
 
 <Example title="Successive changes">
-A price rises 25% and then falls 20%. What is the net change?
+A store raises a price by 25%, then puts the new price on sale for 20% off. How does the sale
+price compare with the original?
 
 <Solution>
-Multiply the factors: 1.25 × 0.80 = 1.00 → **no change**.
+**Step 1 — Write the multipliers.** +25% → × 1.25. −20% → × 0.80.
 
-Adding the percents (+25 − 20 = +5%) is the trap. The 20% decrease is taken of a larger
-number (after the increase), so it removes more than the 20% of the original.
+**Step 2 — Multiply them.** 1.25 × 0.80 = 1.00.
+
+**Answer: the sale price equals the original price exactly.** Try it with $100: $100 → $125 → 20% off
+$125 is $25 → $100 ✓. (Adding the percents, +25 − 20 = +5%, would give the wrong answer.)
 </Solution>
 </Example>
 
 <Check id="gre-pct-successive" />
 
+<Check id="gre-pct-multiplier" />
+
+<Concept>
+## 5. Working backward to the original
+
+"After a 25% increase, the price is $60. What was the original price?" It's tempting to take
+25% off $60 — but the 25% was of the **original**, not of $60.
+
+Use the multiplier instead: original × 1.25 = 60, so **original = 60 ÷ 1.25 = 48**.
+
+**Rule: to undo a percent change, divide by its multiplier.** (Never subtract the same percent.)
+</Concept>
+
 <Example title="Finding the original">
-After a 25% discount, a lamp costs $54. What was the original price?
+After a 25% increase, a bicycle costs $60. What did it cost before the increase?
 
 <Solution>
-A 25% discount leaves 75% of the original: 0.75 × P = 54 → P = 54 ÷ 0.75 = **$72**.
+**Step 1 — Write the equation.** original × 1.25 = 60.
 
-Check: 25% of $72 is $18, and $72 − $18 = $54 ✓. The trap — adding 25% of $54 — gives
-$67.50, because the discount was 25% of the *original*, not of the sale price.
+**Step 2 — Divide.** original = 60 ÷ 1.25 = **48**.
+
+**Check:** 25% of 48 = 12, and 48 + 12 = 60 ✓.
+
+**The trap:** 60 − 25% of 60 = 60 − 15 = 45. That undoes the change using the wrong base.
 </Solution>
 </Example>
 
 <Check id="gre-pct-reverse" />
 
+<Check id="gre-pct-reverse-two" />
+
 <Concept>
-## Interest
+## 6. Percent of a percent, and percentage points
 
-- **Simple interest:** I = P × r × t. The interest each year is the same.
-- **Compound interest (annually):** A = P(1 + r)ᵗ. Each year’s interest is earned on the
-  previous interest too, so compound always beats simple after the first year.
+**Percent of a percent — multiply.** "40% of the students play a sport, and 25% of those play
+soccer." Soccer players are 25% **of 40%** of the students: 0.25 × 0.40 = 0.10 = **10%** of all
+students.
 
-$1,000 at 10% for 2 years: simple → $1,200; compound → $1,000 × 1.1² = $1,210.
+**Percentage points vs. percent.** When a rate itself is a percent, there are two ways to
+describe its change:
+- A rate that goes from 5% to 8% rises by **3 percentage points** (just subtract: 8 − 5).
+- The same change is a **60% increase** (the change, 3, divided by the original, 5).
+
+GRE answer choices often include both, so read which one the question asks for.
 </Concept>
 
 <Gotcha title="Trap — percent vs. percentage points">
-A rate rising from 20% to 25% has gone up **5 percentage points**, which is a
-**25 percent** increase. When a question compares rates, check which one it means.
+A tax rate rising from 10% to 12% is a 2 **percentage point** increase but a **20%** increase.
+If the question says "by what percent," divide the change by the original rate.
 </Gotcha>
+
+<Example title="Percent of a percent">
+At a company, 60% of the employees are women, and 25% of the women are managers. What percent
+of all employees are women managers?
+
+<Solution>
+**Step 1 — Multiply the percents.** 25% of 60% = 0.25 × 0.60 = 0.15.
+
+**Step 2 — Convert.** 0.15 = **15%** of all employees.
+
+**Check with 100 employees:** 60 women; 25% of 60 = 15 women managers; 15 out of 100 = 15% ✓.
+</Solution>
+</Example>
+
+<Check id="gre-pct-points" />
+
+<Check id="gre-pct-of-pct" />
+
+<Concept>
+## 7. Simple and compound interest
+
+**Simple interest** is the same every year: a fixed percent of the **original** amount.
+$1,000 at 5% simple interest earns $50 per year, so $150 in 3 years.
+
+$$
+\text{simple interest} = \text{principal} \times \text{rate} \times \text{years}
+$$
+
+**Compound interest** earns interest on the interest, so each year's growth is a multiplier:
+$1,000 at 5% compounded annually for 3 years grows to
+
+$$
+1{,}000 \times 1.05^3 \approx 1{,}157.63
+$$
+
+That's $157.63 of interest — a little more than simple interest's $150, because years 2 and 3
+earn interest on earlier interest.
+
+If interest compounds more than once a year, split the rate: 8% compounded quarterly means
+2% per quarter, 4 times a year.
+</Concept>
+
+<Example title="Simple vs. compound">
+$2,000 is invested for 2 years at 10% annual interest. How much more does it earn if the
+interest is compounded annually than if it's simple interest?
+
+<Solution>
+**Step 1 — Simple:** $2,000 × 0.10 × 2 = **$400**.
+
+**Step 2 — Compound:** $2,000 × 1.10 × 1.10 = $2,000 × 1.21 = $2,420, so the interest is **$420**.
+
+**Step 3 — Difference:** $420 − $400 = **$20**. (It's exactly 10% of the first year's $200 interest,
+earned in year 2.)
+</Solution>
+</Example>
+
+<Check id="gre-pct-simple" />
 
 <Check id="gre-pct-interest" />
 
+<Concept>
+## Recap
+
+| Situation | Do this | Example |
+|---|---|---|
+| percent ↔ decimal | move the point two places | 7.5% = 0.075 |
+| mental percents | build from 10%, 5%, 1% | 15% of 80 = 8 + 4 = 12 |
+| a sentence | "of" = ×, "is" = =, "what" = x | 12 = x% × 48 → 25% |
+| percent change | (new − old) ÷ **old** | 40 → 50: +25% |
+| more than / less than | divide by the number after "than" | 50 is 25% more than 40; 40 is 20% less than 50 |
+| one change | multiply by 1 ± p/100 | +8% → × 1.08 |
+| several changes | multiply the multipliers | +10% then −10% → × 0.99 |
+| back to the original | divide by the multiplier | 60 ÷ 1.25 = 48 |
+| percent of a percent | multiply | 25% of 40% = 10% |
+| percentage points | subtract the rates | 5% → 8% is +3 points (+60%) |
+| compound interest | × (1 + r) each period | 1,000 × 1.05³ |
+</Concept>
+
 <Cheatsheet>
-Practice bank topic drills: Percent of / what percent · Percent change · Successive percent changes · Finding the original · Simple & compound interest.
+Practice bank topic drills: Percent of a number · Percent change · Successive changes · Reverse percents · Interest.
 </Cheatsheet>

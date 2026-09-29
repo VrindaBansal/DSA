@@ -3,74 +3,292 @@ id: gre-coordinate
 module: gre-geometry
 title: Coordinate geometry
 order: 3
-estimatedMinutes: 25
+estimatedMinutes: 40
 prerequisites: [gre-lines-triangles, gre-linear]
 objectives:
-  - Compute slope, midpoint, and distance between two points
-  - Write and read line equations in slope-intercept form, and find intercepts
+  - Use the signs of x and y to place points in quadrants, and reflect points across the axes
+  - Compute the slope between two points and read what it means
+  - Find the distance and midpoint between two points
+  - Write the equation of a line and find its intercepts
   - Use parallel (equal) and perpendicular (negative reciprocal) slopes
+  - Find where two graphs cross by solving their equations together
 tags: [gre, quant, geometry, coordinate-geometry]
 ---
 
 <Intuition>
-Coordinate geometry is where algebra and geometry meet, and the GRE keeps it simple:
-lines, their slopes, and the distances between points. Distance is just the Pythagorean
-theorem in disguise, and slope is “rise over run.” Sketching a quick graph on your scratch
-paper catches most sign errors.
+The coordinate plane is a map. Every point has an address **(x, y)**: x says how far **left or right**
+of the center, and y says how far **up or down**. Once points have addresses, geometry turns into
+arithmetic:
+
+- the steepness of a line is **rise over run**,
+- the distance between two points is the **Pythagorean theorem**,
+- and a point is on a graph when its numbers **make the equation true**.
+
+A quick sketch on scratch paper catches most mistakes, especially sign errors.
 </Intuition>
 
 <Concept>
-## Two points
+## 1. The plane, quadrants, and reflections
 
-For (x₁, y₁) and (x₂, y₂):
+The two axes split the plane into four **quadrants**, numbered counter-clockwise starting from the top
+right. The signs of x and y tell you which one a point is in:
 
-- **Slope** = (y₂ − y₁) / (x₂ − x₁) — rise over run. Subtract in the same order on top and
-  bottom.
-- **Midpoint** = ((x₁ + x₂)/2, (y₁ + y₂)/2) — average the coordinates.
-- **Distance** = √((x₂ − x₁)² + (y₂ − y₁)²) — the hypotenuse of the right triangle whose
-  legs are the horizontal and vertical gaps.
+<svg viewBox="0 0 240 200" width="100%" style={{maxWidth: '260px'}} role="img" aria-label="Coordinate axes with quadrant I (plus, plus) at top right, II (minus, plus) at top left, III (minus, minus) at bottom left, and IV (plus, minus) at bottom right.">
+  <line x1="10" y1="100" x2="230" y2="100" stroke="currentColor" strokeWidth="1.5" />
+  <line x1="120" y1="10" x2="120" y2="190" stroke="currentColor" strokeWidth="1.5" />
+  <text x="222" y="92" fontSize="13" fill="currentColor" fontStyle="italic">x</text>
+  <text x="127" y="20" fontSize="13" fill="currentColor" fontStyle="italic">y</text>
+  <text x="175" y="52" fontSize="13" fill="currentColor" textAnchor="middle">I  (+, +)</text>
+  <text x="62" y="52" fontSize="13" fill="currentColor" textAnchor="middle">II  (−, +)</text>
+  <text x="62" y="152" fontSize="13" fill="currentColor" textAnchor="middle">III  (−, −)</text>
+  <text x="175" y="152" fontSize="13" fill="currentColor" textAnchor="middle">IV  (+, −)</text>
+</svg>
+
+**Reflections** just flip signs:
+- across the **x-axis** (flip up/down): (x, y) → (x, **−y**)
+- across the **y-axis** (flip left/right): (x, y) → (**−x**, y)
+- across the line **y = x**: swap them, (x, y) → (**y, x**)
+
+**Letters instead of numbers?** If you're told (a, b) is in quadrant II, translate: a is negative and
+b is positive. Then work out the signs of whatever new point they ask about.
 </Concept>
 
-<Example title="Slope and distance">
-Find the slope and the distance between (−2, 1) and (4, 9).
+<Example title="Signs with letters">
+The point (a, b) is in quadrant III. Which quadrant is the point (−a, b) in?
 
 <Solution>
-Slope = (9 − 1)/(4 − (−2)) = 8/6 = **4/3**.
-Distance = √(6² + 8²) = √100 = **10** (a 6-8-10 triangle).
+**Step 1 — Translate the quadrant.** Quadrant III is (−, −), so a is negative and b is negative.
+
+**Step 2 — Work out each coordinate.** −a is the negative of a negative, so it's **positive**. b is
+still **negative**.
+
+**Step 3 — Read the quadrant.** (+, −) is **quadrant IV**.
+
+**Plug-in check:** pick (a, b) = (−2, −3). Then (−a, b) = (2, −3), which is in quadrant IV ✓.
+</Solution>
+</Example>
+
+<Check id="gre-coord-quadrant" />
+
+<Check id="gre-coord-reflect" />
+
+<Concept>
+## 2. Slope: rise over run
+
+**Slope** measures steepness: how much the line goes **up** (rise) for each step to the **right**
+(run).
+
+$$
+\text{slope} = \frac{\text{rise}}{\text{run}} = \frac{y_2 - y_1}{x_2 - x_1}
+$$
+
+**Subtract in the same order on top and bottom** — second point minus first point for both.
+
+What the slope tells you:
+
+| Slope | The line… |
+|---|---|
+| positive | goes **up** from left to right |
+| negative | goes **down** from left to right |
+| 0 | is flat (horizontal), like y = 4 |
+| undefined | is straight up and down (vertical), like x = 2 |
+
+A bigger slope (ignoring the sign) means a **steeper** line: slope 3 is steeper than slope ½.
+</Concept>
+
+<Example title="Slope between two points">
+What is the slope of the line through (−2, 1) and (4, 9)?
+
+<Solution>
+**Step 1 — Rise (change in y).** 9 − 1 = 8.
+
+**Step 2 — Run (change in x), same order.** 4 − (−2) = 6.
+
+**Step 3 — Divide.** 8/6 = **4/3**. Positive, so the line rises from left to right ✓.
 </Solution>
 </Example>
 
 <Check id="gre-coord-slope" />
 
+<Check id="gre-coord-slope-unknown" />
+
 <Concept>
-## Lines
+## 3. Distance and midpoint
 
-**Slope-intercept form:** y = mx + b, where m is the slope and b the y-intercept.
+**Distance** between two points is the Pythagorean theorem. Draw the right triangle: one leg is the
+horizontal gap, the other is the vertical gap, and the distance is the hypotenuse.
 
-- **x-intercept:** set y = 0. **y-intercept:** set x = 0.
-- **Parallel lines** have equal slopes. **Perpendicular lines** have slopes that are
-  negative reciprocals (their product is −1): 2/3 and −3/2.
-- A point lies on a line exactly when its coordinates satisfy the equation.
-- Horizontal lines (y = k) have slope 0; vertical lines (x = k) have undefined slope.
+<svg viewBox="0 0 260 215" width="100%" style={{maxWidth: '260px'}} role="img" aria-label="Points (−2, 1) and (4, 9) joined by a segment of length 10, forming a right triangle with a horizontal leg of 6 and a vertical leg of 8.">
+  <polygon points="54,182 162,182 162,38" fill="none" stroke="currentColor" strokeWidth="1.5" />
+  <polyline points="150,182 150,170 162,170" fill="none" stroke="currentColor" strokeWidth="1" />
+  <circle cx="54" cy="182" r="3" fill="currentColor" />
+  <circle cx="162" cy="38" r="3" fill="currentColor" />
+  <text x="48" y="200" fontSize="12" fill="currentColor" textAnchor="middle">(−2, 1)</text>
+  <text x="170" y="36" fontSize="12" fill="currentColor">(4, 9)</text>
+  <text x="108" y="200" fontSize="13" fill="currentColor" textAnchor="middle">6</text>
+  <text x="170" y="114" fontSize="13" fill="currentColor">8</text>
+  <text x="98" y="104" fontSize="13" fill="currentColor" textAnchor="end">10</text>
+</svg>
+
+$$
+\text{distance} = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}
+$$
+
+You don't need to memorize that — just find the two gaps and use a² + b² = c² (and look for a triple:
+the gaps 6 and 8 above make a 6-8-10 triangle).
+
+**Midpoint** — the point exactly halfway between. **Average the x's and average the y's:**
+
+$$
+\text{midpoint} = \left(\frac{x_1 + x_2}{2},\ \frac{y_1 + y_2}{2}\right)
+$$
+
+The midpoint of (−2, 1) and (4, 9) is ((−2 + 4)/2, (1 + 9)/2) = **(1, 5)**.
+
+**Going backward** (you know one endpoint and the midpoint): the midpoint is halfway, so take the same
+step again. From (−2, 1) to the midpoint (1, 5) is "right 3, up 4"; do it again to reach (4, 9).
 </Concept>
 
-<Example title="Line through two points">
-Find the equation of the line through (1, 5) and (3, 11).
+<Example title="Distance between two points">
+What is the distance between (1, 3) and (−5, 11)?
 
 <Solution>
-Slope = (11 − 5)/(3 − 1) = 3. Then y = 3x + b; plug in (1, 5): 5 = 3 + b → b = 2.
-**y = 3x + 2.**
+**Step 1 — Horizontal gap.** From x = 1 to x = −5 is 6 units. (Sign doesn't matter — it gets squared.)
+
+**Step 2 — Vertical gap.** From y = 3 to y = 11 is 8 units.
+
+**Step 3 — Hypotenuse.** √(6² + 8²) = √(36 + 64) = √100 = **10**.
 </Solution>
 </Example>
 
-<Gotcha title="Trap — intercept confusion">
-For y = 2x − 6, the y-intercept is −6 but the x-intercept is 3 (set y = 0: 2x = 6).
-Questions often ask for one and offer the other as a choice.
+<Check id="gre-coord-distance" />
+
+<Check id="gre-coord-midpoint" />
+
+<Concept>
+## 4. The equation of a line
+
+Most GRE lines are written in **slope-intercept form**:
+
+$$
+y = mx + b
+$$
+
+- **m** is the slope.
+- **b** is the **y-intercept** — where the line crosses the y-axis (the point (0, b)).
+
+**To find the equation from two points:** find the slope m, then plug either point into y = mx + b and
+solve for b.
+
+**Intercepts:**
+- **y-intercept:** set **x = 0** and solve for y.
+- **x-intercept:** set **y = 0** and solve for x.
+
+**Is a point on the line?** Plug it in. If the equation comes out true, the point is on the line.
+
+If the line is written some other way, like 2x + 3y = 12, solve for y to get it into y = mx + b form:
+3y = −2x + 12, so y = −(2/3)x + 4.
+</Concept>
+
+<Example title="Line through two points">
+Find the equation of the line through (1, 5) and (3, 11). Then find its x-intercept.
+
+<Solution>
+**Step 1 — Slope.** (11 − 5)/(3 − 1) = 6/2 = 3. So y = 3x + b.
+
+**Step 2 — Find b with either point.** Use (1, 5): 5 = 3(1) + b, so b = 2. The line is **y = 3x + 2**.
+
+**Step 3 — Check with the other point.** 3(3) + 2 = 11 ✓.
+
+**Step 4 — x-intercept: set y = 0.** 0 = 3x + 2, so x = **−2/3**.
+</Solution>
+</Example>
+
+<Gotcha title="Trap — mixing up the intercepts">
+For y = 2x − 6, the **y**-intercept is −6 but the **x**-intercept is 3 (set y = 0: 2x = 6). Questions
+often ask for one and offer the other as an answer choice.
 </Gotcha>
+
+<Check id="gre-coord-line" />
+
+<Check id="gre-coord-area" />
+
+<Concept>
+## 5. Parallel and perpendicular lines
+
+- **Parallel** lines have the **same slope**. (Same steepness, so they never meet.)
+- **Perpendicular** lines (crossing at a right angle) have slopes that are **negative reciprocals**:
+  flip the fraction **and** change the sign.
+
+| Slope | Parallel slope | Perpendicular slope |
+|---|---|---|
+| 2 | 2 | −1/2 |
+| −3/4 | −3/4 | 4/3 |
+| 1/5 | 1/5 | −5 |
+
+A quick check for perpendicular: the two slopes **multiply to −1**. (2 × −½ = −1 ✓)
+</Concept>
+
+<Example title="A perpendicular line through a point">
+Find the equation of the line perpendicular to y = 2x + 1 that passes through (4, 3).
+
+<Solution>
+**Step 1 — Perpendicular slope.** The given slope is 2 (that is, 2/1). Flip and change the sign: −1/2.
+
+**Step 2 — Find b.** y = −½x + b. Plug in (4, 3): 3 = −½(4) + b = −2 + b, so b = 5.
+
+**Answer: y = −½x + 5.** Check: −½(4) + 5 = 3 ✓, and 2 × (−½) = −1 ✓.
+</Solution>
+</Example>
 
 <Check id="gre-coord-perp" />
 
-<Check id="gre-coord-area" />
+<Check id="gre-coord-parallel" />
+
+<Concept>
+## 6. Where graphs cross
+
+A point where two graphs **cross** is on **both** graphs, so its coordinates make **both** equations
+true. To find it, **solve the equations together** — usually by setting the two y's equal.
+
+The same idea finds where a graph crosses an **axis**: the x-axis is where y = 0, and the y-axis is
+where x = 0. For a curve like y = x² − 9, setting y = 0 gives x² = 9, so it crosses the x-axis at
+x = 3 and x = −3.
+</Concept>
+
+<Example title="Two lines meet">
+Where do the lines y = 3x − 2 and y = −x + 6 intersect?
+
+<Solution>
+**Step 1 — Set the y's equal.** 3x − 2 = −x + 6.
+
+**Step 2 — Solve for x.** 4x = 8, so x = 2.
+
+**Step 3 — Find y with either equation.** y = 3(2) − 2 = 4. Check with the other: −2 + 6 = 4 ✓.
+
+**Answer: (2, 4).**
+</Solution>
+</Example>
+
+<Check id="gre-coord-intersect" />
+
+<Check id="gre-coord-parabola" />
+
+<Concept>
+## Recap
+
+| Tool | Rule | Example |
+|---|---|---|
+| quadrants | I (+, +), II (−, +), III (−, −), IV (+, −) | (−2, −3) is in III |
+| reflect | x-axis: flip y's sign; y-axis: flip x's sign | (3, 5) → (3, −5) across the x-axis |
+| slope | rise ÷ run, same order top and bottom | (−2, 1) to (4, 9): 8/6 = 4/3 |
+| distance | the two gaps, then a² + b² = c² | gaps 6 and 8 → 10 |
+| midpoint | average the x's, average the y's | (−2, 1) and (4, 9) → (1, 5) |
+| line | y = mx + b; find m, then plug in a point for b | through (1, 5), (3, 11): y = 3x + 2 |
+| intercepts | x-intercept: y = 0; y-intercept: x = 0 | y = 2x − 6 → x-int 3, y-int −6 |
+| parallel / perpendicular | same slope / flip and change sign | 2 → 2 / −½ |
+| crossing point | solve the equations together | y = 3x − 2, y = −x + 6 → (2, 4) |
+</Concept>
 
 <Cheatsheet>
 Practice bank topic drills: Slope, distance & midpoint · Lines, intercepts & perpendiculars.

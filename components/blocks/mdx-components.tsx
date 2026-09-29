@@ -16,6 +16,7 @@ import { CheatsheetBlock } from './Cheatsheet';
 import { VisualBlock } from './VisualBlock';
 import { ExerciseBlock } from './Exercise';
 import { WordFamilies } from './gre/WordFamilies';
+import { Chart } from '@/components/quiz/Chart';
 
 const flat = (c: React.ReactNode): string =>
   React.Children.toArray(c)
@@ -103,6 +104,12 @@ export function makeMdxComponents(lessonId: string) {
     ),
     LeetCode,
     WordFamilies,
+    // A data-interpretation chart drawn inline in a lesson (same renderer as questions).
+    DataChart: ({ c }: any) => (
+      <div className="my-5">
+        <Chart c={c} />
+      </div>
+    ),
 
     // prose element overrides
     h2: ({ children }: any) => (

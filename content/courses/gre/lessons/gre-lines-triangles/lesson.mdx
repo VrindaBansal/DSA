@@ -3,58 +3,155 @@ id: gre-lines-triangles
 module: gre-geometry
 title: Lines, angles & triangles
 order: 1
-estimatedMinutes: 35
+estimatedMinutes: 45
 prerequisites: [gre-exponents-roots]
 objectives:
-  - Use angle facts — lines, parallel lines, triangle sums, exterior angles, isosceles triangles
-  - Apply the Pythagorean theorem and recognize the common triples instantly
-  - Use the 45-45-90 and 30-60-90 side ratios
-  - Apply the triangle inequality and the area ratio of similar figures
+  - Find missing angles with lines, parallel lines, and triangles
+  - Use isosceles and exterior-angle facts
+  - Apply the Pythagorean theorem and recognize the common triples
+  - Use the 45-45-90 and 30-60-90 side patterns
+  - Decide which lengths can form a triangle
+  - Find triangle areas and use similar triangles
 tags: [gre, quant, geometry, triangles]
 ---
 
 <Intuition>
-GRE geometry uses a small toolkit over and over: angles on a line add to 180°, a triangle’s
-angles add to 180°, and right triangles follow the Pythagorean theorem and a few special
-ratios. Most questions combine two of those facts. One rule overrides everything:
-**figures are not necessarily drawn to scale.** Use what is stated, not what looks true.
+GRE geometry is less about memorizing dozens of theorems and more about using a **small toolkit**
+over and over. For lines and triangles, the toolkit is:
+
+- a straight line is **180°**;
+- a triangle's angles add to **180°**;
+- right triangles follow **a² + b² = c²**, plus two special shapes;
+- similar triangles are **scaled copies** of each other.
+
+Most questions combine two of these. One warning overrides everything: **figures are not
+necessarily drawn to scale.** Trust what's stated, not what looks true.
 </Intuition>
 
 <Concept>
-## Angles
+## 1. Angles on lines and parallel lines
 
-- Angles on a straight line add to **180°**; around a point, **360°**.
-- Vertical angles (opposite each other where two lines cross) are **equal**.
-- A transversal across **parallel** lines creates only two angle measures: some angle
-  x and its supplement 180° − x.
-- A triangle’s angles add to **180°**. An **exterior angle** equals the sum of the two
-  remote interior angles.
-- In an **isosceles** triangle, the angles opposite the equal sides are equal. In an
-  equilateral triangle, all three angles are 60°.
-- The largest angle is opposite the longest side.
+**Three basic facts:**
+- Angles that make a **straight line** add to **180°**.
+- Angles all the way **around a point** add to **360°**.
+- When two lines cross, the **opposite** angles (called vertical angles) are **equal**.
+
+**Parallel lines.** When a line (a *transversal*) crosses two parallel lines, it makes eight
+angles — but they come in only **two sizes**: a small one (call it a) and a big one (b). Every small
+angle equals every other small angle, and **a + b = 180°**.
+
+<svg viewBox="0 0 360 180" width="100%" style={{maxWidth: '360px'}} role="img" aria-label="Two parallel lines l and m crossed by a transversal. At each crossing the acute angles are labeled a and the obtuse angles are labeled b.">
+  <line x1="20" y1="50" x2="330" y2="50" stroke="currentColor" strokeWidth="1.5" />
+  <line x1="20" y1="130" x2="330" y2="130" stroke="currentColor" strokeWidth="1.5" />
+  <line x1="110" y1="170" x2="250" y2="10" stroke="currentColor" strokeWidth="1.5" />
+  <text x="338" y="55" fontSize="14" fill="currentColor" fontStyle="italic">ℓ</text>
+  <text x="338" y="135" fontSize="14" fill="currentColor" fontStyle="italic">m</text>
+  <text x="232" y="44" fontSize="13" fill="currentColor">a</text>
+  <text x="192" y="44" fontSize="13" fill="currentColor">b</text>
+  <text x="186" y="68" fontSize="13" fill="currentColor">a</text>
+  <text x="228" y="68" fontSize="13" fill="currentColor">b</text>
+  <text x="161" y="124" fontSize="13" fill="currentColor">a</text>
+  <text x="122" y="124" fontSize="13" fill="currentColor">b</text>
+  <text x="115" y="148" fontSize="13" fill="currentColor">a</text>
+  <text x="158" y="148" fontSize="13" fill="currentColor">b</text>
+</svg>
+
+So if you know **one** angle in a parallel-lines figure, you know **all eight**: the ones that look
+the same size are equal, and a small one plus a big one make 180°.
+</Concept>
+
+<Example title="Parallel lines with algebra">
+Lines ℓ and m are parallel and are crossed by a transversal. One of the acute angles measures
+(2x + 10)° and one of the obtuse angles measures (4x + 50)°. What is x?
+
+<Solution>
+**Step 1 — Pick the right fact.** An acute (small) angle and an obtuse (big) angle in a
+parallel-lines figure add to 180°.
+
+**Step 2 — Write the equation.** (2x + 10) + (4x + 50) = 180, so 6x + 60 = 180.
+
+**Step 3 — Solve.** 6x = 120, so **x = 20**.
+
+**Check:** the angles are 50° and 130°, and 50 + 130 = 180 ✓.
+</Solution>
+</Example>
+
+<Check id="gre-tri-line-angles" />
+
+<Check id="gre-tri-parallel" />
+
+<Concept>
+## 2. Angles in a triangle
+
+- The three angles of any triangle add to **180°**.
+- **Exterior angle:** if you extend one side, the outside angle equals the **sum of the two
+  far-away inside angles**. (Because both it and those two angles "complete" the same third angle
+  to 180°.)
+- **Isosceles** triangle (two equal sides): the angles **opposite** the equal sides are equal.
+  **Equilateral** (three equal sides): every angle is 60°.
+- The **biggest angle is across from the longest side**, and the smallest angle is across from the
+  shortest side.
+
+**Isosceles questions often have two cases.** If an isosceles triangle has a 40° angle, that 40° could
+be one of the two equal angles (making the angles 40°, 40°, 100°) **or** the odd one out (making
+40°, 70°, 70°). Unless the question says which, consider both.
 </Concept>
 
 <Example title="Angles in a ratio">
 The angles of a triangle are in the ratio 2 : 3 : 7. What is the largest angle?
 
 <Solution>
-2 + 3 + 7 = 12 parts = 180°, so one part = 15°. Largest = 7 × 15° = **105°**.
+**Step 1 — Count the parts.** 2 + 3 + 7 = 12 parts.
+
+**Step 2 — Find one part.** The angles total 180°, so one part = 180° ÷ 12 = 15°.
+
+**Step 3 — The largest has 7 parts.** 7 × 15° = **105°**.
+
+**Check:** 30° + 45° + 105° = 180° ✓.
 </Solution>
 </Example>
 
 <Check id="gre-tri-angles" />
 
-<Concept>
-## Right triangles
+<Check id="gre-tri-isosceles" />
 
-**Pythagorean theorem:** in a right triangle with legs a, b and hypotenuse c,
-a² + b² = c². Memorize the triples — they save the arithmetic.
+<Concept>
+## 3. The Pythagorean theorem
+
+In a **right triangle**, the two sides that form the right angle are the **legs** (a and b), and the
+longest side, across from the right angle, is the **hypotenuse** (c):
+
+$$
+a^2 + b^2 = c^2
+$$
+
+Legs 6 and 8: 36 + 64 = 100, so the hypotenuse is √100 = 10.
+
+**Save time with triples** — right triangles with whole-number sides. The GRE uses them constantly,
+often scaled up (6-8-10 is 3-4-5 doubled). If you spot one, you can skip the arithmetic:
 </Concept>
 
 <TradeoffTable id="gre-special-triangles" />
 
+<Example title="Find the hypotenuse two ways">
+A right triangle has legs of length 15 and 20. How long is the hypotenuse?
+
+<Solution>
+**The long way.** 15² + 20² = 225 + 400 = 625, and √625 = **25**.
+
+**The fast way.** 15 : 20 is the same as 3 : 4 (both divided by 5). So this is a 3-4-5 triangle times 5,
+and the hypotenuse is 5 × 5 = **25**.
+</Solution>
+</Example>
+
+<Check id="gre-tri-pythag" />
+
+<Check id="gre-tri-rectangle" />
+
 <Concept>
-The two special triangles, with sides opposite their angles:
+## 4. The two special right triangles
+
+The two special triangles, with each side opposite its angle:
 
 <svg viewBox="0 0 420 150" width="100%" style={{maxWidth: '420px'}} role="img" aria-label="A 45-45-90 triangle with sides x, x, x root 2 and a 30-60-90 triangle with sides x, x root 3, 2x">
   <polygon points="20,130 140,130 20,10" fill="none" stroke="currentColor" strokeWidth="1.5" />
@@ -73,45 +170,124 @@ The two special triangles, with sides opposite their angles:
   <text x="226" y="50" fontSize="11" fill="currentColor">60°</text>
 </svg>
 
-- **45-45-90:** sides x : x : x√2. It is half of a square, cut along the diagonal.
-- **30-60-90:** sides x : x√3 : 2x (short leg opposite 30°, hypotenuse = twice the short
-  leg). It is half of an equilateral triangle, so an equilateral triangle with side s has
-  height (s/2)√3 and area s²√3/4.
+**45-45-90** — sides **x : x : x√2**. This is half of a square, cut along its diagonal. So a square
+with side s has diagonal **s√2**. Going the other way, divide the diagonal by √2 to get the side.
+
+**30-60-90** — sides **x : x√3 : 2x**. The shortest side (x) is across from 30°, and the
+hypotenuse is **twice** the shortest side. This triangle is half of an equilateral triangle, which is
+why it shows up whenever an equilateral triangle does.
+
+**How to use them:** find the shortest side x first, then build the other sides from it.
 </Concept>
 
-<Example title="A special right triangle">
-The hypotenuse of a 30-60-90 triangle is 10. What is its area?
+<Example title="Area of an equilateral triangle">
+An equilateral triangle has sides of length 8. What is its area?
 
 <Solution>
-Short leg = 10 ÷ 2 = 5. Long leg = 5√3. Area = ½ × 5 × 5√3 = **(25√3)/2** ≈ 21.65.
+**Step 1 — Draw the height.** A line from the top straight down to the base cuts the triangle into
+two 30-60-90 triangles. Each has hypotenuse 8 and short leg 4 (half the base).
+
+**Step 2 — Find the height.** The height is the long leg: x√3 with x = 4, so height = **4√3**.
+
+**Step 3 — Area.** ½ × base × height = ½ × 8 × 4√3 = **16√3** (about 27.7).
+
+In general, an equilateral triangle with side s has area s²√3 / 4. Here 64√3 / 4 = 16√3 ✓.
 </Solution>
 </Example>
 
 <Check id="gre-tri-special" />
 
-<Concept>
-## The triangle inequality
+<Check id="gre-tri-3060" />
 
-Any side is **less than the sum** and **greater than the difference** of the other two.
-With sides 4 and 9, the third side x satisfies 5 < x < 13.
+<Concept>
+## 5. Which lengths can make a triangle?
+
+Imagine trying to build a triangle from sticks. If two sticks are 4 and 9, the third can't be tiny
+(the 4 and it couldn't reach across the 9) and can't be huge (the 4 and 9 couldn't reach its ends).
+The rule:
+
+**The third side is between the difference and the sum of the other two** — strictly between.
+
+With sides 4 and 9: 9 − 4 = 5 and 9 + 4 = 13, so **5 < third side < 13**. A side of exactly 5 or 13
+would make a flat line, not a triangle.
 </Concept>
+
+<Example title="Which could be the third side?">
+Two sides of a triangle are 3 and 8. Which of 4, 5, 6, or 11 could be the third side?
+
+<Solution>
+**Step 1 — Difference and sum.** 8 − 3 = 5 and 8 + 3 = 11.
+
+**Step 2 — Write the range.** 5 < third side < 11.
+
+**Step 3 — Test each.** 4 is too small. 5 and 11 are the endpoints — not allowed. Only **6** works.
+</Solution>
+</Example>
 
 <Check id="gre-tri-ineq" />
 
-<Concept>
-## Similar figures
+<Check id="gre-tri-ineq-count" />
 
-Similar figures have the same shape. If corresponding sides are in ratio k, then
-**perimeters** are in ratio k, **areas** in ratio k², and **volumes** in ratio k³.
+<Concept>
+## 6. Area, and similar triangles
+
+**Area of a triangle = ½ × base × height.** The height must be **perpendicular** to the base. Any side
+can be the base, as long as you use the height that goes with it. In a right triangle, the two legs
+are a base and height already: legs 6 and 8 give area ½ × 6 × 8 = 24.
+
+**Similar triangles** have the same angles, so one is a scaled-up copy of the other. You'll usually
+spot them when two triangles share an angle and have another pair of equal angles — for example, when
+a line inside a triangle is **parallel** to one side, it cuts off a smaller similar triangle.
+
+If the sides of the bigger triangle are **k times** the sides of the smaller:
+- every **length** (sides, heights, perimeter) is **k** times as big;
+- the **area** is **k²** times as big (area uses two lengths multiplied together).
+
+Sides twice as long → area 4 times as big. Sides 3 times as long → area 9 times as big.
 </Concept>
 
-<Gotcha title="Trap — trusting the figure">
-A triangle that looks like a right triangle, or two lines that look parallel, are not
-known to be unless the question says so (or marks the right angle). On quantitative
-comparison, that uncertainty often makes the answer D.
-</Gotcha>
+<Example title="A parallel line makes similar triangles">
+In triangle ABC, point D is on AB and point E is on AC, with DE parallel to BC. AD = 4, DB = 6, and
+DE = 5. What is BC?
+
+<Solution>
+**Step 1 — Spot the similar triangles.** DE is parallel to BC, so triangle ADE is a smaller copy of
+triangle ABC (they share angle A, and the parallel lines make the other angles equal).
+
+**Step 2 — Find the scale.** Match up a pair of sides: AD = 4 in the small triangle and AB = 4 + 6 = 10
+in the big one. So k = 10 ÷ 4 = 2.5.
+
+**Step 3 — Scale DE.** BC = 2.5 × 5 = **12.5**.
+
+**Bonus:** the big triangle's area is 2.5² = 6.25 times the small one's.
+</Solution>
+</Example>
+
+<Check id="gre-tri-area" />
 
 <Check id="gre-tri-similar" />
+
+<Gotcha title="Trap — trusting the figure">
+A triangle that *looks* like a right triangle, or lines that *look* parallel, are not known to be
+unless the question says so (or marks the right angle with a little square). On quantitative
+comparison, that uncertainty often makes the answer "cannot be determined."
+</Gotcha>
+
+<Concept>
+## Recap
+
+| Fact | Rule | Example |
+|---|---|---|
+| straight line | angles add to 180° | x + 3x = 180 → x = 45 |
+| parallel lines | only two angle sizes; small + big = 180° | 70° and 110° |
+| triangle | angles add to 180°; exterior angle = the two far angles added | far angles 40° and 60° → exterior 100° |
+| isosceles | equal sides ↔ equal angles; check both cases | 40° → 40-40-100 or 40-70-70 |
+| right triangle | a² + b² = c² | 15-20-25 is 3-4-5 × 5 |
+| 45-45-90 | x : x : x√2 | square with side 5 has diagonal 5√2 |
+| 30-60-90 | x : x√3 : 2x | equilateral side 8 → height 4√3 |
+| third side | difference < side < sum | 4 and 9 → between 5 and 13 |
+| similar, ratio k | lengths × k, area × k² | sides × 3 → area × 9 |
+</Concept>
 
 <Cheatsheet>
 Practice bank topic drills: Angles & triangles · Pythagorean theorem · 45-45-90 & 30-60-90 triangles · Triangle inequality · Similar figures & area ratios.

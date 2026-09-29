@@ -3,108 +3,237 @@ id: gre-linear
 module: gre-algebra
 title: Linear equations, systems, inequalities & absolute value
 order: 1
-estimatedMinutes: 35
+estimatedMinutes: 50
 prerequisites: [gre-fractions-decimals]
 objectives:
-  - Solve linear equations, including ones with fractions, without sign errors
-  - Solve systems by elimination — and spot when adding or subtracting gives the answer directly
-  - Solve inequalities, flipping the sign when multiplying or dividing by a negative
-  - Solve absolute value equations and inequalities by thinking of distance
-  - Translate word problems into equations
+  - Solve one-variable equations, including ones with parentheses and fractions
+  - Solve two equations with two unknowns — and spot when you don't need to
+  - Solve inequalities, flipping the sign when you multiply or divide by a negative
+  - Treat absolute value as distance, and write both cases
+  - Turn word problems into equations without mixing up “less than”
 tags: [gre, quant, algebra, linear]
 ---
 
 <Intuition>
-Linear algebra on the GRE is rarely hard; it is **fiddly**. Points are lost to a dropped
-negative sign, an inequality that should have flipped, or a question that asked for x + y
-while you solved for x. This lesson is about doing the routine moves cleanly and noticing
-the shortcuts the test builds in.
+An equation is a **balance**: the left side weighs exactly what the right side weighs. You can do
+anything you like to it — add, subtract, multiply, divide — **as long as you do the same thing to
+both sides**. Solving just means doing those moves until the unknown is alone.
+
+Everything in this lesson builds on that one idea. The only new wrinkles are inequalities (where
+one move flips the sign) and absolute value (where there are usually two answers).
 </Intuition>
 
 <Concept>
-## Equations
+## 1. Solving one-variable equations
 
-Do the same thing to both sides until x is alone. With fractions, **multiply every term by
-the common denominator first**:
+The goal is to get x alone on one side. A reliable order:
 
-x/3 + 2 = x/2 − 1 → multiply by 6 → 2x + 12 = 3x − 6 → x = 18.
+1. **Clear parentheses** by distributing: 3(x − 4) = 3x − 12.
+2. **Clear fractions** by multiplying every term by the least common denominator.
+3. **Collect** the x-terms on one side and the plain numbers on the other.
+4. **Divide** by the number in front of x.
+5. **Check** by plugging your answer back in — it takes ten seconds and catches most slips.
 </Concept>
 
-<Concept>
-## Systems: look for the shortcut first
-
-Before solving for x and y separately, check what the question asks. If it wants x + y or
-x − y, **adding or subtracting the equations** often gives it in one step.
-</Concept>
-
-<Example title="Don’t solve what you don’t need">
-If 4x + 3y = 19 and 3x + 4y = 16, what is x + y?
+<Example title="Parentheses on both sides">
+Solve 3(x − 4) + 5 = 2x + 7.
 
 <Solution>
-Add the equations: 7x + 7y = 35 → **x + y = 5**. Done — you never needed x or y.
+**Step 1 — Distribute.** 3x − 12 + 5 = 2x + 7, so 3x − 7 = 2x + 7.
 
-(Subtracting would give x − y = 3, so x = 4 and y = 1, if you wanted them.)
+**Step 2 — Collect x on the left.** Subtract 2x from both sides: x − 7 = 7.
+
+**Step 3 — Isolate x.** Add 7 to both sides: **x = 14**.
+
+**Step 4 — Check.** Left: 3(10) + 5 = 35. Right: 28 + 7 = 35 ✓.
+</Solution>
+</Example>
+
+<Example title="An equation with fractions">
+Solve x/3 + x/4 = 14.
+
+<Solution>
+**Step 1 — Clear the fractions.** The least common denominator of 3 and 4 is 12. Multiply every
+term by 12: 12 · (x/3) + 12 · (x/4) = 12 · 14, which is 4x + 3x = 168.
+
+**Step 2 — Combine and divide.** 7x = 168, so **x = 24**.
+
+**Check:** 24/3 + 24/4 = 8 + 6 = 14 ✓.
+</Solution>
+</Example>
+
+<Check id="gre-lin-solve" />
+
+<Check id="gre-lin-fraction-eq" />
+
+<Concept>
+## 2. Two equations, two unknowns
+
+With two unknowns you need two equations. There are two standard methods:
+
+**Elimination** — add or subtract the equations so one variable cancels.
+x + y = 10 and x − y = 4. Add them: 2x = 14, so x = 7, and then y = 3.
+
+**Substitution** — solve one equation for a variable and plug it into the other.
+y = 2x − 1 and 3x + y = 14 → 3x + (2x − 1) = 14 → 5x = 15 → x = 3, y = 5.
+
+**But first, look for a shortcut.** The GRE often asks for a **combination** like x + y instead of
+x and y separately. Adding or subtracting the equations sometimes produces it directly:
+3x + 2y = 17 and 2x + 3y = 13. Add them: 5x + 5y = 30, so **x + y = 6** — no need to find x or y.
+</Concept>
+
+<Example title="Elimination with multiplying">
+Solve 2x + 3y = 12 and 5x − 2y = 11.
+
+<Solution>
+**Step 1 — Make one variable cancel.** Multiply the first equation by 2 and the second by 3 so the
+y-terms become +6y and −6y:
+4x + 6y = 24 and 15x − 6y = 33.
+
+**Step 2 — Add.** 19x = 57, so x = 3.
+
+**Step 3 — Substitute back.** 2(3) + 3y = 12 → 3y = 6 → y = 2.
+
+**Answer: x = 3, y = 2.** Check in the second equation: 15 − 4 = 11 ✓.
 </Solution>
 </Example>
 
 <Check id="gre-lin-system" />
 
+<Check id="gre-lin-substitute" />
+
 <Concept>
-## Inequalities
+## 3. Inequalities
 
-Solve like equations, with one extra rule: **multiplying or dividing by a negative number
-flips the inequality.**
+Solve an inequality exactly like an equation, with **one extra rule**:
 
-−3x + 5 > 17 → −3x > 12 → x < −4 (flipped).
+**When you multiply or divide both sides by a negative number, flip the inequality sign.**
 
-For a compound inequality, do the same operation to all three parts:
-−1 < 2x + 3 ≤ 9 → −4 < 2x ≤ 6 → −2 < x ≤ 3.
+Why? 2 < 3 is true. Multiply both sides by −1: −2 and −3. Now −2 is the *bigger* one, so the sign
+must flip: −2 > −3.
+
+The answer to an inequality is a **range** of values, like x < −4. When a question asks "how many
+integers" satisfy it, list them, and watch whether the ends are included (≤ and ≥ include them; < and > don't).
+
+A **double inequality** like 3 < 2x + 1 ≤ 15 is solved by doing the same thing to all three parts.
 </Concept>
 
-<Gotcha title="Trap — multiplying by a variable">
-You can’t multiply both sides of an inequality by x unless you know x’s sign. If x could be
-negative, the direction might flip. This is why x/2 > 3 is safe to multiply by 2, but
-1/x > 2 is not safe to multiply by x.
-</Gotcha>
+<Example title="Dividing by a negative">
+Solve 5 − 3x > 17.
+
+<Solution>
+**Step 1 — Subtract 5 from both sides.** −3x > 12.
+
+**Step 2 — Divide by −3, and flip the sign.** x < −4.
+
+**Check with a number in the range**, like x = −5: 5 − 3(−5) = 20, and 20 > 17 ✓. A number outside it,
+like x = 0, gives 5 > 17 ✗. Good.
+</Solution>
+</Example>
+
+<Example title="A double inequality">
+How many integers x satisfy −7 ≤ 2x − 3 < 5?
+
+<Solution>
+**Step 1 — Add 3 to all three parts.** −4 ≤ 2x < 8.
+
+**Step 2 — Divide all three parts by 2** (positive, so no flip). −2 ≤ x < 4.
+
+**Step 3 — List the integers.** −2, −1, 0, 1, 2, 3. (−2 is included because of the ≤ sign; 4 is not, because of the < sign.)
+
+**Answer: 6 integers.**
+</Solution>
+</Example>
 
 <Check id="gre-lin-inequality" />
 
-<Concept>
-## Absolute value is distance
+<Check id="gre-lin-range" />
 
-|x − a| = b means “x is b away from a,” so x = a + b or x = a − b.
-|x − a| < b means x is **within** b of a: a − b < x < a + b.
-|x − a| > b means x is **farther** than b from a: x < a − b or x > a + b.
+<Concept>
+## 4. Absolute value is distance
+
+**|x| is the distance from x to 0** on the number line, so it's never negative: |5| = 5 and |−5| = 5.
+
+More generally, **|x − a| is the distance between x and a.** That picture makes absolute-value
+questions easy:
+
+- **|x − 3| = 5** means "x is 5 away from 3": x = 8 or x = −2. **Two answers.**
+- **|x − 3| < 5** means "x is less than 5 away from 3": −2 < x < 8. **A range between.**
+- **|x − 3| > 5** means "more than 5 away": x < −2 or x > 8. **Two outer ranges.**
+
+**The algebra version** of |expression| = k: write two equations, expression = k and
+expression = −k, and solve both.
 </Concept>
 
-<Example title="Absolute value">
-How many integers satisfy |x − 4| ≤ 3?
+<Example title="Two cases">
+Solve |2x + 1| = 9.
 
 <Solution>
-Within 3 of 4: 1 ≤ x ≤ 7. The integers 1 through 7 → **7** of them.
+**Step 1 — Split into two cases.** 2x + 1 = 9 or 2x + 1 = −9.
+
+**Step 2 — Solve each.** First: 2x = 8, x = 4. Second: 2x = −10, x = −5.
+
+**Answer: x = 4 or x = −5.** Check: |9| = 9 and |−9| = 9 ✓.
 </Solution>
 </Example>
 
 <Check id="gre-lin-abs" />
 
-<Concept>
-## Translating words
+<Check id="gre-lin-abs-range" />
 
-| Words | Algebra |
+<Concept>
+## 5. Turning words into equations
+
+Word problems are mostly translation. Name the unknown, then turn each phrase into math:
+
+| words | math |
 |---|---|
-| is, equals, results in | = |
-| more than, increased by | + |
-| less than (reversed order!) | “5 less than x” = x − 5 |
-| of, times, product | × |
-| per, for each | ÷ (a rate) |
+| a number, the amount | x (say what x stands for) |
+| is, was, equals, will be | = |
+| more than, increased by, sum | + |
+| less than, decreased by, difference | − |
+| times, of, product | × |
 | twice, double | 2 × |
 
-Define your variable in words (“let t = the number of adult tickets”), write one equation
-per fact, and reread the question before you answer.
+**Watch the order with "less than."** "5 less than x" means start with x and take 5 away: **x − 5**,
+not 5 − x. Same with "more than": "7 more than twice n" is 2n + 7.
+
+When a problem has two unknowns (like adult and child tickets), write **one equation for each fact**
+— usually one for the count and one for the money.
 </Concept>
+
+<Example title="Two facts, two equations">
+A jar holds 40 coins, all nickels and dimes, worth $3.10 in total. How many dimes are in the jar?
+
+<Solution>
+**Step 1 — Name the unknowns.** n = nickels, d = dimes.
+
+**Step 2 — One equation per fact.** Count: n + d = 40. Value, in cents: 5n + 10d = 310.
+
+**Step 3 — Substitute.** n = 40 − d, so 5(40 − d) + 10d = 310 → 200 + 5d = 310 → 5d = 110 → **d = 22**.
+
+**Check:** 18 nickels (90¢) + 22 dimes ($2.20) = $3.10 ✓.
+</Solution>
+</Example>
+
+<Check id="gre-lin-translate" />
 
 <Check id="gre-lin-words" />
 
+<Concept>
+## Recap
+
+| Situation | Do this | Example |
+|---|---|---|
+| one equation | distribute, clear fractions, collect, divide, check | x/3 + x/4 = 14 → x = 24 |
+| two equations | eliminate or substitute | x + y = 10, x − y = 4 → x = 7 |
+| asked for x + y | add or subtract the equations first | 5x + 5y = 30 → x + y = 6 |
+| inequality | like an equation, but flip when × or ÷ by a negative | −3x > 12 → x < −4 |
+| \|x − a\| = k | two answers, a ± k | \|x − 3\| = 5 → 8 or −2 |
+| \|x − a\| < k | within k of a | −2 < x < 8 |
+| "5 less than x" | x − 5 | not 5 − x |
+</Concept>
+
 <Cheatsheet>
-Practice bank topic drills: Linear equations · Systems of equations · Inequalities · Absolute value · Translating words to equations · Age problems.
+Practice bank topic drills: Linear equations · Systems · Inequalities · Absolute value · Word problems.
 </Cheatsheet>

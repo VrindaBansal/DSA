@@ -3,102 +3,346 @@ id: gre-fractions-decimals
 module: gre-arithmetic
 title: Fractions, decimals & comparing numbers
 order: 3
-estimatedMinutes: 30
+estimatedMinutes: 50
 prerequisites: [gre-integers]
 objectives:
-  - Add, subtract, multiply, and divide fractions without errors
-  - Compare fractions quickly by cross-multiplying or with benchmarks
-  - Solve “fraction of the remainder” word problems by working with what’s left
-  - Handle scientific notation and numeric-entry fraction answers
+  - Read a fraction as “part of a whole” and as a division, and simplify it
+  - Add and subtract fractions with a common denominator
+  - Multiply and divide fractions, canceling first to keep numbers small
+  - Compare fractions quickly by cross-multiplying, using benchmarks, or converting to decimals
+  - Multiply and divide decimals without losing track of the decimal point
+  - Solve “fraction of what’s left” word problems
+  - Work with scientific notation
 tags: [gre, quant, fractions, decimals]
 ---
 
 <Intuition>
-Fractions are the most common place for careless errors on the GRE — not because the
-math is hard, but because there are several procedures and it is easy to apply the wrong
-one. The fix is to know exactly what each operation does: you need a common denominator
-to **add**, you multiply straight across to **multiply**, and dividing is multiplying by
-the reciprocal. Everything else in this lesson is about comparing and interpreting
-fractions fast.
+Fractions cause more careless mistakes on the GRE than almost anything else — not because
+they're hard, but because each operation has its own procedure, and it's easy to use the
+wrong one. Adding needs a common denominator; multiplying doesn't. Dividing flips a fraction;
+adding doesn't.
+
+This lesson goes through each procedure slowly, says **why** it works, and then practices
+the word problems where fractions show up on the test. If you ever get stuck, go back to
+the picture of a fraction as a pizza cut into equal slices.
 </Intuition>
 
 <Concept>
-## The four operations
+## 1. What a fraction means
 
-- **Add / subtract:** common denominator first. ⅔ + ¾ = 8/12 + 9/12 = 17/12.
-- **Multiply:** straight across. ⅔ × ¾ = 6/12 = ½. Cancel before multiplying to keep
-  numbers small.
-- **Divide:** multiply by the reciprocal. ⅔ ÷ ¾ = ⅔ × 4/3 = 8/9.
-- **Mixed numbers:** convert first. 2⅓ = 7/3.
+A fraction like **3/4** describes **part of a whole**: the whole is cut into **4 equal
+pieces** (the bottom number, the **denominator**), and we have **3** of them (the top number,
+the **numerator**).
+
+A fraction is also a **division**: 3/4 means 3 ÷ 4 = 0.75. That's how you turn any fraction
+into a decimal.
+
+**Equivalent fractions.** Multiplying or dividing the top and bottom by the same number
+doesn't change the value — it just cuts the pizza into more or fewer slices:
+1/2 = 2/4 = 3/6 = 50/100.
+
+**Simplifying (reducing)** means dividing the top and bottom by a number they share, until
+they share nothing but 1. For 18/24, both are divisible by 6: 18/24 = 3/4.
+
+**Mixed numbers and improper fractions.** 2⅓ means 2 wholes plus ⅓. To turn it into a single
+fraction, multiply the whole number by the denominator and add the numerator:
+2⅓ = (2 × 3 + 1)/3 = **7/3**. Going the other way, 17/5 = 3 remainder 2, so 17/5 = **3⅖**.
+Always convert mixed numbers to improper fractions before doing math with them.
 </Concept>
 
-<Example title="A compound fraction">
+<Example title="Simplify a fraction">
+Simplify 84/126.
+
+<Solution>
+**Step 1 — Find a common factor.** Both are even: 84/126 = 42/63.
+
+**Step 2 — Keep going.** 42 and 63 are both divisible by 7: 42/63 = 6/9.
+
+**Step 3 — Once more.** 6 and 9 are both divisible by 3: 6/9 = 2/3.
+
+**Answer: 2/3.** (Shortcut: the greatest common factor of 84 and 126 is 42, and dividing both by
+42 gives 2/3 in one step. But reducing in small steps works just as well.)
+</Solution>
+</Example>
+
+<Check id="gre-frac-simplify" />
+
+<Check id="gre-frac-improper" />
+
+<Concept>
+## 2. Adding and subtracting fractions
+
+You can only add pieces that are the **same size**. 1/2 + 1/3 isn't 2/5 — halves and thirds are
+different-sized slices. So first, rewrite both fractions with the **same denominator**, then add
+the numerators and keep the denominator.
+
+**Steps:**
+1. Find a **common denominator** — ideally the least common multiple (LCM) of the denominators.
+2. Rewrite each fraction with that denominator (multiply top and bottom by the same number).
+3. Add or subtract the **numerators only**. The denominator stays the same.
+4. Simplify if you can.
+
+$$
+\frac{1}{2} + \frac{1}{3} = \frac{3}{6} + \frac{2}{6} = \frac{5}{6}
+$$
+</Concept>
+
+<Example title="Add with the least common denominator">
+Compute 5/6 + 3/8.
+
+<Solution>
+**Step 1 — Common denominator.** LCM of 6 and 8: multiples of 8 are 8, 16, **24**; 24 is also a
+multiple of 6. Use 24.
+
+**Step 2 — Rewrite.** 5/6 = 20/24 (multiply top and bottom by 4). 3/8 = 9/24 (multiply by 3).
+
+**Step 3 — Add the numerators.** 20/24 + 9/24 = 29/24.
+
+**Answer: 29/24**, which is 1 5/24 as a mixed number.
+</Solution>
+</Example>
+
+<Example title="Subtract mixed numbers">
+Compute 4⅓ − 2⅚.
+
+<Solution>
+**Step 1 — Convert to improper fractions.** 4⅓ = 13/3 and 2⅚ = 17/6.
+
+**Step 2 — Common denominator (6).** 13/3 = 26/6.
+
+**Step 3 — Subtract.** 26/6 − 17/6 = 9/6.
+
+**Step 4 — Simplify.** 9/6 = 3/2 = **1½**.
+</Solution>
+</Example>
+
+<Check id="gre-frac-add" />
+
+<Check id="gre-frac-mixed" />
+
+<Concept>
+## 3. Multiplying and dividing fractions
+
+**Multiplying is easier than adding:** multiply straight across, top × top and bottom × bottom.
+No common denominator needed.
+
+$$
+\frac{2}{3} \times \frac{3}{4} = \frac{6}{12} = \frac{1}{2}
+$$
+
+**Cancel first** to keep the numbers small: any top number can cancel with any bottom number.
+In 2/3 × 3/4, the 3s cancel and the 2 cancels into the 4, leaving 1/2 directly.
+
+The word **"of" means multiply**: "2/3 of 90" is 2/3 × 90 = 60.
+
+**Dividing: flip the second fraction, then multiply.** "Keep, change, flip":
+
+$$
+\frac{2}{3} \div \frac{3}{4} = \frac{2}{3} \times \frac{4}{3} = \frac{8}{9}
+$$
+
+Why does flipping work? Dividing asks "how many of these fit?" How many ½-cup scoops fit in 3
+cups? Each cup holds 2 scoops, so 6 — and that's 3 ÷ ½ = 3 × 2 = 6.
+</Concept>
+
+<Example title="Cancel before multiplying">
+Compute 14/15 × 25/28.
+
+<Solution>
+**Step 1 — Cancel across.** 14 (top) and 28 (bottom) share 14: they become 1 and 2.
+25 (top) and 15 (bottom) share 5: they become 5 and 3.
+
+**Step 2 — Multiply what's left.** (1 × 5)/(3 × 2) = **5/6**.
+
+Without canceling you'd compute 350/420 and then have to reduce it — same answer, more work
+and more chances for errors.
+</Solution>
+</Example>
+
+<Example title="A fraction inside a fraction">
 Compute (1/2 + 1/3) ÷ (5/6).
 
 <Solution>
-1/2 + 1/3 = 3/6 + 2/6 = 5/6. Then 5/6 ÷ 5/6 = **1**.
+**Step 1 — Do the top first (parentheses).** 1/2 + 1/3 = 3/6 + 2/6 = 5/6.
 
-On the GRE, a numeric-entry question with a fraction answer gives you two boxes
-(numerator and denominator). Equivalent fractions are accepted — 10/10 would also be
-marked correct — so you don’t have to reduce.
+**Step 2 — Divide.** 5/6 ÷ 5/6 = 5/6 × 6/5 = **1**. (Any nonzero number divided by itself is 1.)
+
+GRE note: when a numeric-entry answer is a fraction, you get two boxes (top and bottom), and
+equivalent fractions are accepted, so you don't have to reduce.
 </Solution>
 </Example>
 
 <Check id="gre-frac-ops" />
 
+<Check id="gre-frac-divide-servings" />
+
 <Concept>
-## Comparing fractions
+## 4. Comparing fractions
 
-- **Cross-multiply:** to compare 5/8 and 7/11, compare 5 × 11 = 55 with 7 × 8 = 56.
-  56 is larger, so 7/11 is larger.
-- **Benchmarks:** compare each to ½ or 1. 4/9 < ½ < 5/9.
-- **Convert to decimals** when the choices mix forms: 3/7 ≈ 0.429, 0.43, (0.65)² ≈ 0.42.
+Three ways, from quickest to most reliable:
 
-Memorize a few conversions: ⅛ = 0.125, ⅙ ≈ 0.167, ⅕ = 0.2, ¼ = 0.25, ⅓ ≈ 0.333,
-⅜ = 0.375, ⅗ = 0.6, ⅔ ≈ 0.667, ¾ = 0.75, ⅞ = 0.875.
+**Benchmarks.** Compare each fraction to ½ or to 1. Is the top more or less than half the
+bottom? 4/9 is less than ½ (4 is less than 4.5); 5/9 is more. So 4/9 < 5/9 without any math.
+
+**Cross-multiplying.** To compare a/b with c/d, compare **a × d** with **c × b**. For 5/8 vs. 7/11:
+5 × 11 = 55 and 7 × 8 = 56. The bigger product belongs to the fraction on its top, so
+**7/11 is bigger**. (This works because it's the same as giving both fractions the denominator 88.)
+
+**Convert to decimals** when the choices mix fractions, decimals, and roots. These are worth
+memorizing:
+
+| fraction | 1/8 | 1/6 | 1/5 | 1/4 | 1/3 | 3/8 | 2/5 | 1/2 | 3/5 | 5/8 | 2/3 | 3/4 | 4/5 | 7/8 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| decimal | .125 | .167 | .2 | .25 | .333 | .375 | .4 | .5 | .6 | .625 | .667 | .75 | .8 | .875 |
 </Concept>
+
+<Example title="Which is bigger?">
+Which is greater, 7/12 or 4/7?
+
+<Solution>
+**Step 1 — Cross-multiply.** 7/12 vs 4/7: 7 × 7 = 49 (goes with 7/12) and 4 × 12 = 48 (goes with 4/7).
+
+**Step 2 — Compare.** 49 > 48, so **7/12 is greater** — just barely.
+
+**Check with decimals:** 7/12 ≈ 0.583 and 4/7 ≈ 0.571. ✓ Benchmarks wouldn't settle this one:
+both are just over ½.
+</Solution>
+</Example>
+
+<Check id="gre-frac-order" />
 
 <Check id="gre-frac-compare" />
 
 <Concept>
-## Fractions of what’s left
+## 5. Decimals
 
-“Spent ⅓ of her money on rent and ¼ **of the remainder** on food.” The second fraction is
-of a smaller amount. Track **what remains** at each step: after rent, ⅔ is left; after food,
-¾ of that is left, so ⅔ × ¾ = ½ of the original remains.
+**Converting.** A decimal is a fraction with a denominator of 10, 100, 1,000…:
+0.35 = 35/100 = 7/20. And a fraction becomes a decimal by dividing: 3/8 = 3 ÷ 8 = 0.375.
+
+**Multiplying decimals.** Ignore the decimal points, multiply the whole numbers, then put the
+point back: the answer has as many decimal places as the two numbers **together**.
+0.3 × 0.02: 3 × 2 = 6, and there are 1 + 2 = 3 decimal places, so the answer is **0.006**.
+
+**Dividing decimals.** Move the decimal point in **both** numbers the same number of places until
+you're dividing by a whole number. 2.4 ÷ 0.06: move both points two places → 240 ÷ 6 = **40**.
+(This is the same as multiplying top and bottom by 100, which doesn't change the value.)
+
+**Place value** matters for rounding: in 3.1416, the 1 is in the tenths place, the 4 in the
+hundredths, the 1 in the thousandths. Rounded to the nearest hundredth, 3.1416 is 3.14.
 </Concept>
 
-<Example title="Working backward">
+<Gotcha title="Trap — decimals times decimals">
+0.3 × 0.3 = 0.09, not 0.9. Count decimal places: each factor has one, so the product has
+two. Multiplying two numbers between 0 and 1 always gives something **smaller than both** —
+if your answer got bigger, a decimal point slipped.
+</Gotcha>
+
+<Example title="Divide by a decimal">
+What is 0.45 ÷ 0.015?
+
+<Solution>
+**Step 1 — Make the divisor a whole number.** 0.015 has three decimal places, so move both
+points three places right: 0.45 → 450 and 0.015 → 15.
+
+**Step 2 — Divide.** 450 ÷ 15 = **30**.
+
+**Check:** 30 × 0.015 = 0.45 ✓.
+</Solution>
+</Example>
+
+<Check id="gre-frac-decimal-mult" />
+
+<Check id="gre-frac-decimal-div" />
+
+<Concept>
+## 6. Fractions of what's left
+
+Word problems love this phrase: "She spent 1/3 of her money on rent and **1/4 of the
+remainder** on food." The second fraction is a fraction of a **smaller amount** — what was
+left after rent — not of the original.
+
+**The reliable method: track what remains after each step.**
+- After spending 1/3, **2/3** remains.
+- After spending 1/4 of that, **3/4 of the 2/3** remains: 3/4 × 2/3 = 1/2 of the original.
+
+Multiply the "what's left" fractions together. If you know how much is left at the end, divide
+by that fraction to get the original amount.
+
+Another option that always works: **pick a convenient starting number** — one divisible by all
+the denominators (here, 12) — and follow the dollars.
+</Concept>
+
+<Example title="Working backward to the start">
 Priya spent 1/4 of her paycheck on rent and then 1/3 of what was left on groceries. She had
 $600 left. How much was the paycheck?
 
 <Solution>
-After rent, 3/4 remains. After groceries, 2/3 of that remains: 3/4 × 2/3 = 1/2 of the
-paycheck. So half the paycheck is $600, and the paycheck was **$1,200**.
+**Step 1 — After rent,** 1 − 1/4 = 3/4 of the paycheck remains.
 
-Trap: treating 1/3 as a fraction of the whole paycheck gives 1 − 1/4 − 1/3 = 5/12
-remaining, and 600 ÷ 5/12 = $1,440 — wrong, because the groceries fraction was of the
-remainder.
+**Step 2 — After groceries,** she keeps 1 − 1/3 = 2/3 of that: 3/4 × 2/3 = 6/12 = 1/2 of the paycheck.
+
+**Step 3 — Solve.** Half the paycheck is $600, so the paycheck was **$1,200**.
+
+**Check by following the money:** $1,200 − $300 rent = $900; 1/3 of $900 = $300 groceries; $900 − $300 = $600 ✓.
+
+**The trap:** treating 1/3 as a fraction of the whole paycheck: 1 − 1/4 − 1/3 = 5/12 left, which
+gives $1,440 — wrong, because groceries were 1/3 of the *remainder*.
 </Solution>
 </Example>
 
 <Check id="gre-frac-remain" />
 
+<Check id="gre-frac-remain-two" />
+
 <Concept>
-## Scientific notation
+## 7. Scientific notation
 
-A number in scientific notation is a × 10ⁿ with 1 ≤ a < 10. Multiply the a’s, add the
-exponents, then renormalize:
+Scientific notation writes very big or very small numbers as **(a number from 1 to just under 10)
+× (a power of 10)**:
 
-(4 × 10⁵)(6 × 10³) = 24 × 10⁸ = 2.4 × 10⁹.
+- 45,000 = 4.5 × 10⁴ (move the decimal point 4 places left)
+- 0.0032 = 3.2 × 10⁻³ (move it 3 places right; small numbers get negative exponents)
+
+**To multiply:** multiply the front numbers, add the exponents, then fix the front number if it
+isn't between 1 and 10.
+
+(4 × 10⁵) × (6 × 10³) = 24 × 10⁸ = **2.4 × 10⁹** (24 = 2.4 × 10, so one more power of 10).
+
+**To divide:** divide the front numbers and **subtract** the exponents.
 </Concept>
 
-<Gotcha title="Trap — decimals times decimals">
-0.3 × 0.3 = 0.09, not 0.9. Count decimal places: each factor has one, so the product has
-two. Multiplying two numbers between 0 and 1 always gives something smaller than both.
-</Gotcha>
+<Example title="Divide in scientific notation">
+Compute (9 × 10⁴) ÷ (3 × 10⁻²).
+
+<Solution>
+**Step 1 — Divide the front numbers.** 9 ÷ 3 = 3.
+
+**Step 2 — Subtract the exponents.** 10⁴ ÷ 10⁻² = 10^(4 − (−2)) = 10⁶. (Subtracting a negative adds.)
+
+**Answer: 3 × 10⁶**, which is 3,000,000.
+</Solution>
+</Example>
 
 <Check id="gre-frac-sci" />
+
+<Check id="gre-frac-sci-div" />
+
+<Concept>
+## Recap
+
+| Operation | How | Example |
+|---|---|---|
+| simplify | divide top and bottom by a shared factor | 18/24 = 3/4 |
+| mixed → improper | whole × bottom + top, over bottom | 2⅓ = 7/3 |
+| add / subtract | common denominator, then add tops | 1/2 + 1/3 = 5/6 |
+| multiply | straight across; cancel first; "of" = × | 2/3 × 3/4 = 1/2 |
+| divide | flip the second fraction and multiply | 2/3 ÷ 3/4 = 8/9 |
+| compare | benchmarks, cross-multiply, or decimals | 5/8 < 7/11 (55 < 56) |
+| decimal × decimal | count total decimal places | 0.3 × 0.02 = 0.006 |
+| ÷ by a decimal | shift both points until the divisor is whole | 2.4 ÷ 0.06 = 240 ÷ 6 |
+| fraction of the rest | multiply the "what's left" fractions | ⅔ × ¾ = ½ left |
+| scientific notation | multiply fronts, add exponents, then fix the front | 24 × 10⁸ = 2.4 × 10⁹ |
+</Concept>
 
 <Cheatsheet>
 Practice bank topic drills: Fraction arithmetic · Comparing fractions & decimals · Fractions of a remainder · Scientific notation.

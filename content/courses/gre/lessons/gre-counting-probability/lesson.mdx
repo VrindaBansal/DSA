@@ -3,97 +3,319 @@ id: gre-counting-probability
 module: gre-data
 title: Counting & probability
 order: 2
-estimatedMinutes: 40
+estimatedMinutes: 55
 prerequisites: [gre-fractions-decimals]
 objectives:
-  - Count with the multiplication principle, permutations, and combinations — and know which applies
-  - Handle restrictions (together, apart, at least one) with blocks and complements
-  - Compute probabilities of AND and OR events, with and without replacement
-  - Solve overlapping-sets problems with a Venn diagram or a 2×2 table
+  - Count with the slot method (multiplication principle)
+  - Count arrangements where order matters, including letters that repeat
+  - Count groups where order doesn't matter (combinations)
+  - Handle "together," "not together," and "at least one"
+  - Find simple probabilities, and use 1 − P(none) for "at least one"
+  - Combine probabilities with AND and OR, with and without replacement
+  - Solve overlapping-group problems with a formula or a 2×2 table
 tags: [gre, quant, counting, probability, sets]
 ---
 
 <Intuition>
-Counting problems all start from one principle: if one choice can be made in m ways and a
-second in n ways, together they can be made in m × n ways. Permutations and combinations
-are just that principle plus one question — **does order matter?** Probability is then
-“favorable outcomes over total outcomes,” and for anything that says “at least one,” the
-fastest path is almost always 1 minus the probability of none.
+Almost every counting problem comes down to one idea: **if you make one choice in m ways and then a
+second choice in n ways, there are m × n ways to make both.** Three shirts and four pairs of pants give
+3 × 4 = 12 outfits.
+
+Everything else in counting is that idea plus one question: **does the order matter?** Picking a
+president and a vice-president (order matters — they're different jobs) is different from picking a
+two-person team (order doesn't matter — it's the same team either way).
+
+Probability then builds on counting: it's **the number of outcomes you want divided by the number of
+possible outcomes**.
 </Intuition>
 
 <Concept>
-## The multiplication principle
+## 1. The slot method
 
-Fill slots one at a time and multiply the number of options for each. A code of 2 letters
-followed by 3 digits, repeats allowed: 26 × 26 × 10 × 10 × 10 = 676,000.
+Draw one blank **slot** for each choice you have to make. Write how many options each slot has, then
+**multiply**.
+
+A code of 2 letters followed by 3 digits (repeats allowed):
+
+| slot | letter | letter | digit | digit | digit |
+|---|---|---|---|---|---|
+| options | 26 | 26 | 10 | 10 | 10 |
+
+26 × 26 × 10 × 10 × 10 = **676,000** codes.
+
+**Two rules that prevent most mistakes:**
+- **No repeats allowed?** Each slot has one fewer option than the one before.
+- **A slot has a restriction** (must be odd, can't be 0)? **Fill that slot first**, then the others.
+</Concept>
+
+<Example title="Three-digit numbers with no repeated digit">
+How many three-digit numbers have three different digits?
+
+<Solution>
+**Step 1 — Draw three slots:** hundreds, tens, units.
+
+**Step 2 — Restricted slot first.** The hundreds digit can't be 0, so it has **9** options (1–9).
+
+**Step 3 — Next slot.** The tens digit can be anything except the digit already used: 10 − 1 = **9**
+options (0 is allowed now).
+
+**Step 4 — Last slot.** The units digit can't match either one used: 10 − 2 = **8** options.
+
+**Step 5 — Multiply.** 9 × 9 × 8 = **648**.
+</Solution>
+</Example>
+
+<Check id="gre-cnt-slots" />
+
+<Check id="gre-cnt-odd" />
+
+<Concept>
+## 2. Arrangements — when order matters
+
+**Arranging all n things in a row** uses the slot method: n choices for the first spot, n − 1 for the
+next, and so on down to 1. That product is written **n!** ("n factorial"):
+
+$$
+n! = n \times (n - 1) \times \cdots \times 2 \times 1
+$$
+
+5 books on a shelf: 5! = 5 × 4 × 3 × 2 × 1 = 120 ways.
+
+**Arranging only k of the n things** (like awarding 1st, 2nd, and 3rd place): use just k slots.
+From 10 runners: 10 × 9 × 8 = 720.
+
+**Letters that repeat.** To arrange the letters of a word with repeated letters, start with the
+arrangements as if every letter were different, then **divide by the factorial of each letter's
+count** (swapping identical letters doesn't make a new arrangement).
 </Concept>
 
 <TradeoffTable id="gre-counting" />
 
-<Example title="Order matters or not?">
-From 8 club members, how many ways can you choose (a) a president, secretary, and
-treasurer, (b) a 3-person committee?
+<Example title="Arranging the letters of LEVEL">
+How many different arrangements are there of the letters in LEVEL?
 
 <Solution>
-(a) Distinct roles → order matters: 8 × 7 × 6 = **336**.
+**Step 1 — Count the letters.** 5 letters: L appears 2 times, E appears 2 times, V once.
 
-(b) A committee is just a group → order doesn’t matter. Each committee was counted 3! = 6
-times in (a), so 336 ÷ 6 = **56** = C(8, 3).
+**Step 2 — Pretend they're all different.** 5! = 120.
+
+**Step 3 — Divide out the repeats.** The two L's can swap (2! = 2 ways) and the two E's can swap
+(2! = 2 ways) without changing anything: 120 ÷ (2 × 2) = **30**.
+</Solution>
+</Example>
+
+<Check id="gre-cnt-perm" />
+
+<Check id="gre-cnt-letters" />
+
+<Concept>
+## 3. Groups — when order doesn't matter (combinations)
+
+A **committee**, a **team**, a **hand of cards**: Ann, Ben, and Cal make the same group however
+you list it. Count these with **combinations**, written C(n, k), "n choose k":
+
+$$
+C(n, k) = \frac{n!}{k!\,(n - k)!}
+$$
+
+**Where the formula comes from:** count as if order mattered, then divide by the number of ways to
+order the k people you picked (k!), because each group got counted that many times.
+
+**The quick way to compute it:** multiply k numbers counting down from n, then divide by k!.
+C(10, 3) = (10 × 9 × 8) ÷ (3 × 2 × 1) = 720 ÷ 6 = 120.
+
+**Choosing from two separate groups** (like 2 teachers **and** 3 students): count each choice
+separately, then **multiply**.
+</Concept>
+
+<Example title="Officers vs. a committee">
+A club has 8 members. In how many ways can it choose (a) a president, a secretary, and a treasurer;
+(b) a 3-person committee?
+
+<Solution>
+**(a) Different jobs, so order matters.** Three slots: 8 × 7 × 6 = **336**.
+
+**(b) A committee is just a group, so order doesn't matter.** In part (a), every group of 3 people
+was counted once for each way to hand out the 3 jobs — 3! = 6 times. So divide: 336 ÷ 6 = **56**.
+That's C(8, 3).
 </Solution>
 </Example>
 
 <Check id="gre-cnt-comb" />
 
-<Concept>
-## Restrictions
-
-- **Must be together:** glue them into one block, arrange the blocks, then multiply by the
-  ways to arrange inside the block. 5 people in a row with A and B together:
-  4! × 2! = 48.
-- **Must not be together:** total − together = 5! − 48 = 72.
-- **At least one:** total − none. Committees of 3 from 5 men and 4 women with at least one
-  woman: C(9, 3) − C(5, 3) = 84 − 10 = 74.
-</Concept>
-
-<Check id="gre-cnt-restrict" />
+<Check id="gre-cnt-two-groups" />
 
 <Concept>
-## Probability
+## 4. Restrictions: together, apart, at least one
 
-P(event) = favorable outcomes ÷ total outcomes (when outcomes are equally likely).
+**"Must be together":** glue them into one block. Arrange the blocks, then multiply by the ways to
+arrange the people inside the block.
+5 people in a row with A and B together: the block AB plus 3 others is 4 things → 4! = 24, and A and
+B can swap inside the block → × 2 = **48**.
 
-- **AND** (both happen), independent events: multiply. P(A and B) = P(A) × P(B).
-- **OR** (at least one happens): P(A or B) = P(A) + P(B) − P(A and B).
-- **NOT**: P(not A) = 1 − P(A).
-- **Without replacement:** the second draw’s probabilities change.
+**"Must not be together":** it's easier to count the opposite and subtract.
+Not together = total − together = 5! − 48 = 120 − 48 = **72**.
+
+**"At least one":** count everything, then subtract the groups that have **none**.
+
+$$
+\text{at least one} = \text{total} - \text{none}
+$$
 </Concept>
 
-<Example title="Without replacement">
-A bag has 4 red and 6 blue marbles. Two are drawn without replacement. What is the
-probability both are red?
+<Example title="At least one">
+A committee of 4 is chosen from 6 men and 3 women. How many committees include at least one woman?
 
 <Solution>
-First red: 4/10. Then 3 reds among 9 marbles: 3/9. Multiply: 4/10 × 3/9 = 12/90 = **2/15**.
+**Step 1 — All committees.** 9 people, choose 4: C(9, 4) = (9 × 8 × 7 × 6) ÷ 24 = 126.
 
-(With replacement it would be 4/10 × 4/10 = 4/25.)
+**Step 2 — Committees with no women** (all 4 from the 6 men): C(6, 4) = (6 × 5 × 4 × 3) ÷ 24 = 15.
+
+**Step 3 — Subtract.** 126 − 15 = **111**.
+
+(Counting "exactly 1 woman + exactly 2 + exactly 3" separately also works, but takes three times as
+long.)
 </Solution>
 </Example>
 
-<Check id="gre-prob-draw" />
+<Check id="gre-cnt-restrict" />
+
+<Check id="gre-cnt-atleast" />
 
 <Concept>
-## Overlapping sets
+## 5. Probability basics
 
-**Total = A + B − Both + Neither.** Subtract “both” once, because people in both groups
-were counted twice.
+When all outcomes are equally likely:
+
+$$
+P(\text{event}) = \frac{\text{outcomes you want}}{\text{all possible outcomes}}
+$$
+
+A probability is always between **0** (impossible) and **1** (certain).
+
+**The complement:** the chance something does **not** happen is **1 − P(it happens)**.
+
+**"At least one" → use 1 − P(none).** It's the probability version of the counting trick above.
+The chance of at least one six in 2 rolls of a die is 1 − P(no sixes) = 1 − (5/6)(5/6) = 1 − 25/36 = 11/36.
+
+**Two dice:** there are 6 × 6 = 36 equally likely outcomes. List the ones you want.
 </Concept>
 
-<Gotcha title="Trap — adding probabilities for “and”">
-“Both” means multiply; adding gives a number that is too big (and can exceed 1). If your
-probability is bigger than 1, something went wrong.
-</Gotcha>
+<Example title="A sum with two dice">
+Two fair six-sided dice are rolled. What is the probability that the sum is 7?
+
+<Solution>
+**Step 1 — Total outcomes.** 6 × 6 = 36.
+
+**Step 2 — List the ones you want.** (1, 6), (2, 5), (3, 4), (4, 3), (5, 2), (6, 1) — 6 outcomes.
+(Order matters here: rolling 1 then 6 is a different outcome from 6 then 1.)
+
+**Step 3 — Divide.** 6/36 = **1/6**.
+</Solution>
+</Example>
+
+<Check id="gre-prob-dice" />
 
 <Check id="gre-prob-atleast" />
+
+<Concept>
+## 6. AND and OR
+
+**AND — both happen.** Multiply. If the events are **independent** (one doesn't affect the other):
+P(A and B) = P(A) × P(B). Two coin flips both heads: ½ × ½ = ¼.
+
+**Without replacement,** the first draw changes what's left for the second, so update the second
+fraction before multiplying.
+
+**OR — at least one happens.** Add, then subtract the overlap (it was counted twice):
+
+$$
+P(A \text{ or } B) = P(A) + P(B) - P(A \text{ and } B)
+$$
+
+If A and B can't both happen, the overlap is 0 and you just add.
+</Concept>
+
+<Example title="Drawing without replacement">
+A bag has 4 red and 6 blue marbles. Two are drawn without replacement. What is the probability that
+both are red?
+
+<Solution>
+**Step 1 — First draw.** 4 red out of 10: 4/10.
+
+**Step 2 — Second draw.** One red is gone, so 3 red out of 9 left: 3/9.
+
+**Step 3 — AND, so multiply.** (4/10) × (3/9) = 12/90 = **2/15**.
+
+(With replacement, the second draw would still be 4/10: (4/10)² = 4/25.)
+</Solution>
+</Example>
+
+<Gotcha title="Trap — adding for “and”">
+"Both" means **multiply**. Adding gives a number that's too big — and it can even go over 1. If a
+probability comes out bigger than 1, something went wrong.
+</Gotcha>
+
+<Check id="gre-prob-draw" />
+
+<Check id="gre-prob-or" />
+
+<Concept>
+## 7. Overlapping groups
+
+When some people belong to **both** groups, adding the groups counts those people twice. Subtract them
+once:
+
+$$
+\text{Total} = A + B - \text{Both} + \text{Neither}
+$$
+
+**When there are two different yes/no categories** (like men/women and glasses/no glasses), make a
+**2×2 table**. Rows and columns must add up, so you can fill in the blanks one at a time.
+</Concept>
+
+<Example title="A 2×2 table">
+Of 60 employees, 25 are managers. 36 employees work remotely, and 10 of the managers do **not** work
+remotely. How many non-managers do not work remotely?
+
+<Solution>
+**Step 1 — Set up the table** with what you know.
+
+| | remote | not remote | total |
+|---|---|---|---|
+| manager | ? | 10 | 25 |
+| non-manager | ? | **?** | ? |
+| total | 36 | ? | 60 |
+
+**Step 2 — Fill in what the totals force.** Not-remote total: 60 − 36 = 24. Non-manager total:
+60 − 25 = 35.
+
+**Step 3 — Answer.** Non-managers not remote = not-remote total − managers not remote = 24 − 10 = **14**.
+
+**Check:** remote managers = 25 − 10 = 15, remote non-managers = 35 − 14 = 21, and 15 + 21 = 36 ✓.
+</Solution>
+</Example>
+
+<Check id="gre-set-overlap" />
+
+<Check id="gre-set-table" />
+
+<Concept>
+## Recap
+
+| Situation | Method | Example |
+|---|---|---|
+| a sequence of choices | slots; multiply; restricted slot first | 3-digit, no repeats: 9 × 9 × 8 = 648 |
+| arrange all n | n! | 5 books: 120 |
+| arrange k of n | k slots counting down | top 3 of 10: 720 |
+| repeated letters | n! ÷ (repeat counts)! | LEVEL: 120 ÷ 4 = 30 |
+| choose a group | C(n, k) = count down k numbers ÷ k! | C(8, 3) = 56 |
+| together / apart | block it / total − together | 5 people: 48 / 72 |
+| at least one | total − none (or 1 − P(none)) | 126 − 15 = 111 |
+| probability | wanted ÷ possible | sum of 7: 6/36 |
+| AND / OR | multiply / add − overlap | red, red without replacement: 4/10 × 3/9 |
+| overlapping groups | total = A + B − both + neither | or a 2×2 table |
+</Concept>
 
 <Cheatsheet>
 Practice bank topic drills: Arrangements (permutations) · Selections (combinations) · Probability · Combining probabilities · Overlapping sets.
