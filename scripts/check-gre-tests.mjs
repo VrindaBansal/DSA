@@ -13,7 +13,8 @@
 //     as correct through the same grading code the app uses, select-in-
 //     passage sentences really occur in the passage, figures/charts sane;
 //   - ids unique across tests, bank, and lesson checks; no duplicate
-//     questions; essay prompts present and distinct.
+//     questions; timed tests carry a distinct essay prompt, untimed tests
+//     (the no-clock, no-essay set) carry none.
 //
 // `--print <testNo> <sectionKey>` prints a section for a read-through.
 
@@ -215,15 +216,26 @@ const avg = (qs) => qs.reduce((a, q) => a + q.difficulty, 0) / qs.length;
 // -------------------------------------------------------------------------------------
 section('tests and sections');
 const tests = T.TESTS;
-if (tests.length < 5) fail(`only ${tests.length} tests — promised 5`);
+const timedTests = tests.filter((t) => t.timed !== false);
+const untimedTests = tests.filter((t) => t.timed === false);
+if (timedTests.length < 5) fail(`only ${timedTests.length} timed tests — promised 5`);
+if (untimedTests.length < 5) fail(`only ${untimedTests.length} untimed tests — promised 5`);
+if (new Set(tests.map((t) => t.number)).size !== tests.length) fail('duplicate test numbers');
+tests.forEach((t, i) => {
+  if (t.number !== i + 1 || t.id !== `pt-${t.number}`) fail(`${t.id}: expected pt-${i + 1} at position ${i + 1}`);
+});
 const allIds = new Set();
 const sigs = new Map();
 const claims = new Set();
 let total = 0;
 for (const t of tests) {
-  if (!t.essay?.claim || !t.essay?.task) fail(`${t.id}: essay prompt missing`);
-  if (claims.has(t.essay.claim)) fail(`${t.id}: duplicate essay claim`);
-  claims.add(t.essay.claim);
+  if (t.timed === false) {
+    if (t.essay) fail(`${t.id}: untimed tests omit the essay, but one is set`);
+  } else {
+    if (!t.essay?.claim || !t.essay?.task) fail(`${t.id}: essay prompt missing`);
+    else if (claims.has(t.essay.claim)) fail(`${t.id}: duplicate essay claim`);
+    else claims.add(t.essay.claim);
+  }
   const o = t.order.join(',');
   if (t.order.length !== 4 || new Set(t.order).size !== 4) fail(`${t.id}: order must contain each slot once`);
   if (t.order.indexOf('v1') > t.order.indexOf('v2') || t.order.indexOf('q1') > t.order.indexOf('q2')) fail(`${t.id}: order ${o} puts a second section first`);
@@ -255,7 +267,7 @@ for (const t of tests) {
     `  ${t.id}: order ${o} · difficulty V ${v2e.toFixed(1)}/${v1.toFixed(1)}/${v2h.toFixed(1)} · Q ${q2e.toFixed(1)}/${q1.toFixed(1)}/${q2h.toFixed(1)} (easier/first/harder)`,
   );
 }
-console.log(`  ${total} questions across ${tests.length} tests`);
+console.log(`  ${total} questions across ${tests.length} tests (${timedTests.length} timed with essay, ${untimedTests.length} untimed without)`);
 
 section('answer keys are spread out');
 {

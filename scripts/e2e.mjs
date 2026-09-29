@@ -676,6 +676,49 @@ section('GRE full-length practice test');
   if ((await page.locator('text=no longer exists').count()) === 0 && (await page.locator('text=practice test miss').count()) > 0)
     pass('review resolves a practice-test question');
   else fail('review could not load a practice-test question');
+
+  // An untimed, essay-free test: no essay screen, a count-up clock, no time-up.
+  const ut = T.TESTS.find((t) => t.timed === false);
+  await page.goto(`${BASE}/course/gre/tests/${ut.id}`, { waitUntil: 'networkidle' });
+  if ((await page.locator('text=No time limit and no essay').count()) > 0) pass(`${ut.title} is described as untimed with no essay`);
+  else fail(`${ut.title} home page doesn't describe it as untimed`);
+  await page.getByRole('button', { name: /start test/ }).click();
+  const introText = await page.locator('body').innerText();
+  if ((await page.getByLabel('Your essay').count()) === 0 && /Section 1 of 4/.test(introText) && /untimed/.test(introText))
+    pass('untimed test skips the essay and opens on Section 1 of 4');
+  else fail('untimed test showed an essay or the wrong section count');
+  await page.getByRole('button', { name: /begin section/ }).click();
+  const t0 = (await page.getByTestId('test-timer').textContent()) ?? '';
+  await page.waitForTimeout(2300);
+  const t1 = (await page.getByTestId('test-timer').textContent()) ?? '';
+  const secs = (t) => { const m = t.match(/(\d+):(\d\d) spent/); return m ? Number(m[1]) * 60 + Number(m[2]) : NaN; };
+  if (/untimed/.test(t0) && secs(t1) >= secs(t0) + 2) pass(`clock counts up on an untimed test (${t0.trim()} → ${t1.trim()})`);
+  else fail(`untimed clock: "${t0}" then "${t1}"`);
+  // First section: every question keyed → the harder second section of that measure
+  const firstKey = ut.order[0] === 'v1' ? 'v1' : 'q1';
+  const firstQs = ut.sections[firstKey].questions;
+  for (const q of firstQs) {
+    await answerKeyed(q);
+    await page.getByRole('button', { name: 'next →' }).click();
+  }
+  await page.getByRole('button', { name: /end section & continue/ }).click();
+  for (let k = 1; k < ut.order.length; k++) {
+    await page.getByRole('button', { name: /begin section/ }).click();
+    await page.getByRole('button', { name: 'end section', exact: true }).click();
+    await page.locator('.bg-alert-wash').getByRole('button', { name: 'end section' }).click();
+  }
+  await page.waitForTimeout(1200);
+  const resultsText = await page.locator('body').innerText();
+  if (/This test was untimed/.test(resultsText) && !/Your essay|Issue essay/.test(resultsText))
+    pass('untimed results: untimed note shown, no essay block');
+  else fail('untimed results page is missing the note or shows an essay section');
+  const utState = await page.evaluate((id) => {
+    const s = JSON.parse(localStorage.getItem('invariant.progress.v1') ?? '{}');
+    const a = s.tests?.[id]?.[0];
+    return { attempts: s.tests?.[id]?.length ?? 0, essay: a?.essay ?? null, route: a?.route ?? null };
+  }, ut.id);
+  if (utState.attempts === 1 && !utState.essay) pass('untimed attempt saved without an essay');
+  else fail(`untimed attempt state: ${JSON.stringify(utState)}`);
 }
 
 section('print stylesheet on cheatsheet route');

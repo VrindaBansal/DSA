@@ -10,6 +10,8 @@ interface TestSummary {
   number: number;
   title: string;
   order: Slot[];
+  timed: boolean;
+  essay: boolean;
 }
 
 /** When each test fits in the study plan (see the "Study plan" lesson). */
@@ -19,14 +21,19 @@ const WHEN: Record<number, string> = {
   3: 'After all lessons — the first full test with the whole toolkit.',
   4: 'Final phase — two to three weeks out.',
   5: 'Dress rehearsal — about a week before test day, at the time of day you’ll test.',
+  6: 'Week 2 — after the first few lessons in each section; see the whole test without the clock.',
+  7: 'Week 3 — a careful pass to find what you don’t know yet.',
+  8: 'Week 5 — between timed tests, rework every skill without time pressure.',
+  9: 'In reserve — for a rework week after a rough timed test: accuracy first, then compare your time with the real limits.',
+  10: 'In reserve — one more full set of new questions, at your own pace.',
 };
 
-const measureOrder = (order: Slot[]) =>
-  order
+const measureOrder = (t: TestSummary) =>
+  t.order
     .filter((s) => s.endsWith('1'))
     .map((s) => (s[0] === 'v' ? 'Verbal' : 'Quant'))
     .join(' first, then ')
-    .concat(' (after Writing)');
+    .concat(t.essay ? ' (after Writing)' : '');
 
 export function TestsHomeClient({ courseId, tests }: { courseId: string; tests: TestSummary[] }) {
   const { state, ready } = useProgress();
@@ -57,10 +64,12 @@ export function TestsHomeClient({ courseId, tests }: { courseId: string; tests: 
       </div>
       <h1 className="font-display text-[2rem] font-bold tracking-tight">Full-length practice tests</h1>
       <p className="mt-1 max-w-[66ch] text-[14px] leading-relaxed text-ink-soft">
-        Five complete GRE General Tests, run like the real thing: the Issue essay, then two Verbal and two Quant
-        sections (12 + 15 questions each) on the official clock, with mark &amp; review, an on-screen calculator, and a
-        second section that gets harder or easier depending on how you did on the first. At the end: estimated
-        130–170 scores, a breakdown by topic and question type, and an explanation for every question.
+        Ten complete GRE practice tests. Every one has two Verbal and two Quant sections (12 + 15 questions each) with
+        mark &amp; review, an on-screen calculator, and a second section that gets harder or easier depending on how you
+        did on the first. <strong>Tests 1–5</strong> run like the real thing — the Issue essay, then the four sections
+        on the official clock. <strong>Tests 6–10</strong> are untimed and skip the essay, for working through a full
+        test carefully. Every test ends with estimated 130–170 scores, a breakdown by topic and question type, and an
+        explanation for every question.
       </p>
       <p className="mt-2 max-w-[66ch] text-[12.5px] leading-relaxed text-muted">
         The questions are original — written to match real GRE questions in format, topic mix, difficulty and traps,
@@ -68,39 +77,51 @@ export function TestsHomeClient({ courseId, tests }: { courseId: string; tests: 
         only practice scored by ETS’s own algorithm.
       </p>
 
-      <div className="mt-6 space-y-3">
-        {tests.map((t) => {
-          const hist = state.tests?.[t.id] ?? [];
-          const last = hist.at(-1);
-          return (
-            <Link
-              key={t.id}
-              href={`/course/${courseId}/tests/${t.id}`}
-              className="block rounded-md border-[1.5px] border-line bg-panel px-5 py-4 transition-colors hover:border-ink"
-            >
-              <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <span className="font-display text-[1.15rem] font-bold">{t.title}</span>
-                <span className="font-mono text-[11.5px]">
-                  {ready && last ? (
-                    <span className="text-done">
-                      V {last.verbal.scaled} · Q {last.quant.scaled}
-                      {hist.length > 1 ? ` · ${hist.length} attempts` : ''}
-                    </span>
-                  ) : inProgress[t.id] ? (
-                    <span className="text-active-deep">in progress — resume →</span>
-                  ) : (
-                    <span className="text-muted">not taken</span>
-                  )}
-                </span>
-              </div>
-              <p className="mt-1 text-[13.5px] text-ink-soft">{WHEN[t.number]}</p>
-              <p className="mt-1 font-mono text-[10.5px] text-faint">
-                ~1 h 58 min · {measureOrder(t.order)}
-              </p>
-            </Link>
-          );
-        })}
-      </div>
+      {(
+        [
+          ['Timed tests — real test conditions', tests.filter((t) => t.timed)],
+          ['Untimed tests — no clock, no essay', tests.filter((t) => !t.timed)],
+        ] as const
+      ).map(([heading, group]) =>
+        group.length ? (
+          <section key={heading} className="mt-7">
+            <h2 className="mb-2 font-mono text-[10.5px] font-semibold uppercase tracking-[0.16em] text-muted">{heading}</h2>
+            <div className="space-y-3">
+              {group.map((t) => {
+                const hist = state.tests?.[t.id] ?? [];
+                const last = hist.at(-1);
+                return (
+                  <Link
+                    key={t.id}
+                    href={`/course/${courseId}/tests/${t.id}`}
+                    className="block rounded-md border-[1.5px] border-line bg-panel px-5 py-4 transition-colors hover:border-ink"
+                  >
+                    <div className="flex flex-wrap items-baseline justify-between gap-2">
+                      <span className="font-display text-[1.15rem] font-bold">{t.title}</span>
+                      <span className="font-mono text-[11.5px]">
+                        {ready && last ? (
+                          <span className="text-done">
+                            V {last.verbal.scaled} · Q {last.quant.scaled}
+                            {hist.length > 1 ? ` · ${hist.length} attempts` : ''}
+                          </span>
+                        ) : inProgress[t.id] ? (
+                          <span className="text-active-deep">in progress — resume →</span>
+                        ) : (
+                          <span className="text-muted">not taken</span>
+                        )}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-[13.5px] text-ink-soft">{WHEN[t.number]}</p>
+                    <p className="mt-1 font-mono text-[10.5px] text-faint">
+                      {t.timed ? '~1 h 58 min' : 'untimed · no essay · 54 questions'} · {measureOrder(t)}
+                    </p>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        ) : null,
+      )}
 
       {ready && taken.length > 1 && (
         <>

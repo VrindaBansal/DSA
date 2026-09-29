@@ -48,7 +48,7 @@ anchors, tested constantly):
     you redo misses, and every miss joins the spaced review queue. Review
     serves a fresh variant of the same problem so you can't just memorize
     the answer.
-  - **Five full-length practice tests** (`/course/gre/tests`) that run like the
+  - **Ten full-length practice tests** (`/course/gre/tests`). Tests 1–5 run like the
     real exam: the Issue essay (30 min, no spell-check), then two Verbal
     sections (12 questions/18 min, 15/23) and two Quant sections (12/21, 15/26)
     in the official layout. Inside a section you can go back, **mark**, and use
@@ -58,7 +58,9 @@ anchors, tested constantly):
     get. Results show **estimated 130–170 scores** (a ±3 band, since ETS
     doesn’t publish its conversion), time per section, breakdowns by question
     type and topic, an explanation for every question, a button that sends
-    misses to the review queue, and tutor feedback on the essay. The 420
+    misses to the review queue, and tutor feedback on the essay. Tests 6–10
+    are the same adaptive sections and scoring with **no clock** (a count-up
+    timer shows time spent; nothing ends on its own) and **no essay**. All 840
     questions are original, written to match real GRE formats, topic mix,
     difficulty, and traps. They include bar, line, and pie charts, data
     tables, geometry figures, and select-in-passage questions. The attempt is
@@ -113,6 +115,13 @@ declines unrelated requests and steers back), never sycophantic, and answer
 factual questions directly before elaborating. Threads persist through the
 same progress repository as everything else (`lib/progress/repo.ts`).
 
+Replies render as light markdown with **typeset math**: the prompt asks the
+model to write every expression in LaTeX — `\( … \)` inline, `\[ … \]` on its
+own line — and `components/tutor/Markdown.tsx` renders it with KaTeX (plus
+numbered and bulleted lists). `$ … $` works too, but a lone dollar amount
+("costs $12 and $15") stays plain text. Short-answer grading feedback uses
+the same renderer.
+
 ## Where things live
 
 ```
@@ -126,7 +135,7 @@ content/courses/<course>/cheatsheets.ts course-level cheatsheets (LLM)
 content/courses/<course>/tradeoffs.ts   course tradeoff tables
 content/courses/gre/bank/            GRE practice-bank generators (quant/, verbal/)
                                      + index.ts (sets, tiers, variants, lookup)
-content/courses/gre/tests/           the 5 full-length practice tests: pt<N>/
+content/courses/gre/tests/           the 10 full-length practice tests: pt<N>/
                                      verbal.ts + quant.ts, author.ts (builders,
                                      figures), scoring.ts (routing + estimates)
 components/tests/                    practice-test runner, calculator, results
@@ -204,7 +213,7 @@ npm run test:bank       # builds all 11,773 GRE bank questions and checks
                         # variants, and every hand-written GRE check.
                         # `node scripts/check-gre-bank.mjs --sample 10 tc-`
                         # prints random questions for a read-through
-npm run test:tests      # checks the 5 practice tests against the real test's
+npm run test:tests      # checks the 10 practice tests against the real test's
                         # blueprint (section sizes, minutes, question-type
                         # order), checks every question's structure, and
                         # checks that each keyed answer grades as correct

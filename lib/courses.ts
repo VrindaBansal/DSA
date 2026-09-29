@@ -62,9 +62,9 @@ export const COURSES: CourseMeta[] = [
   {
     id: 'gre',
     title: 'GRE prep',
-    tagline: 'Quant + Verbal + Writing, taught by worked example — then 11,000+ practice questions and 5 full-length practice tests.',
+    tagline: 'Quant + Verbal + Writing, taught by worked example — then 11,000+ practice questions and 10 full-length practice tests.',
     blurb:
-      'A complete, follow-along GRE course in two sections — Math and English — that you work through side by side. Every quant topic and every verbal question type is taught with worked examples you try first, checked with questions that explain every answer choice, and backed by a practice bank of 11,000+ questions organized into numbered sets that ramp from Foundation to Advanced, plus five full-length practice tests that run like the real exam — timed sections, adaptive second sections, and estimated scores.',
+      'A complete, follow-along GRE course in two sections — Math and English — that you work through side by side. Every quant topic and every verbal question type is taught with worked examples you try first, checked with questions that explain every answer choice, and backed by a practice bank of 11,000+ questions organized into numbered sets that ramp from Foundation to Advanced, plus ten full-length practice tests: five that run like the real exam — the essay, timed sections, adaptive second sections, and estimated scores — and five untimed ones without the essay.',
     outcome:
       'Finish it and you know exactly what the GRE tests and how it tests it, have a method for every question type, and have drilled each skill to the point where test day feels like one more practice set.',
     bank: true,
