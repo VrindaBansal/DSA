@@ -9,7 +9,8 @@ export const QUESTIONS: Question[] = [
     prompt: 'On the GRE, the Verbal and Quantitative sections are each reported on which scale?',
     options: ['0–6, in half-point steps', '130–170, in 1-point steps', '200–800, in 10-point steps', '1–36', '0–100 percent'],
     correctIndex: 1,
-    explanation: 'Verbal and Quant are each scored 130–170 in 1-point increments. Analytical Writing is the one scored 0–6 in half points.',
+    explanation:
+      '**Step 1:** Verbal and Quant each get a scaled score from **130 to 170**, in 1-point steps.\n**Step 2:** The 0–6 scale belongs to Analytical Writing — that’s the common mix-up.\n**Answer:** **130–170, in 1-point steps**.',
     distractorNotes: [
       'That is the Analytical Writing scale.',
       'Correct.',
@@ -32,7 +33,8 @@ export const QUESTIONS: Question[] = [
       'You should slow down and spend extra time on each question to make up for it.',
     ],
     correctIndex: 1,
-    explanation: 'The GRE adapts by section: your first-section performance picks the difficulty of the second. A harder second section usually means the first went well — and it is where high scores come from.',
+    explanation:
+      '**Step 1:** The GRE adapts by section, not question by question.\n**Step 2:** Your first Quant section decides whether the second is easier or harder.\n**Step 3:** So a harder second section usually means the first went well — and it’s where high scores come from.\n**Answer:** you probably did well on the first section.',
     distractorNotes: [
       'The GRE does not adapt question by question.',
       'Correct.',
@@ -49,7 +51,8 @@ export const QUESTIONS: Question[] = [
     prompt: 'Which of the following question types appear in the Verbal Reasoning sections?\n\nIndicate all that apply.',
     options: ['Text completion', 'Quantitative comparison', 'Sentence equivalence', 'Reading comprehension', 'Numeric entry'],
     correctIndices: [0, 2, 3],
-    explanation: 'Verbal has three types: text completion, sentence equivalence, and reading comprehension (which includes short argument paragraphs). Quantitative comparison and numeric entry are Quant types.',
+    explanation:
+      '**Step 1:** Verbal has three question types: text completion, sentence equivalence, and reading comprehension (which includes short argument paragraphs).\n**Step 2:** Quantitative comparison and numeric entry belong to Quant.\n**Answer:** **text completion, sentence equivalence, reading comprehension**.',
     distractorNotes: ['✓ Verbal.', '✗ Quant.', '✓ Verbal.', '✓ Verbal.', '✗ Quant.'],
   },
   {
@@ -66,7 +69,8 @@ export const QUESTIONS: Question[] = [
       'Answer only the ones you are at least 50% sure about.',
     ],
     correctIndex: 1,
-    explanation: 'There is no penalty for wrong answers, so a blank is always worse than a guess. Lock in guesses first, then use the leftover seconds to try to improve one of them.',
+    explanation:
+      '**Step 1:** There is no penalty for wrong answers, so a blank is always worse than a guess.\n**Step 2:** Lock in a guess on all four first — that takes seconds.\n**Step 3:** Then use whatever time is left to try to improve one of them.\n**Answer:** **guess on all four, then work on the fastest one**.',
     distractorNotes: [
       'Wrong answers cost nothing on the GRE — blanks just throw away chances.',
       'Correct.',
@@ -84,6 +88,7 @@ export const QUESTIONS: Question[] = [
     answer: 13 / 9,
     answerDisplay: '1.4',
     roundTo: 0.1,
-    explanation: '26 − 13 = 13 minutes remain for 15 − 6 = 9 questions: 13 ÷ 9 ≈ 1.4 minutes each — a bit below the 1.75-minute average, so it is time to speed up or skip a hard one.',
+    explanation:
+      '**Step 1:** Time left: 26 − 13 = 13 minutes.\n**Step 2:** Questions left: 15 − 6 = 9.\n**Step 3:** 13 ÷ 9 ≈ **1.4** minutes each — below the 1.75-minute average, so it’s time to speed up or skip a hard one.',
   },
 ];

@@ -34,11 +34,17 @@ anchors, tested constantly):
   lesson, and the **study plan** (pinned on the dashboard) schedules both every
   week. Sections are generic: a course lists `sections` in `lib/courses.ts`
   and each module names its `section` in `lib/modules.ts`. Every lesson
-  follows the same loop: intuition → concept → worked **examples** → "try it
-  first" **solutions** → checks with per-choice feedback → a named trap → a
-  cheatsheet. 104 hand-written checks use the real GRE formats (5-choice,
-  quantitative comparison, numeric entry, select-all, 2–3 blank text
-  completion, sentence equivalence). The vocabulary is taught as **word
+  teaches one idea at a time: a plain-language explanation → a worked
+  **example** with every step shown ("try it first", then reveal the
+  **solution**) → one or two GRE-style **practice checks** on that idea, each
+  with a step-by-step explanation and a note on every answer choice → a named
+  trap → a recap table and cheatsheet. 261 hand-written checks use the real
+  GRE formats (5-choice, quantitative comparison, numeric entry, select-all,
+  2–3 blank text completion, sentence equivalence, reading passages). Lesson
+  formulas are typeset with KaTeX (`remark-math` + `rehype-katex`; only `$$ … $$`
+  counts as math, so dollar amounts stay text), geometry lessons carry inline
+  SVG figures, and `<DataChart c={…} />` draws a bar, line, or pie chart with
+  the same renderer as the questions. The vocabulary is taught as **word
   families** (184 families, 764 words), not a flat list.
   - **Practice bank** (`/course/gre/bank`) — **11,773 questions** (6,750 Quant ·
     5,023 Verbal) in 589 numbered sets of ~20, tiered Foundation → Core →

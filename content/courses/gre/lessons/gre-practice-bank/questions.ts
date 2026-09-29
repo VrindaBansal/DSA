@@ -9,7 +9,8 @@ export const QUESTIONS: Question[] = [
     prompt: 'You want to practice pacing under real test conditions. Which practice-bank mode fits best?',
     options: ['A topic drill', 'A numbered set in timed mode', 'The mistakes list', 'The vocabulary drills', 'A numbered set in practice mode'],
     correctIndex: 1,
-    explanation: 'Timed mode runs a set at real GRE pace and withholds feedback until the end, like the test.',
+    explanation:
+      '**Step 1:** Pacing practice needs a real clock and no feedback until the end — just like the test.\n**Step 2:** Timed mode does exactly that; practice mode and drills show feedback after each question.\n**Answer:** **a numbered set in timed mode**.',
     distractorNotes: [
       'Drills target one skill, untimed.',
       'Correct.',
@@ -32,7 +33,8 @@ export const QUESTIONS: Question[] = [
       'Stop practicing quant',
     ],
     correctIndex: 1,
-    explanation: 'A weak topic inside a good overall score is exactly what topic drills are for. If the drill confirms the gap, the lesson fixes the method.',
+    explanation:
+      '**Step 1:** A good overall score can hide one weak topic — here, work rates at 1/4.\n**Step 2:** A topic drill gives you ten fresh questions on exactly that skill.\n**Step 3:** If the drill goes badly too, the gap is the method — reread the lesson.\n**Answer:** **a work-rates drill, then the lesson if needed**.',
     distractorNotes: [
       'The weak topic will cost points on test day.',
       'Correct.',
@@ -57,7 +59,7 @@ export const QUESTIONS: Question[] = [
     ],
     correctIndex: 1,
     explanation:
-      'The first section decides which second section you get, and the easier second section caps your score well below the top of the scale. Getting one more first-section question right would have routed you to the harder section. So the first section of each measure deserves your sharpest focus.',
+      '**Step 1:** The first section decides which second section you get — 7 or more right routes you to the harder one.\n**Step 2:** With 6 right, you got the easier second section, which caps your score well below the top of the scale, however well you do on it.\n**Step 3:** One more first-section question would have changed your route.\n**Answer:** **the first section cost you the most** — give it your sharpest focus.',
     distractorNotes: [
       'Acing an easier section can’t lift you to the top of the scale — that’s the whole point of routing.',
       'Correct.',

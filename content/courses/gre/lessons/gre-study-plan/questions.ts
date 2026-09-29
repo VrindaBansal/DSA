@@ -15,7 +15,8 @@ export const QUESTIONS: Question[] = [
       'In the next numbered set, unchanged',
     ],
     correctIndex: 1,
-    explanation: 'Every missed bank question enters the review queue (and the bank’s Mistakes tab). It comes back after a day, then at growing intervals as you get it right — for quant, usually as a fresh variant.',
+    explanation:
+      '**Step 1:** Every missed bank question goes into your review queue automatically (and into the bank’s Mistakes tab).\n**Step 2:** It comes back after a day, then at growing intervals as you get it right — for quant, usually as a fresh variant with new numbers.\n**Answer:** **in your review queue, starting tomorrow**.',
     distractorNotes: [
       'Misses are recorded and scheduled for review.',
       'Correct.',
@@ -38,7 +39,8 @@ export const QUESTIONS: Question[] = [
       'Move on to geometry, since percents are a small topic',
     ],
     correctIndex: 1,
-    explanation: 'The trap has a name (adding percents instead of multiplying factors), so this is a method problem. Fix the method with the lesson, then drill that exact topic until it is automatic.',
+    explanation:
+      '**Step 1 — Diagnose:** the same trap every time (adding percents instead of multiplying the factors) means it’s a **method** problem, not bad luck.\n**Step 2 — Fix the method:** reread the lesson section that teaches successive changes.\n**Step 3 — Make it automatic:** drill that exact topic until you stop falling for the trap.\n**Answer:** **reread the section, then do a topic drill**.',
     distractorNotes: [
       'Mixed sets have only a question or two of this type — too slow to fix a method gap.',
       'Correct.',
@@ -61,7 +63,8 @@ export const QUESTIONS: Question[] = [
       'Only study vocabulary',
     ],
     correctIndex: 1,
-    explanation: 'Week 4 ends with your first timed sets. From then on, timed practice teaches the pacing that untimed practice cannot.',
+    explanation:
+      '**Step 1:** Weeks 1–3 build methods with untimed practice.\n**Step 2:** Week 4 adds your first **timed** set in each track, because only timed practice teaches pacing.\n**Answer:** **start doing at least one timed set**.',
     distractorNotes: [
       'Both tracks continue throughout.',
       'Correct.',
