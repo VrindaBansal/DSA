@@ -29,6 +29,8 @@ export interface ModuleMeta {
   blurb: string;
   /** Real-world anchors this module leans on (spec §6). */
   anchors: string[];
+  /** Section id within the course (see CourseMeta.sections), e.g. 'math'. */
+  section?: string;
 }
 
 // --- Question model (spec §5.2) --------------------------------------------

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { OPENAI_MODEL, OPENAI_API_URL } from '@/lib/config';
 import { rateLimited } from '@/lib/rate-guard';
 import { getAllLessons } from '@/lib/content';
-import { MODULES } from '@/lib/modules';
+import { moduleLabel, getModulesForCourse } from '@/lib/modules';
 import { COURSES } from '@/lib/courses';
 
 // The AI tutor (spec §8, extended with a course-wide "General" mode). The
@@ -73,13 +73,13 @@ ${
 function curriculumManifest(): string {
   const lessons = getAllLessons();
   return COURSES.map((course) => {
-    const mods = MODULES.filter((m) => m.courseId === course.id)
+    const mods = getModulesForCourse(course.id)
       .map((m) => {
         const ls = lessons.filter((l) => l.meta.module === m.slug);
         const lessonLines = ls
           .map((l) => `    - ${l.meta.title} (id: ${l.meta.id}): ${l.meta.objectives[0] ?? ''}`)
           .join('\n');
-        return `  ${m.number}. ${m.title} — ${m.blurb}\n${lessonLines}`;
+        return `  ${moduleLabel(m)}. ${m.title} — ${m.blurb}\n${lessonLines}`;
       })
       .join('\n');
     return `### COURSE: ${course.title} (id: ${course.id})\n${mods}`;

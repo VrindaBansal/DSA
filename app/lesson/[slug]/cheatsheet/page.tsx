@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getAllLessons, getLesson } from '@/lib/content';
-import { getModule } from '@/lib/modules';
+import { getModule, moduleLabel } from '@/lib/modules';
 import { CheatsheetBody, MyNotes } from '@/components/blocks/Cheatsheet';
 import { CHEATSHEET_BY_LESSON } from '@/content/cheatsheets';
 import { PrintButton } from '@/components/chrome/PrintButton';
@@ -38,7 +38,7 @@ export default async function CheatsheetPage({
       <div className="print-sheet rounded-md border-[1.5px] border-ink bg-panel p-7">
         <div className="mb-1 font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
           Invariant · cheatsheet
-          {mod ? ` · module ${String(mod.number).padStart(2, '0')}` : ''}
+          {mod ? ` · ${moduleLabel(mod).toLowerCase()}` : ''}
         </div>
         <h1 className="mb-6 font-display text-[1.7rem] font-bold tracking-tight">
           {lesson.meta.title}
