@@ -557,6 +557,8 @@ const expSolve: Generator = {
     if (m === nn || (nn * b - m * a) % (m - nn) !== 0) return null;
     const x = (nn * b - m * a) / (m - nn);
     const sh = (c: number) => (c ? (c > 0 ? ` + ${c}` : ` − ${-c}`) : '');
+    // the new exponent: m(x + a), or just mx when there's nothing to add
+    const times = (k: number, c: number) => (c ? `${k}(x${sh(c)})` : `${k}x`);
     const q = mc(r, {
       prompt: `If ${C1}^(x${sh(a)}) = ${C2}^(x${sh(b)}), what is the value of x?`,
       correct: n(x, `Convert both sides to base ${p}, then set exponents equal.`),
@@ -568,7 +570,7 @@ const expSolve: Generator = {
         n(2 * x + 1, 'Distributed the outer exponent to only one term.'),
         n(x + 3, 'Arithmetic slip.'),
       ],
-      explanation: `${C1} = ${p}${sup(m)} and ${C2} = ${p}${sup(nn)}.\nLeft: ${p}^(${m}(x${sh(a)})); right: ${p}^(${nn}(x${sh(b)})).\nSet exponents equal: ${m}x${sh(m * a)} = ${nn}x${sh(nn * b)} → ${m - nn}x = ${nn * b - m * a} → x = **${fmt(x)}**.`,
+      explanation: `${C1} = ${p}${sup(m)} and ${C2} = ${p}${sup(nn)}.\nLeft: ${p}^(${times(m, a)}); right: ${p}^(${times(nn, b)}).\nSet exponents equal: ${m}x${sh(m * a)} = ${nn}x${sh(nn * b)} → ${m - nn}x = ${nn * b - m * a} → x = **${fmt(x)}**.`,
       difficulty: 2,
     });
     return q && { key: `b:${C1}:${C2}:${a}:${b}`, q };

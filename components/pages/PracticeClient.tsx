@@ -6,6 +6,7 @@ import type { LessonMeta, Question } from '@/lib/types';
 import { ALL_QUESTIONS } from '@/content/questions';
 import { useProgress } from '@/lib/progress/provider';
 import { QuestionCard } from '@/components/quiz/QuestionCard';
+import { RichText } from '@/components/quiz/RichText';
 import { getModule } from '@/lib/modules';
 import { COURSES } from '@/lib/courses';
 
@@ -203,7 +204,7 @@ export function PracticeClient({
                   .filter((r) => !r.correct)
                   .map(({ q }) => (
                     <li key={q.id} className="text-[13.5px]">
-                      <span className="text-alert">✗</span> {q.prompt}{' '}
+                      <span className="text-alert">✗</span> <RichText text={q.prompt} />{' '}
                       <Link
                         href={`/lesson/${q.lessonId}`}
                         className="font-mono text-[11px] text-active hover:underline"

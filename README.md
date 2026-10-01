@@ -42,7 +42,10 @@ anchors, tested constantly):
   GRE formats (5-choice, quantitative comparison, numeric entry, select-all,
   2–3 blank text completion, sentence equivalence, reading passages). Lesson
   formulas are typeset with KaTeX (`remark-math` + `rehype-katex`; only `$$ … $$`
-  counts as math, so dollar amounts stay text), geometry lessons carry inline
+  counts as math, so dollar amounts stay text). Exponents typed with a caret
+  (`9^(x + 1)`, `2^x`) are drawn as real raised powers everywhere: in lesson
+  prose (`remarkPowers`) and in every question, option, and explanation
+  (`RichText`), both built on `lib/powers.ts`. Geometry lessons carry inline
   SVG figures, and `<DataChart c={…} />` draws a bar, line, or pie chart with
   the same renderer as the questions. The vocabulary is taught as **word
   families** (184 families, 764 words), not a flat list.

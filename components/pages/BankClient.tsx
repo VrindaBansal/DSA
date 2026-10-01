@@ -6,6 +6,7 @@ import type { LessonMeta } from '@/lib/types';
 import { useProgress } from '@/lib/progress/provider';
 import { QuestionCard } from '@/components/quiz/QuestionCard';
 import { AnswerReview } from '@/components/quiz/AnswerReview';
+import { Powers } from '@/components/quiz/RichText';
 import {
   BANK_TOTAL,
   PACE_MIN,
@@ -750,7 +751,7 @@ function Results({
                 >
                   <span className="font-mono text-[11px] text-alert">{answers[q.id] ? '✗' : '—'}</span>
                   <span className="flex-1 truncate text-[13.5px]">
-                    {i + 1}. {q.prompt.replace(/\*\*/g, '').split('\n')[0]}
+                    {i + 1}. <Powers text={q.prompt.replace(/\*\*/g, '').split('\n')[0]} />
                   </span>
                   <span className="font-mono text-[11px] text-muted">{open === q.id ? '−' : '+'}</span>
                 </button>
