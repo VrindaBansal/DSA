@@ -221,6 +221,24 @@ section('vocab flashcards');
     if (/\b[Aa] \*\*[aeio]/.test(c.ex) || /\b[Aa]n \*\*[^aeiouAEIOU]/.test(c.ex)) fail(`${where}: a/an mismatch → ${c.ex}`);
     if (BAD_TEXT.test(c.ex) || BAD_TEXT.test(c.def)) fail(`${where}: broken text`);
   }
+  // word roots: every card has a breakdown whose parts spell the word, or an origin story
+  const rootsMod = await import(pathToFileURL(path.join(root, 'content/courses/gre/roots/index.ts')).href);
+  let stories = 0;
+  for (const c of cards) {
+    const rt = c.rt;
+    if (!rt) fail(`flashcard ${c.w}: no word-root breakdown`);
+    else if (rt.story !== undefined) {
+      stories++;
+      if (rt.story.length < 20) fail(`flashcard ${c.w}: origin story too short`);
+    } else {
+      if (!rt.parts?.length || !rootsMod.spellsWord(c.w, rt.parts)) fail(`flashcard ${c.w}: root parts don't spell the word`);
+      if (!rt.sense) fail(`flashcard ${c.w}: roots with no "adds up to" sense`);
+      for (const p of rt.parts) if (p.kind === 'prefix' && !p.meaning) fail(`flashcard ${c.w}: prefix ${p.text} has no meaning`);
+    }
+  }
+  for (const w of Object.keys(rootsMod.ROOTS)) if (!words.has(w)) fail(`roots: "${w}" is not a word in the deck`);
+  console.log(`  roots: ${cards.length - stories} breakdowns that spell their words, ${stories} origin stories`);
+
   // scheduling: the Leitner boxes behave as the page promises
   const t0 = Date.UTC(2026, 0, 5, 12);
   let p = fcLib.gradeCard(undefined, true, t0);

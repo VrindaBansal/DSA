@@ -6,6 +6,7 @@
 // opposite family.
 
 import { CLUSTERS, type Pos } from './bank/verbal/clusters.ts';
+import { ROOTS, type WordRoots } from './roots/index.ts';
 
 export interface FlashFamily {
   id: string;
@@ -26,6 +27,8 @@ export interface FlashCard {
   fam: string;
   /** Example sentence: the word as **word**, the context clue as [clue]. */
   ex: string;
+  /** Word-root breakdown, or an origin story for words without useful roots. */
+  rt?: WordRoots;
 }
 
 const tidy = (g: string) => g.replace(/\s*\((mass|plural|singular)\)/g, '');
@@ -55,6 +58,7 @@ export function buildDeck(): { cards: FlashCard[]; families: FlashFamily[] } {
       fam: c.id,
       // a different sentence for each word in the family, where there are enough
       ex: fillExample(c.frames[i % c.frames.length], x.w),
+      ...(ROOTS[x.w] ? { rt: ROOTS[x.w] } : {}),
     })),
   );
   return { cards, families };

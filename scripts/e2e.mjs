@@ -742,6 +742,10 @@ section('GRE vocab flashcards');
   if ((await count.textContent())?.trim() === '1 / 10') pass('a mini set deals 10 cards');
   else fail(`mini set count: ${await count.textContent()}`);
   await page.keyboard.press(' ');
+  await page.waitForTimeout(600);
+  const rootsText = (await page.locator('.fc-back [data-testid="roots"]').first().innerText()).toLowerCase();
+  if (rootsText.includes('word roots') || rootsText.includes('word origin')) pass('the back of a card shows its word-root breakdown (or origin story)');
+  else fail(`card back roots: ${rootsText.slice(0, 80)}`);
   await page.getByRole('button', { name: /Got it/ }).click();
   await page.waitForTimeout(450);
   await page.keyboard.press(' ');
@@ -814,7 +818,7 @@ section('GRE vocab flashcards');
   // master set: every word, in a fresh order each session
   const firstCard = async () => {
     await page.locator('[data-deck="master"]').click();
-    const t = (await page.locator('.fc-face').first().innerText()).split('\n').slice(0, 2).join(' ');
+    const t = await page.getByTestId('fc-word').first().innerText();
     const n = await count.textContent();
     await page.keyboard.press('Escape');
     return { t, n };

@@ -48,8 +48,13 @@ anchors, tested constantly):
   families** (184 families, 764 words), not a flat list.
   - **Vocab flashcards** (`/course/gre/flashcards`) — one card per word (764),
     built from the same families (`content/courses/gre/flashcards.ts`). The
-    back of each card shows the definition, an example sentence with the
-    context clue underlined, the rest of the family, and the opposite family.
+    back of each card shows the definition, a **word-root breakdown** (each
+    prefix, root, and suffix with its meaning, and what they add up to — or,
+    for the 65 words without useful roots, where the word comes from), an
+    example sentence with the context clue underlined, the rest of the family,
+    and the opposite family. The front can show the roots as a hint (h)
+    before you flip. The breakdowns are hand-written in
+    `content/courses/gre/roots/` and checked to spell their words.
     Three ways to play: **flip cards** (3D flip, swipe or ←/→ to grade, undo),
     **match** (6 words to 6 meanings against the clock, +2s per miss), and a
     60-second **speed round** (one choice is usually the opposite family).
