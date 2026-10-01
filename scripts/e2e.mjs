@@ -77,6 +77,10 @@ const routes = [
       .filter((d) => d.isDirectory() && /^pt\d+$/.test(d.name))
       .map((d) => `/course/${m[1]}/tests/pt-${d.name.slice(2)}`),
   ]),
+  // courses with vocab flashcards (`flashcards: true`)
+  ...[
+    ...fs.readFileSync(path.join(root, 'lib', 'courses.ts'), 'utf8').matchAll(/id: '([^']+)',[^}]*?flashcards: true/gs),
+  ].map((m) => `/course/${m[1]}/flashcards`),
 ];
 
 // --- boot server -------------------------------------------------------------
@@ -719,6 +723,93 @@ section('GRE full-length practice test');
   }, ut.id);
   if (utState.attempts === 1 && !utState.essay) pass('untimed attempt saved without an essay');
   else fail(`untimed attempt state: ${JSON.stringify(utState)}`);
+}
+
+section('GRE vocab flashcards');
+{
+  await page.goto(`${BASE}/course/gre/flashcards`, { waitUntil: 'networkidle' });
+  if ((await page.locator('text=All 764 words').count()) > 0) pass('flashcards page lists the whole core list');
+  else fail('flashcards page header missing its word count');
+
+  // flip: today's review — flip, grade one right and one wrong, undo, then check what was saved
+  await page.locator('[data-deck="today"]').click();
+  const count = page.getByTestId('fc-count');
+  if ((await count.textContent())?.trim() === '1 / 20') pass("today's review deals 20 cards");
+  else fail(`today's review count: ${await count.textContent()}`);
+  await page.keyboard.press(' ');
+  await page.getByRole('button', { name: /Got it/ }).click();
+  await page.waitForTimeout(450);
+  await page.keyboard.press(' ');
+  await page.getByRole('button', { name: /Still learning/ }).click();
+  await page.waitForTimeout(450);
+  await page.keyboard.press(' ');
+  await page.keyboard.press('ArrowRight');
+  await page.waitForTimeout(450);
+  await page.getByRole('button', { name: /undo/ }).click();
+  // progress saves are debounced (400ms) — wait for the undo to reach storage
+  await page
+    .waitForFunction(
+      () => Object.keys(JSON.parse(localStorage.getItem('invariant.progress.v1') ?? '{}').flashcards?.cards ?? {}).length === 2,
+      null,
+      { timeout: 4000 },
+    )
+    .catch(() => {});
+  const fcState = await page.evaluate(() => {
+    const s = JSON.parse(localStorage.getItem('invariant.progress.v1') ?? '{}');
+    const cards = Object.values(s.flashcards?.cards ?? {});
+    return { n: cards.length, boxes: cards.map((c) => c.box).sort().join(','), days: s.flashcards?.days?.length ?? 0 };
+  });
+  if (fcState.n === 2 && fcState.boxes === '1,2' && fcState.days === 1)
+    pass('flip grades save Leitner boxes (got it → box 2, miss → box 1), undo reverts, streak day recorded');
+  else fail(`flashcard progress after grading: ${JSON.stringify(fcState)}`);
+
+  // swipe right on a flipped card grades it as known (undo left the card face up)
+  await page.waitForTimeout(600);
+  const before = await count.textContent();
+  const box = await page.locator('.fc-swipe').boundingBox();
+  await page.mouse.move(box.x + box.width / 2, box.y + 120);
+  await page.mouse.down();
+  for (let i = 1; i <= 10; i++) await page.mouse.move(box.x + box.width / 2 + i * 16, box.y + 120);
+  await page.mouse.up();
+  await page.waitForTimeout(500);
+  if ((await count.textContent()) !== before) pass('swiping a flipped card right grades it and deals the next');
+  else fail('swipe did not advance the card');
+  await page.keyboard.press('Escape');
+
+  // match game: one wrong pair (shake + penalty), then solve the board
+  await page.getByRole('radio', { name: /Match/ }).click();
+  await page.locator('[data-deck="shuffle"]').click();
+  const pairs = await page.locator('[data-side="word"]').evaluateAll((els) => els.map((e) => e.getAttribute('data-pair')));
+  if (pairs.length === 6 && (await page.locator('[data-side="def"]').count()) === 6) pass('match deals 6 words and 6 meanings');
+  else fail(`match board: ${pairs.length} words`);
+  await page.locator(`[data-side="word"][data-pair="${pairs[0]}"]`).click();
+  await page.locator(`[data-side="def"][data-pair="${pairs[1]}"]`).click();
+  for (const w of pairs) {
+    await page.locator(`[data-side="word"][data-pair="${w}"]`).click();
+    await page.locator(`[data-side="def"][data-pair="${w}"]`).click();
+  }
+  await page
+    .waitForFunction(() => JSON.parse(localStorage.getItem('invariant.progress.v1') ?? '{}').flashcards?.matchBestMs !== undefined, null, {
+      timeout: 4000,
+    })
+    .catch(() => {});
+  const best = await page.evaluate(() => JSON.parse(localStorage.getItem('invariant.progress.v1') ?? '{}').flashcards?.matchBestMs);
+  if ((await page.locator('text=all 6 matched').count()) > 0 && best >= 2000)
+    pass('match finishes, counts the 2s miss penalty, and saves a best time');
+  else fail(`match did not finish cleanly (best ${best})`);
+  await page.getByRole('button', { name: 'Back to decks' }).click();
+
+  // speed round: countdown, a right answer scores
+  await page.getByRole('radio', { name: /Speed round/ }).click();
+  await page.locator('[data-deck="shuffle"]').click();
+  await page.getByRole('button', { name: 'Start →' }).click();
+  await page.locator('[data-correct="true"]').waitFor({ timeout: 5000 });
+  await page.locator('[data-correct="true"]').click();
+  await page.waitForTimeout(200);
+  if ((await page.getByTestId('speed-live').textContent())?.trim() === '1') pass('speed round scores a right answer');
+  else fail('speed round did not score');
+  await page.keyboard.press('Escape');
+  await page.getByRole('radio', { name: /Flip cards/ }).click();
 }
 
 section('print stylesheet on cheatsheet route');

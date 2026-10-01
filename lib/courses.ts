@@ -25,6 +25,8 @@ export interface CourseMeta {
   bank?: boolean;
   /** Has full-length practice tests at /course/<id>/tests. */
   tests?: boolean;
+  /** Has vocab flashcards at /course/<id>/flashcards. */
+  flashcards?: boolean;
   /** Lesson that lays out the week-by-week plan, linked from the dashboard. */
   planLessonId?: string;
   /** Group modules into sections, in dashboard order. Modules name their section. */
@@ -64,11 +66,12 @@ export const COURSES: CourseMeta[] = [
     title: 'GRE prep',
     tagline: 'Quant + Verbal + Writing, taught by worked example — then 11,000+ practice questions and 10 full-length practice tests.',
     blurb:
-      'A complete, follow-along GRE course in two sections — Math and English — that you work through side by side. Every quant topic and every verbal question type is taught with worked examples you try first, checked with questions that explain every answer choice, and backed by a practice bank of 11,000+ questions organized into numbered sets that ramp from Foundation to Advanced, plus ten full-length practice tests: five that run like the real exam — the essay, timed sections, adaptive second sections, and estimated scores — and five untimed ones without the essay.',
+      'A complete, follow-along GRE course in two sections — Math and English — that you work through side by side. Every quant topic and every verbal question type is taught with worked examples you try first, checked with questions that explain every answer choice, and backed by a practice bank of 11,000+ questions organized into numbered sets that ramp from Foundation to Advanced, plus ten full-length practice tests: five that run like the real exam — the essay, timed sections, adaptive second sections, and estimated scores — and five untimed ones without the essay. Vocab flashcards — flip cards, a match game, and speed rounds — cover all 764 words of the core list.',
     outcome:
       'Finish it and you know exactly what the GRE tests and how it tests it, have a method for every question type, and have drilled each skill to the point where test day feels like one more practice set.',
     bank: true,
     tests: true,
+    flashcards: true,
     planLessonId: 'gre-study-plan',
     sections: [
       { id: 'start', title: 'Getting started' },

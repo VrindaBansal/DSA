@@ -86,8 +86,12 @@ export function DashboardClient({
         </div>
       </div>
 
-      {(course.bank || course.planLessonId || course.tests) && (
-        <div className={`mb-6 grid gap-4 sm:grid-cols-2 ${course.tests ? 'lg:grid-cols-3' : ''}`}>
+      {(course.bank || course.planLessonId || course.tests || course.flashcards) && (
+        <div
+          className={`mb-6 grid gap-4 sm:grid-cols-2 ${
+            [course.planLessonId, course.bank, course.tests, course.flashcards].filter(Boolean).length === 3 ? 'lg:grid-cols-3' : ''
+          }`}
+        >
           {course.planLessonId && (
             <Link
               href={`/lesson/${course.planLessonId}`}
@@ -135,6 +139,27 @@ export function DashboardClient({
                       return `${Object.values(state.tests).filter((h) => h.length).length} of 10 taken · latest V ${last.verbal.scaled} · Q ${last.quant.scaled}`;
                     })()
                   : '5 timed with essay · 5 untimed, no essay · estimated scores'}
+              </p>
+            </Link>
+          )}
+          {course.flashcards && (
+            <Link
+              href={`/course/${course.id}/flashcards`}
+              className="group rounded-md border-[1.5px] border-ink bg-panel p-5 transition-colors hover:bg-active-wash/30"
+            >
+              <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">Vocab flashcards</div>
+              <div className="mt-1 font-display text-[17px] font-semibold group-hover:text-active-deep">
+                764 words — flip, match & speed rounds →
+              </div>
+              <p className="mt-1 text-[13px] text-muted">
+                {ready && Object.keys(state.flashcards?.cards ?? {}).length
+                  ? (() => {
+                      const ps = Object.values(state.flashcards.cards);
+                      const mastered = ps.filter((x) => x.box >= 4).length;
+                      const due = ps.filter((x) => x.due <= Date.now()).length;
+                      return `${ps.length} studied · ${mastered} mastered · ${due} due now`;
+                    })()
+                  : 'every word in its family, with an example sentence and its opposite'}
               </p>
             </Link>
           )}
