@@ -250,3 +250,81 @@ body {
 .md .katex-display {
   margin: 0.35em 0;
 }
+
+/* ------------------------------------------------------------------ */
+/* Vocab flashcards — 3D flip, swipe, and the little game animations.  */
+/* ------------------------------------------------------------------ */
+
+.fc-scene {
+  perspective: 1400px;
+}
+
+/* Both faces share one grid cell, so the card is as tall as its taller face. */
+.fc-card {
+  display: grid;
+  transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.fc-card.is-flipped {
+  transform: rotateY(180deg);
+}
+.fc-face {
+  grid-area: 1 / 1;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.fc-back {
+  transform: rotateY(180deg);
+}
+
+/* The swipe wrapper: follows the finger, then flies off. */
+.fc-swipe {
+  touch-action: pan-y;
+  transition: transform 0.28s ease-out, opacity 0.28s ease-out;
+}
+.fc-swipe.is-dragging {
+  transition: none;
+}
+
+@keyframes fc-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+.fc-shake {
+  animation: fc-shake 0.4s ease-in-out;
+}
+
+@keyframes fc-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+.fc-pop {
+  animation: fc-pop 0.35s ease-out;
+}
+
+@keyframes fc-deal {
+  from { transform: translateY(14px) scale(0.97); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+.fc-deal {
+  animation: fc-deal 0.3s ease-out;
+}
+
+@keyframes fc-confetti {
+  0% { transform: translate3d(0, -10vh, 0) rotate(0deg); opacity: 1; }
+  100% { transform: translate3d(var(--fc-drift, 0px), 105vh, 0) rotate(var(--fc-spin, 540deg)); opacity: 0.9; }
+}
+.fc-confetti {
+  position: fixed;
+  top: 0;
+  z-index: 60;
+  width: 9px;
+  height: 14px;
+  border-radius: 2px;
+  pointer-events: none;
+  animation: fc-confetti var(--fc-dur, 2.4s) cubic-bezier(0.25, 0.6, 0.4, 1) forwards;
+}

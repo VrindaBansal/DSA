@@ -3,6 +3,8 @@
 // repository interface (§11).
 // ---------------------------------------------------------------------------
 
+import { emptyFlashcardState, type FlashcardState } from './flashcards';
+
 export type Difficulty = 1 | 2 | 3;
 
 export interface LessonMeta {
@@ -321,6 +323,8 @@ export interface AppState {
   bank: BankProgress;
   /** Full-length practice tests: test id → finished attempts, oldest first. */
   tests: Record<string, PracticeTestResult[]>;
+  /** GRE vocab flashcards: per-word Leitner boxes, study days, game bests. */
+  flashcards: FlashcardState;
 }
 
 export const emptyLessonProgress = (lessonId: string): LessonProgress => ({
@@ -338,4 +342,5 @@ export const emptyAppState = (): AppState => ({
   generalChat: [],
   bank: { answers: {}, sets: {} },
   tests: {},
+  flashcards: emptyFlashcardState(),
 });

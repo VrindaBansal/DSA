@@ -21,6 +21,7 @@ import type {
 import { emptyAppState, emptyLessonProgress } from '../types';
 import { createRepo, type ProgressRepo } from './repo';
 import { applyAnswer, enterQueue, dueItems } from '../review';
+import { emptyFlashcardState, gradeCard, markDay, type CardProgress, type FlashcardState } from '../flashcards';
 
 interface ProgressApi {
   state: AppState;
@@ -51,6 +52,12 @@ interface ProgressApi {
   recordPracticeTest: (result: PracticeTestResult) => void;
   /** Put questions into the review queue as misses (due tomorrow). */
   queueForReview: (items: { id: string; lessonId: string }[]) => void;
+  /** Vocab flashcards: "got it" (knew) or "still learning" for one word. */
+  gradeFlashcard: (word: string, knew: boolean) => void;
+  /** Put a word's flashcard progress back to an earlier value (undo). */
+  setFlashcard: (word: string, progress: CardProgress | undefined) => void;
+  /** A finished flashcard game: match time in ms (lower is better) or speed-round score (higher is better). */
+  recordFlashGame: (game: 'match' | 'speed', score: number) => void;
   appendChat: (lessonId: string, msg: ChatMessage) => void;
   clearChat: (lessonId: string) => void;
   appendGeneralChat: (msg: ChatMessage) => void;
@@ -321,6 +328,43 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  const updateFlashcards = useCallback((fn: (fc: FlashcardState) => FlashcardState) => {
+    setState((s) => ({ ...s, flashcards: fn({ ...emptyFlashcardState(), ...s.flashcards }) }));
+  }, []);
+
+  const gradeFlashcard = useCallback(
+    (word: string, knew: boolean) =>
+      updateFlashcards((fc) => ({
+        ...fc,
+        cards: { ...fc.cards, [word]: gradeCard(fc.cards[word], knew) },
+        days: markDay(fc.days),
+      })),
+    [updateFlashcards],
+  );
+
+  const setFlashcard = useCallback(
+    (word: string, progress: CardProgress | undefined) =>
+      updateFlashcards((fc) => {
+        const cards = { ...fc.cards };
+        if (progress) cards[word] = progress;
+        else delete cards[word];
+        return { ...fc, cards };
+      }),
+    [updateFlashcards],
+  );
+
+  const recordFlashGame = useCallback(
+    (game: 'match' | 'speed', score: number) =>
+      updateFlashcards((fc) => ({
+        ...fc,
+        days: markDay(fc.days),
+        ...(game === 'match'
+          ? { matchBestMs: fc.matchBestMs === undefined ? score : Math.min(fc.matchBestMs, score) }
+          : { speedBest: Math.max(fc.speedBest ?? 0, score) }),
+      })),
+    [updateFlashcards],
+  );
+
   const appendChat = useCallback(
     (lessonId: string, msg: ChatMessage) => {
       updateLesson(lessonId, (lp) => ({ ...lp, chat: [...lp.chat, msg] }));
@@ -379,6 +423,9 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
       recordBankSet,
       recordPracticeTest,
       queueForReview,
+      gradeFlashcard,
+      setFlashcard,
+      recordFlashGame,
       appendChat,
       clearChat,
       appendGeneralChat,
@@ -403,6 +450,9 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
       recordBankSet,
       recordPracticeTest,
       queueForReview,
+      gradeFlashcard,
+      setFlashcard,
+      recordFlashGame,
       appendChat,
       clearChat,
       appendGeneralChat,

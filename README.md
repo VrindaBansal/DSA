@@ -46,6 +46,19 @@ anchors, tested constantly):
   SVG figures, and `<DataChart c={…} />` draws a bar, line, or pie chart with
   the same renderer as the questions. The vocabulary is taught as **word
   families** (184 families, 764 words), not a flat list.
+  - **Vocab flashcards** (`/course/gre/flashcards`) — one card per word (764),
+    built from the same families (`content/courses/gre/flashcards.ts`). The
+    back of each card shows the definition, an example sentence with the
+    context clue underlined, the rest of the family, and the opposite family.
+    Three ways to play: **flip cards** (3D flip, swipe or ←/→ to grade, undo),
+    **match** (6 words to 6 meanings against the clock, +2s per miss), and a
+    60-second **speed round** (one choice is usually the opposite family).
+    Words climb a five-box Leitner schedule (`lib/flashcards.ts`: due again in
+    1, 3, 7, then 21 days; a miss drops a word back to box 1), and *Today's
+    review* deals what's due plus up to 20 new words a day. Decks: today's
+    review, new, tricky, shuffle, mastered, any family, or a family with its
+    opposite. Progress, the daily streak, and best scores live in the same
+    progress state as everything else (`state.flashcards`).
   - **Practice bank** (`/course/gre/bank`) — **11,773 questions** (6,750 Quant ·
     5,023 Verbal) in 589 numbered sets of ~20, tiered Foundation → Core →
     Advanced. Run a set in **practice** mode (feedback after each question)

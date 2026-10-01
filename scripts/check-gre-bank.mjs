@@ -196,6 +196,47 @@ for (const g of bank.GENERATORS.filter((x) => x.variants)) {
 }
 console.log(`  ${variantChecks} generators serve fresh variants`);
 
+section('vocab flashcards');
+{
+  const deckMod = await import(pathToFileURL(path.join(root, 'content/courses/gre/flashcards.ts')).href);
+  const clusters = await import(pathToFileURL(path.join(root, 'content/courses/gre/bank/verbal/clusters.ts')).href);
+  const fcLib = await import(pathToFileURL(path.join(root, 'lib/flashcards.ts')).href);
+  const { cards, families } = deckMod.buildDeck();
+  const famIds = new Set(families.map((f) => f.id));
+  const words = new Set(cards.map((c) => c.w));
+  if (cards.length !== clusters.WORD_COUNT) fail(`flashcards: ${cards.length} cards for ${clusters.WORD_COUNT} words`);
+  if (words.size !== cards.length) fail('flashcards: duplicate words');
+  for (const f of families) {
+    if (f.opposite && !famIds.has(f.opposite)) fail(`flashcards: ${f.id} opposite missing`);
+    for (const w of f.words) if (!words.has(w)) fail(`flashcards: ${f.id} lists ${w} without a card`);
+  }
+  for (const c of cards) {
+    const where = `flashcard ${c.w}`;
+    if (!famIds.has(c.fam)) fail(`${where}: unknown family ${c.fam}`);
+    if (!c.def || c.def.length < 3) fail(`${where}: missing definition`);
+    if ((c.ex.match(/\*\*/g) ?? []).length !== 2 || !c.ex.includes(`**${c.w}**`)) fail(`${where}: example doesn't bold the word once`);
+    if (c.ex.includes('___')) fail(`${where}: example still has a blank`);
+    if (!/\[[^\]]+\]/.test(c.ex)) fail(`${where}: example has no [clue]`);
+    if (/\[[^\]]*\*\*/.test(c.ex)) fail(`${where}: word sits inside the clue`);
+    if (/\b[Aa] \*\*[aeio]/.test(c.ex) || /\b[Aa]n \*\*[^aeiouAEIOU]/.test(c.ex)) fail(`${where}: a/an mismatch → ${c.ex}`);
+    if (BAD_TEXT.test(c.ex) || BAD_TEXT.test(c.def)) fail(`${where}: broken text`);
+  }
+  // scheduling: the Leitner boxes behave as the page promises
+  const t0 = Date.UTC(2026, 0, 5, 12);
+  let p = fcLib.gradeCard(undefined, true, t0);
+  if (p.box !== 2 || p.due !== t0 + fcLib.DAY_MS) fail('flashcards: a known new word should land in box 2, due tomorrow');
+  for (let i = 0; i < 2; i++) p = fcLib.gradeCard(p, true, t0);
+  if (p.box !== 4 || fcLib.cardStatus(p) !== 'mastered') fail('flashcards: box 4 should count as mastered');
+  p = fcLib.gradeCard(p, false, t0);
+  if (p.box !== 1 || p.due !== t0 || !fcLib.isTricky(p) || fcLib.cardStatus(p) !== 'learning') fail('flashcards: a miss should drop to box 1, due now');
+  if (p.first !== t0) fail('flashcards: first-studied time should stick');
+  const days = ['2026-01-02', '2026-01-03', '2026-01-04'];
+  if (fcLib.streak(days, new Date(2026, 0, 4, 9)) !== 3) fail('flashcards: streak through today');
+  if (fcLib.streak(days, new Date(2026, 0, 5, 9)) !== 3) fail('flashcards: streak survives until you study today');
+  if (fcLib.streak(days, new Date(2026, 0, 6, 9)) !== 0) fail('flashcards: a missed day breaks the streak');
+  console.log(`  ${cards.length} cards in ${families.length} families · examples, links and scheduling ok`);
+}
+
 const sampleArg = process.argv.indexOf('--sample');
 if (sampleArg > 0) {
   const n = Number(process.argv[sampleArg + 1] ?? 10);
