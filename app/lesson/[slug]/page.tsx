@@ -5,6 +5,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import { remarkPowers } from '@/lib/powers';
 import 'katex/dist/katex.min.css';
 import { getAllLessons, getLesson, getLessonNeighbors } from '@/lib/content';
 import { getModule, moduleLabel } from '@/lib/modules';
@@ -110,8 +111,9 @@ export default async function LessonPage({
             options={{
               // Math: $$…$$ only (inline or display). Single dollars stay
               // literal so prices like $12 and $15 never turn into math.
+              // Caret exponents in prose (9^(x + 1)) are drawn as real powers.
               mdxOptions: {
-                remarkPlugins: [remarkGfm, [remarkMath, { singleDollarTextMath: false }]],
+                remarkPlugins: [remarkGfm, [remarkMath, { singleDollarTextMath: false }], remarkPowers],
                 rehypePlugins: [[rehypeKatex, { strict: 'ignore' }]],
               },
               // Lessons are trusted, repository-owned content and use JS

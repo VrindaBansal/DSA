@@ -6,6 +6,7 @@ import type { PracticeTestResult, TestMeasureResult } from '@/lib/types';
 import { useProgress } from '@/lib/progress/provider';
 import { useTutor } from '@/components/tutor/TutorContext';
 import { AnswerReview } from '@/components/quiz/AnswerReview';
+import { Powers } from '@/components/quiz/RichText';
 import type { Measure, PracticeTest, TestFormat, TestQuestion, TestSection } from '@/content/courses/gre/tests/types';
 import { isAnswered, isCorrect, responseText } from '@/content/courses/gre/tests/grade';
 import { scoreBand } from '@/content/courses/gre/tests/scoring';
@@ -358,7 +359,9 @@ function ReviewRow({
           {right ? '✓' : answered ? '✗' : '—'}
         </span>
         <span className="w-6 font-mono text-[11px] text-muted">{n}</span>
-        <span className="flex-1 truncate text-[13.5px]">{head.replace(/\*\*/g, '').split('\n')[0]}</span>
+        <span className="flex-1 truncate text-[13.5px]">
+          <Powers text={head.replace(/\*\*/g, '').split('\n')[0]} />
+        </span>
         <span className="hidden font-mono text-[10px] text-faint sm:inline">{FORMAT_LABEL[q.format]}</span>
         <span className="font-mono text-[11px] text-muted">{open ? '−' : '+'}</span>
       </button>

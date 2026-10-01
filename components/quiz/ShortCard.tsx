@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import type { ShortQuestion, GradeResult } from '@/lib/types';
 import { MathText } from '@/components/tutor/Markdown';
+import { RichText } from './RichText';
 
 /**
  * Short-response question, graded server-side against the rubric only
@@ -57,7 +58,9 @@ export function ShortCard({
 
   return (
     <div>
-      <p className="mb-3 font-body text-[15.5px] leading-relaxed">{q.prompt}</p>
+      <p className="mb-3 font-body text-[15.5px] leading-relaxed">
+        <RichText text={q.prompt} />
+      </p>
       {!result && (
         <>
           <textarea

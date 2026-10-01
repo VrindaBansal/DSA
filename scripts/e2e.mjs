@@ -457,6 +457,23 @@ await page.goto(`${BASE}/lesson/gre-integers`, { waitUntil: 'networkidle' });
   if ((await multi.locator('text=Correct').count()) > 0) pass('select-all grades an exact set');
   else fail('select-all did not grade the right set as correct');
 }
+await page.goto(`${BASE}/lesson/gre-exponents-roots`, { waitUntil: 'networkidle' });
+{
+  // carets are drawn as raised powers, in lesson prose and in a check's prompt
+  const sups = await page.locator('article sup').allTextContents();
+  const prompt = page.locator('p', { hasText: 'value of n?' }).filter({ hasText: '81' }).first();
+  const promptSups = await prompt.locator('sup').allTextContents();
+  const carets = await page.locator('article').evaluate((a) => {
+    const w = document.createTreeWalker(a, NodeFilter.SHOW_TEXT, {
+      acceptNode: (n) => (n.parentElement?.closest('.katex, code, pre') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT),
+    });
+    let n = 0;
+    while (w.nextNode()) if (w.currentNode.textContent.includes('^')) n++;
+    return n;
+  });
+  if (sups.includes('x + 1') && promptSups.join('|') === '2n|n − 1' && carets === 0) pass('exponents render as raised powers, no bare carets');
+  else fail(`raised powers: lesson ${JSON.stringify(sups.slice(0, 4))}, prompt ${JSON.stringify(promptSups)}, bare carets ${carets}`);
+}
 await page.goto(`${BASE}/lesson/gre-tc-multi`, { waitUntil: 'networkidle' });
 {
   const bl = page.locator('[data-block*="gre-tcm-two"]');

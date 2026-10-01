@@ -185,6 +185,52 @@ section('GRE lesson checks (hand-written)');
   console.log(`  ${n} lesson checks valid`);
 }
 
+section('raised powers');
+{
+  // Every caret in question text or lesson prose must become a raised power
+  // on screen (RichText / remarkPowers) — never a bare "^" left for the reader.
+  const { splitPowers } = await import(pathToFileURL(path.join(root, 'lib/powers.ts')).href);
+  const flat = (ps) => ps.map((x) => (typeof x === 'string' ? x : `[${flat(x.sup)}]`)).join('');
+  const cases = {
+    '9^(x + 1) = 27^x': '9[x + 1] = 27[x]',
+    '3^(4(n − 1))': '3[4(n − 1)]',
+    '(1.05)^3 and 1.05^3.': '(1.05)[3] and 1.05[3].',
+    'n^(log₂4) vs n^log₂4': 'n[log₂4] vs n[log₂4]',
+    'x^(m+n)^2': 'x[m+n][2]',
+    'a ^ b stays, so does x^ alone': 'a ^ b stays, so does x^ alone',
+  };
+  for (const [src, want] of Object.entries(cases)) {
+    const got = flat(splitPowers(src));
+    if (got !== want) fail(`powers: "${src}" → "${got}", expected "${want}"`);
+  }
+  const T = await import(pathToFileURL(path.join(root, 'content/courses/gre/tests/index.ts')).href);
+  const texts = [];
+  const collect = (v, where) => {
+    if (typeof v === 'string') v.includes('^') && texts.push([where, v]);
+    else if (Array.isArray(v)) v.forEach((x) => collect(x, where));
+    else if (v && typeof v === 'object') for (const [k, x] of Object.entries(v)) k !== 'id' && collect(x, where);
+  };
+  for (const q of all) collect(q, q.id);
+  for (const t of T.TESTS) collect(t.sections, t.id);
+  for (const lid of lessonIds) {
+    const f = path.join(lessonsDir, lid, 'questions.ts');
+    if (fs.existsSync(f)) collect((await import(pathToFileURL(f).href)).QUESTIONS, lid);
+    // lesson prose: carets outside $$math$$ and code
+    const mdx = path.join(lessonsDir, lid, 'lesson.mdx');
+    if (fs.existsSync(mdx)) {
+      const prose = fs.readFileSync(mdx, 'utf8').replace(/```[\s\S]*?```/g, '').replace(/\$\$[\s\S]*?\$\$/g, '').replace(/`[^`\n]*`/g, '');
+      for (const line of prose.split('\n')) if (line.includes('^') && !/=["{]/.test(line)) texts.push([`${lid} prose`, line]);
+    }
+  }
+  let raised = 0;
+  for (const [where, text] of texts) {
+    const out = flat(splitPowers(text));
+    if (out.includes('^')) fail(`${where}: a caret that won't render as a power: ${text.slice(0, 120)}`);
+    else raised++;
+  }
+  console.log(`  ${raised} texts with carets, every one drawn as raised powers`);
+}
+
 section('review variants');
 let variantChecks = 0;
 for (const g of bank.GENERATORS.filter((x) => x.variants)) {

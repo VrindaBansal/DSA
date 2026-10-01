@@ -328,3 +328,9 @@ body {
   pointer-events: none;
   animation: fc-confetti var(--fc-dur, 2.4s) cubic-bezier(0.25, 0.6, 0.4, 1) forwards;
 }
+
+/* Raised powers (2^(x + 3) in lessons and questions): keep an exponent on one line. */
+sup {
+  white-space: nowrap;
+  word-spacing: -0.06em;
+}
