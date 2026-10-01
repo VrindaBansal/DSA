@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useProgress } from '@/lib/progress/provider';
-import { Confetti, type FlashCard, PosChip, fmtTime, shuffle } from './shared';
+import { Confetti, FlagButton, type FlashCard, PosChip, fmtTime, shuffle } from './shared';
 
 const PAIRS = 6;
 const PENALTY_MS = 2000;
@@ -160,10 +160,11 @@ export function MatchGame({
             {cards.map((c) => (
               <li key={c.w} className="flex items-baseline gap-2">
                 <PosChip pos={c.pos} />
-                <span>
+                <span className="flex-1">
                   <span className="font-semibold">{c.w}</span>
                   <span className="text-ink-soft"> — {c.def}</span>
                 </span>
+                <FlagButton word={c.w} compact />
               </li>
             ))}
           </ul>

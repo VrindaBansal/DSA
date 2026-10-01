@@ -21,7 +21,7 @@ import type {
 import { emptyAppState, emptyLessonProgress } from '../types';
 import { createRepo, type ProgressRepo } from './repo';
 import { applyAnswer, enterQueue, dueItems } from '../review';
-import { emptyFlashcardState, gradeCard, markDay, type CardProgress, type FlashcardState } from '../flashcards';
+import { emptyFlashcardState, gradeCard, markDay, type CardProgress, type DailyPlan, type FlashcardState } from '../flashcards';
 
 interface ProgressApi {
   state: AppState;
@@ -58,6 +58,12 @@ interface ProgressApi {
   setFlashcard: (word: string, progress: CardProgress | undefined) => void;
   /** A finished flashcard game: match time in ms (lower is better) or speed-round score (higher is better). */
   recordFlashGame: (game: 'match' | 'speed', score: number) => void;
+  /** Flag or unflag a word to keep an eye on. */
+  toggleFlag: (word: string) => void;
+  /** Store today's mini sets (dealt once a day). */
+  setDailyPlan: (plan: DailyPlan) => void;
+  /** Mark one of today's mini sets finished. */
+  completeDailySet: (day: string, index: number, result: { firstTry: number; total: number }) => void;
   appendChat: (lessonId: string, msg: ChatMessage) => void;
   clearChat: (lessonId: string) => void;
   appendGeneralChat: (msg: ChatMessage) => void;
@@ -365,6 +371,29 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
     [updateFlashcards],
   );
 
+  const toggleFlag = useCallback(
+    (word: string) =>
+      updateFlashcards((fc) => {
+        const flagged = { ...(fc.flagged ?? {}) };
+        if (flagged[word] !== undefined) delete flagged[word];
+        else flagged[word] = Date.now();
+        return { ...fc, flagged };
+      }),
+    [updateFlashcards],
+  );
+
+  const setDailyPlan = useCallback((plan: DailyPlan) => updateFlashcards((fc) => ({ ...fc, daily: plan })), [updateFlashcards]);
+
+  const completeDailySet = useCallback(
+    (day: string, index: number, result: { firstTry: number; total: number }) =>
+      updateFlashcards((fc) => {
+        if (!fc.daily || fc.daily.day !== day || !fc.daily.sets[index]) return fc;
+        const sets = fc.daily.sets.map((st, i) => (i === index ? { ...st, done: { at: Date.now(), ...result } } : st));
+        return { ...fc, daily: { ...fc.daily, sets } };
+      }),
+    [updateFlashcards],
+  );
+
   const appendChat = useCallback(
     (lessonId: string, msg: ChatMessage) => {
       updateLesson(lessonId, (lp) => ({ ...lp, chat: [...lp.chat, msg] }));
@@ -426,6 +455,9 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
       gradeFlashcard,
       setFlashcard,
       recordFlashGame,
+      toggleFlag,
+      setDailyPlan,
+      completeDailySet,
       appendChat,
       clearChat,
       appendGeneralChat,
@@ -453,6 +485,9 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
       gradeFlashcard,
       setFlashcard,
       recordFlashGame,
+      toggleFlag,
+      setDailyPlan,
+      completeDailySet,
       appendChat,
       clearChat,
       appendGeneralChat,

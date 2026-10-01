@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useProgress } from '@/lib/progress/provider';
 import type { FlashCard, FlashFamily } from '@/content/courses/gre/flashcards';
 import type { Pos } from '@/content/courses/gre/bank/verbal/clusters';
 import { type CardProgress, type CardStatus, cardStatus } from '@/lib/flashcards';
@@ -154,4 +155,39 @@ export function familyLinks(card: FlashCard, families: Record<string, FlashFamil
     mates: (fam?.words ?? []).filter((w) => w !== card.w),
     opposite: opp ? { gist: opp.gist, words: opp.words } : undefined,
   };
+}
+
+/** Flag a word to keep an eye on. Never flips or swipes the card it sits on. */
+export function FlagButton({ word, compact = false }: { word: string; compact?: boolean }) {
+  const { state, toggleFlag } = useProgress();
+  const on = state.flashcards?.flagged?.[word] !== undefined;
+  return (
+    <button
+      type="button"
+      data-flag={word}
+      aria-pressed={on}
+      aria-label={on ? `Unflag ${word}` : `Flag ${word}`}
+      title={on ? 'Flagged — click to unflag (f)' : 'Flag this word to practice it more (f)'}
+      onPointerDown={(e) => e.stopPropagation()}
+      onClick={(e) => {
+        e.stopPropagation();
+        toggleFlag(word);
+      }}
+      className={`shrink-0 rounded-md border font-mono text-[11px] leading-none transition-colors ${
+        compact ? 'px-1.5 py-1' : 'px-2 py-1'
+      } ${on ? 'border-[#e3a008] bg-[#fff4d6] text-[#9a5b00]' : 'border-line-strong text-muted hover:border-ink hover:text-ink'}`}
+    >
+      {on ? '⚑' : '⚐'}
+      {!compact && <span className="ml-1">{on ? 'flagged' : 'flag'}</span>}
+    </button>
+  );
+}
+
+/** "today", "yesterday", "3d ago" … */
+export function ago(ms: number, now = Date.now()): string {
+  const d = new Date(now);
+  const midnight = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  if (ms >= midnight) return 'today';
+  const days = Math.ceil((midnight - ms) / 86_400_000);
+  return days === 1 ? 'yesterday' : `${days}d ago`;
 }

@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useProgress } from '@/lib/progress/provider';
-import { Confetti, type FlashCard, type FlashFamily, PosChip, shuffle } from './shared';
+import { Confetti, FlagButton, type FlashCard, type FlashFamily, PosChip, shuffle } from './shared';
 
 const ROUND_MS = 60_000;
 
@@ -216,9 +216,12 @@ export function SpeedRound({
             <div className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.16em] text-muted">Missed this round</div>
             <ul className="space-y-1.5 text-[14px]">
               {missed.map((c) => (
-                <li key={c.w}>
-                  <span className="font-semibold">{c.w}</span>
-                  <span className="text-ink-soft"> — {c.def}</span>
+                <li key={c.w} className="flex items-start justify-between gap-3">
+                  <span>
+                    <span className="font-semibold">{c.w}</span>
+                    <span className="text-ink-soft"> — {c.def}</span>
+                  </span>
+                  <FlagButton word={c.w} compact />
                 </li>
               ))}
             </ul>
