@@ -48,17 +48,30 @@ anchors, tested constantly):
   families** (184 families, 764 words), not a flat list.
   - **Vocab flashcards** (`/course/gre/flashcards`) — one card per word (764),
     built from the same families (`content/courses/gre/flashcards.ts`). The
-    back of each card shows the definition, an example sentence with the
-    context clue underlined, the rest of the family, and the opposite family.
+    back of each card shows the definition, a **word-root breakdown** (each
+    prefix, root, and suffix with its meaning, and what they add up to — or,
+    for the 65 words without useful roots, where the word comes from), an
+    example sentence with the context clue underlined, the rest of the family,
+    and the opposite family. The front can show the roots as a hint (h)
+    before you flip. The breakdowns are hand-written in
+    `content/courses/gre/roots/` and checked to spell their words.
     Three ways to play: **flip cards** (3D flip, swipe or ←/→ to grade, undo),
     **match** (6 words to 6 meanings against the clock, +2s per miss), and a
     60-second **speed round** (one choice is usually the opposite family).
     Words climb a five-box Leitner schedule (`lib/flashcards.ts`: due again in
-    1, 3, 7, then 21 days; a miss drops a word back to box 1), and *Today's
-    review* deals what's due plus up to 20 new words a day. Decks: today's
-    review, new, tricky, shuffle, mastered, any family, or a family with its
-    opposite. Progress, the daily streak, and best scores live in the same
-    progress state as everything else (`state.flashcards`).
+    1, 3, 7, then 21 days; a miss drops a word back to box 1). Each day deals
+    **mini sets** of 10 (`buildDailyPlan`): words due back first, then
+    flagged, then missed, plus up to 20 new words, mixed so every set has
+    some of each; the sets stay fixed for the day, finished ones are marked
+    with their score, and "deal one more" adds a set from what's left. The
+    **master set** is all 764 words in a fresh order every session — a
+    weighted shuffle that brings missed and flagged words up sooner. Flag any
+    word (⚐ or the f key); the **word log** lists every word you've missed
+    (miss count, accuracy, last miss) and every flag, each with a practice
+    button. Other decks: missed, flagged, new, mastered, any family, or a
+    family with its opposite. Progress, flags, today's sets, the streak, and
+    best scores live in the same progress state as everything else
+    (`state.flashcards`).
   - **Practice bank** (`/course/gre/bank`) — **11,773 questions** (6,750 Quant ·
     5,023 Verbal) in 589 numbered sets of ~20, tiered Foundation → Core →
     Advanced. Run a set in **practice** mode (feedback after each question)

@@ -221,6 +221,24 @@ section('vocab flashcards');
     if (/\b[Aa] \*\*[aeio]/.test(c.ex) || /\b[Aa]n \*\*[^aeiouAEIOU]/.test(c.ex)) fail(`${where}: a/an mismatch → ${c.ex}`);
     if (BAD_TEXT.test(c.ex) || BAD_TEXT.test(c.def)) fail(`${where}: broken text`);
   }
+  // word roots: every card has a breakdown whose parts spell the word, or an origin story
+  const rootsMod = await import(pathToFileURL(path.join(root, 'content/courses/gre/roots/index.ts')).href);
+  let stories = 0;
+  for (const c of cards) {
+    const rt = c.rt;
+    if (!rt) fail(`flashcard ${c.w}: no word-root breakdown`);
+    else if (rt.story !== undefined) {
+      stories++;
+      if (rt.story.length < 20) fail(`flashcard ${c.w}: origin story too short`);
+    } else {
+      if (!rt.parts?.length || !rootsMod.spellsWord(c.w, rt.parts)) fail(`flashcard ${c.w}: root parts don't spell the word`);
+      if (!rt.sense) fail(`flashcard ${c.w}: roots with no "adds up to" sense`);
+      for (const p of rt.parts) if (p.kind === 'prefix' && !p.meaning) fail(`flashcard ${c.w}: prefix ${p.text} has no meaning`);
+    }
+  }
+  for (const w of Object.keys(rootsMod.ROOTS)) if (!words.has(w)) fail(`roots: "${w}" is not a word in the deck`);
+  console.log(`  roots: ${cards.length - stories} breakdowns that spell their words, ${stories} origin stories`);
+
   // scheduling: the Leitner boxes behave as the page promises
   const t0 = Date.UTC(2026, 0, 5, 12);
   let p = fcLib.gradeCard(undefined, true, t0);
@@ -234,7 +252,34 @@ section('vocab flashcards');
   if (fcLib.streak(days, new Date(2026, 0, 4, 9)) !== 3) fail('flashcards: streak through today');
   if (fcLib.streak(days, new Date(2026, 0, 5, 9)) !== 3) fail('flashcards: streak survives until you study today');
   if (fcLib.streak(days, new Date(2026, 0, 6, 9)) !== 0) fail('flashcards: a missed day breaks the streak');
-  console.log(`  ${cards.length} cards in ${families.length} families · examples, links and scheduling ok`);
+  // daily mini sets
+  const all = cards.map((c) => c.w);
+  const day = '2026-01-05';
+  const plan0 = fcLib.buildDailyPlan({ words: all, progress: {}, flagged: {}, newLeft: 20, day, now: t0 });
+  if (plan0.sets.length !== 2 || plan0.sets.some((st) => st.words.length !== 10 || st.kinds.new !== 10))
+    fail(`daily plan for a new learner: ${plan0.sets.map((st) => st.words.length).join(',')}`);
+  const prog = {};
+  all.slice(0, 15).forEach((w) => (prog[w] = { box: 2, due: t0 - 1, seen: 1, right: 1, wrong: 0, last: t0 - fcLib.DAY_MS }));
+  all.slice(15, 20).forEach((w) => (prog[w] = { box: 2, due: t0 + 9 * fcLib.DAY_MS, seen: 2, right: 1, wrong: 1, last: t0, lastMiss: t0 }));
+  const flags = Object.fromEntries(all.slice(20, 23).map((w, i) => [w, t0 + i]));
+  const plan1 = fcLib.buildDailyPlan({ words: all, progress: prog, flagged: flags, newLeft: 20, day, now: t0 });
+  const dealt = plan1.sets.flatMap((st) => st.words);
+  const kinds = plan1.sets.reduce((k, st) => (Object.keys(k).forEach((x) => (k[x] += st.kinds[x])), k), { due: 0, flagged: 0, missed: 0, new: 0 });
+  if (plan1.sets.length !== 3 || dealt.length !== 30 || new Set(dealt).size !== 30) fail(`daily plan size: ${plan1.sets.map((st) => st.words.length)}`);
+  if (kinds.due !== 15 || kinds.flagged !== 3 || kinds.new !== 10 || kinds.missed !== 2)
+    fail(`daily plan priorities (due → flagged → missed, a set of new kept): ${JSON.stringify(kinds)}`);
+  if (plan1.sets.some((st) => !st.kinds.new || st.kinds.new === st.words.length)) fail('daily sets should each mix review and new words');
+  const extra = fcLib.buildDailyPlan({ words: all, progress: prog, flagged: flags, newLeft: 10, minNew: 0, day, now: t0, exclude: new Set(dealt), maxSets: 1 });
+  if (extra.sets.length !== 1 || extra.sets[0].kinds.missed !== 3 || extra.sets[0].words.some((w) => dealt.includes(w)))
+    fail(`an extra set should take the leftover review first: ${JSON.stringify(extra.sets[0]?.kinds)}`);
+  // master-set shuffle: a fresh order each time, weighted toward missed and flagged words
+  let frontFirst = 0;
+  for (let i = 0; i < 4000; i++) if (fcLib.weightedShuffle(['heavy', 'light'], (x) => (x === 'heavy' ? 3 : 1))[0] === 'heavy') frontFirst++;
+  if (frontFirst / 4000 < 0.7 || frontFirst / 4000 > 0.8) fail(`weighted shuffle bias ${frontFirst / 4000} (expected ≈ 0.75)`);
+  const order = fcLib.weightedShuffle(all, () => 1);
+  if (new Set(order).size !== all.length) fail('weighted shuffle lost or duplicated words');
+  if (fcLib.masterWeight(prog[all[15]], true) <= fcLib.masterWeight(undefined, false)) fail('missed + flagged words should weigh more');
+  console.log(`  ${cards.length} cards in ${families.length} families · examples, links, scheduling, daily sets and shuffle ok`);
 }
 
 const sampleArg = process.argv.indexOf('--sample');

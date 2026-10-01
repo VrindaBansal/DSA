@@ -731,12 +731,21 @@ section('GRE vocab flashcards');
   if ((await page.locator('text=All 764 words').count()) > 0) pass('flashcards page lists the whole core list');
   else fail('flashcards page header missing its word count');
 
-  // flip: today's review — flip, grade one right and one wrong, undo, then check what was saved
-  await page.locator('[data-deck="today"]').click();
+  // today's mini sets are dealt once the page loads: 20 new words → two sets of 10
+  await page.locator('[data-miniset="1"]').waitFor({ timeout: 5000 }).catch(() => {});
+  if ((await page.locator('[data-miniset]').count()) === 2) pass("a new learner gets today's 20 new words as two mini sets");
+  else fail(`mini sets dealt: ${await page.locator('[data-miniset]').count()}`);
+
+  // flip: mini set 1 — flip, grade one right and one wrong, undo, then check what was saved
+  await page.locator('[data-miniset="0"]').click();
   const count = page.getByTestId('fc-count');
-  if ((await count.textContent())?.trim() === '1 / 20') pass("today's review deals 20 cards");
-  else fail(`today's review count: ${await count.textContent()}`);
+  if ((await count.textContent())?.trim() === '1 / 10') pass('a mini set deals 10 cards');
+  else fail(`mini set count: ${await count.textContent()}`);
   await page.keyboard.press(' ');
+  await page.waitForTimeout(600);
+  const rootsText = (await page.locator('.fc-back [data-testid="roots"]').first().innerText()).toLowerCase();
+  if (rootsText.includes('word roots') || rootsText.includes('word origin')) pass('the back of a card shows its word-root breakdown (or origin story)');
+  else fail(`card back roots: ${rootsText.slice(0, 80)}`);
   await page.getByRole('button', { name: /Got it/ }).click();
   await page.waitForTimeout(450);
   await page.keyboard.press(' ');
@@ -774,11 +783,55 @@ section('GRE vocab flashcards');
   await page.waitForTimeout(500);
   if ((await count.textContent()) !== before) pass('swiping a flipped card right grades it and deals the next');
   else fail('swipe did not advance the card');
+
+  // flag the current card with the f key
+  await page.keyboard.press('f');
+  await page
+    .waitForFunction(() => Object.keys(JSON.parse(localStorage.getItem('invariant.progress.v1') ?? '{}').flashcards?.flagged ?? {}).length === 1, null, {
+      timeout: 4000,
+    })
+    .catch(() => {});
+  if ((await page.locator('[data-flag][aria-pressed="true"]').count()) > 0) pass('f flags the card, and the flag shows on it');
+  else fail('flag did not stick');
   await page.keyboard.press('Escape');
+
+  // the word log lists the miss and the flag; the flagged deck is live
+  const log = page.getByTestId('word-log');
+  if ((await log.locator('text=Missed · 1').count()) > 0 && (await log.locator('text=Flagged · 1').count()) > 0 && (await log.locator('text=missed 1×').count()) > 0)
+    pass('word log tracks the missed word (with its miss count) and the flagged one');
+  else fail('word log missing the miss or the flag');
+  if (await page.locator('[data-deck="flagged"]').isEnabled()) pass('flagged words get their own deck');
+  else fail('flagged deck disabled');
+
+  // finish mini set 2 → the tile is marked done
+  await page.locator('[data-miniset="1"]').click();
+  for (let i = 0; i < 25 && (await page.locator('text=Round complete').count()) === 0; i++) {
+    await page.keyboard.press(' ');
+    await page.waitForTimeout(250);
+    await page.keyboard.press('ArrowRight');
+    await page.waitForTimeout(320);
+  }
+  await page.getByRole('button', { name: 'Back to decks' }).click();
+  if ((await page.getByTestId('sets-done').textContent())?.includes('1 of 2 done')) pass('finishing a mini set marks it done for today');
+  else fail(`mini set progress: ${await page.getByTestId('sets-done').textContent()}`);
+
+  // master set: every word, in a fresh order each session
+  const firstCard = async () => {
+    await page.locator('[data-deck="master"]').click();
+    const t = await page.getByTestId('fc-word').first().innerText();
+    const n = await count.textContent();
+    await page.keyboard.press('Escape');
+    return { t, n };
+  };
+  const m1 = await firstCard();
+  const m2 = await firstCard();
+  const m3 = await firstCard();
+  if (m1.n?.trim() === '1 / 764' && (m1.t !== m2.t || m2.t !== m3.t)) pass('master set deals all 764 words, reshuffled each session');
+  else fail(`master set: ${m1.n} / ${m1.t} · ${m2.t} · ${m3.t}`);
 
   // match game: one wrong pair (shake + penalty), then solve the board
   await page.getByRole('radio', { name: /Match/ }).click();
-  await page.locator('[data-deck="shuffle"]').click();
+  await page.locator('[data-deck="master"]').click();
   const pairs = await page.locator('[data-side="word"]').evaluateAll((els) => els.map((e) => e.getAttribute('data-pair')));
   if (pairs.length === 6 && (await page.locator('[data-side="def"]').count()) === 6) pass('match deals 6 words and 6 meanings');
   else fail(`match board: ${pairs.length} words`);
@@ -801,7 +854,7 @@ section('GRE vocab flashcards');
 
   // speed round: countdown, a right answer scores
   await page.getByRole('radio', { name: /Speed round/ }).click();
-  await page.locator('[data-deck="shuffle"]').click();
+  await page.locator('[data-deck="master"]').click();
   await page.getByRole('button', { name: 'Start →' }).click();
   await page.locator('[data-correct="true"]').waitFor({ timeout: 5000 });
   await page.locator('[data-correct="true"]').click();

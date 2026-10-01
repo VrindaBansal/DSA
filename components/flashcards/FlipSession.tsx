@@ -7,9 +7,11 @@ import {
   BoxMeter,
   Confetti,
   Example,
+  FlagButton,
   type FlashCard,
   type FlashFamily,
   PosChip,
+  Roots,
   familyColor,
   familyLinks,
 } from './shared';
@@ -42,6 +44,8 @@ export function FlipSession({
   families,
   onExit,
   onRestart,
+  onComplete,
+  next,
 }: {
   title: string;
   deck: FlashCard[];
@@ -51,8 +55,12 @@ export function FlipSession({
   onExit: () => void;
   /** Start a fresh flip round with these cards (e.g. the ones just missed). */
   onRestart: (cards: FlashCard[], title: string) => void;
+  /** Called once when the round is finished (daily mini sets record their score). */
+  onComplete?: (r: { firstTry: number; total: number }) => void;
+  /** A follow-up offered on the summary, e.g. the next mini set. */
+  next?: { label: string; go: () => void };
 }) {
-  const { state, gradeFlashcard, setFlashcard } = useProgress();
+  const { state, gradeFlashcard, setFlashcard, toggleFlag } = useProgress();
   const progress = state.flashcards?.cards ?? {};
 
   const [queue, setQueue] = useState<FlashCard[]>(deck);
@@ -66,15 +74,24 @@ export function FlipSession({
   const [dx, setDx] = useState(0);
   const [dragging, setDragging] = useState(false);
   const [burst, setBurst] = useState(0);
+  // the roots hint on the front of the card, before flipping
+  const [hint, setHint] = useState(false);
   const drag = useRef<{ x: number; y: number; id: number; moved: boolean } | null>(null);
   const busy = useRef(false);
 
   const card = queue[idx] as FlashCard | undefined;
   const done = idx >= queue.length;
 
+  const reported = useRef(false);
   useEffect(() => {
-    if (done) setBurst((b) => b + 1);
-  }, [done]);
+    if (!done) return;
+    setBurst((b) => b + 1);
+    if (onComplete && !reported.current) {
+      reported.current = true;
+      const rs = Object.values(results);
+      onComplete({ firstTry: rs.filter((r) => r.firstTry).length, total: rs.length });
+    }
+  }, [done]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const answer = useCallback(
     (knew: boolean) => {
@@ -110,6 +127,7 @@ export function FlipSession({
         setDragging(true);
         setIdx((i) => i + 1);
         setFlipped(false);
+        setHint(false);
         setLeaving(null);
         setDx(0);
         busy.current = false;
@@ -128,6 +146,7 @@ export function FlipSession({
     setResults(last.results);
     setCombo(last.combo);
     setFlipped(true);
+    setHint(false);
     setHistory((h) => h.slice(0, -1));
   }, [history, setFlashcard]);
 
@@ -152,11 +171,15 @@ export function FlipSession({
         else setFlipped(true);
       } else if (e.key === 'z' || e.key === 'Z' || e.key === 'Backspace') {
         undo();
+      } else if ((e.key === 'f' || e.key === 'F') && card) {
+        toggleFlag(card.w);
+      } else if ((e.key === 'h' || e.key === 'H') && !reverse) {
+        setHint((x) => !x);
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [answer, undo, flipped, done, onExit]);
+  }, [answer, undo, flipped, done, onExit, card, toggleFlag, reverse]);
 
   // swipe / drag
   const onPointerDown = (e: React.PointerEvent) => {
@@ -218,10 +241,17 @@ export function FlipSession({
             </p>
           )}
           <div className="mt-6 flex flex-wrap justify-center gap-2">
+            {next && (
+              <button onClick={next.go} className="rounded-md bg-ink px-4 py-2 font-mono text-[12px] text-paper hover:bg-active-deep">
+                {next.label}
+              </button>
+            )}
             {missed.length > 0 && (
               <button
                 onClick={() => onRestart(missed, `${title} · practice the misses`)}
-                className="rounded-md bg-ink px-4 py-2 font-mono text-[12px] text-paper hover:bg-active-deep"
+                className={`rounded-md px-4 py-2 font-mono text-[12px] ${
+                  next ? 'border border-line-strong hover:border-ink' : 'bg-ink text-paper hover:bg-active-deep'
+                }`}
               >
                 Practice the {missed.length} I missed →
               </button>
@@ -242,12 +272,17 @@ export function FlipSession({
         </div>
         {missed.length > 0 && (
           <div className="mt-5 rounded-lg border border-line bg-panel p-5">
-            <div className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.16em] text-muted">Words to keep practicing</div>
+            <div className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.16em] text-muted">
+              Words to keep practicing · flag any you want to see more
+            </div>
             <ul className="space-y-1.5 text-[14px]">
               {missed.map((c) => (
-                <li key={c.w}>
-                  <span className="font-semibold">{c.w}</span>
-                  <span className="text-ink-soft"> — {c.def}</span>
+                <li key={c.w} className="flex items-start justify-between gap-3">
+                  <span>
+                    <span className="font-semibold">{c.w}</span>
+                    <span className="text-ink-soft"> — {c.def}</span>
+                  </span>
+                  <FlagButton word={c.w} compact />
                 </li>
               ))}
             </ul>
@@ -268,9 +303,12 @@ export function FlipSession({
 
   const front = reverse ? (
     <div className="flex h-full flex-col">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <PosChip pos={card.pos} />
-        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-faint">which word?</span>
+        <span className="flex items-center gap-3">
+          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-faint">which word?</span>
+          <FlagButton word={card.w} />
+        </span>
       </div>
       <div className="flex flex-1 flex-col justify-center py-6 text-center">
         <div className="font-display text-[1.6rem] font-semibold leading-snug sm:text-[1.9rem]">{card.def}</div>
@@ -285,14 +323,36 @@ export function FlipSession({
     </div>
   ) : (
     <div className="flex h-full flex-col">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <PosChip pos={card.pos} />
-        <BoxMeter progress={p} />
+        <span className="flex items-center gap-3">
+          <BoxMeter progress={p} />
+          <FlagButton word={card.w} />
+        </span>
       </div>
-      <div className="flex flex-1 items-center justify-center py-10 text-center">
-        <div className="break-words font-display text-[2.6rem] font-bold leading-tight tracking-tight sm:text-[3.4rem]">
+      <div className="flex flex-1 flex-col items-center justify-center gap-4 py-8 text-center">
+        <div
+          data-testid="fc-word"
+          className="break-words font-display text-[2.6rem] font-bold leading-tight tracking-tight sm:text-[3.4rem]"
+        >
           {card.w}
         </div>
+        {card.rt?.parts &&
+          (hint ? (
+            <Roots roots={card.rt} hint />
+          ) : (
+            <button
+              type="button"
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+                setHint(true);
+              }}
+              className="rounded-full border border-dashed border-line-strong px-3 py-1 font-mono text-[11px] text-muted hover:border-ink hover:text-ink"
+            >
+              stuck? show the roots · h
+            </button>
+          ))}
       </div>
       <Hint />
     </div>
@@ -305,14 +365,20 @@ export function FlipSession({
           <span className="font-display text-[1.35rem] font-bold">{card.w}</span>
           <PosChip pos={card.pos} />
         </div>
-        <BoxMeter progress={p} />
+        <span className="flex items-center gap-3">
+          <BoxMeter progress={p} />
+          <FlagButton word={card.w} />
+        </span>
       </div>
       <div className="mt-3 font-display text-[1.45rem] font-semibold leading-snug sm:text-[1.6rem]">{card.def}</div>
       <div className="mt-2 inline-flex items-center gap-1.5 text-[13px] text-muted">
         <span className="h-2 w-2 rounded-full" style={{ background: familyColor(card.fam) }} />
         family: <span className="text-ink-soft">{fam?.gist}</span>
       </div>
-      <div className="mt-4 rounded-md bg-paper px-3.5 py-2.5">
+      <div className="mt-4">
+        <Roots roots={card.rt} />
+      </div>
+      <div className="mt-3 rounded-md bg-paper px-3.5 py-2.5">
         <div className="font-mono text-[9.5px] uppercase tracking-[0.14em] text-faint">in a sentence · underlined = the clue</div>
         <p className="mt-1 text-[14.5px] leading-relaxed text-ink-soft">
           <Example text={card.ex} />
@@ -444,7 +510,7 @@ export function FlipSession({
           <button onClick={onExit} className="hover:text-ink">
             ← decks
           </button>
-          <span className="hidden sm:inline">space flip · ← / → grade · z undo</span>
+          <span className="hidden sm:inline">space flip · ← / → grade · h roots · f flag · z undo</span>
           <button onClick={undo} disabled={!history.length} className="hover:text-ink disabled:opacity-40">
             ↶ undo
           </button>
@@ -467,7 +533,7 @@ const nextLabel = (box: number) => {
 function Hint() {
   return (
     <div className="text-center font-mono text-[10.5px] text-faint">
-      tap to flip · swipe → if you knew it, ← if not
+      tap to flip · swipe → if you knew it, ← if not · ⚐ flag words to practice more
     </div>
   );
 }

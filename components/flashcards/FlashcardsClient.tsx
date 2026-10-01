@@ -4,15 +4,41 @@ import Link from 'next/link';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useProgress } from '@/lib/progress/provider';
 import type { Pos } from '@/content/courses/gre/bank/verbal/clusters';
-import { NEW_PER_DAY, cardStatus, isDue, isTricky, newToday, streak, type CardStatus } from '@/lib/flashcards';
+import {
+  NEW_PER_DAY,
+  SET_SIZE,
+  accuracy,
+  buildDailyPlan,
+  cardStatus,
+  isTricky,
+  localDay,
+  masterWeight,
+  newToday,
+  streak,
+  weightedShuffle,
+  type CardProgress,
+  type CardStatus,
+} from '@/lib/flashcards';
 import { FlipSession } from './FlipSession';
 import { MatchGame } from './MatchGame';
 import { SpeedRound } from './SpeedRound';
-import { type FlashCard, type FlashFamily, STATUS_CLASS, familyColor, fmtTime, shuffle } from './shared';
+import {
+  FlagButton,
+  type FlashCard,
+  type FlashFamily,
+  PosChip,
+  STATUS_CLASS,
+  STATUS_LABEL,
+  ago,
+  familyColor,
+  fmtTime,
+  shuffle,
+} from './shared';
 
 type Mode = 'flip' | 'match' | 'speed';
 type PosFilter = 'all' | Pos;
-type View = { kind: 'home' } | { kind: Mode; title: string; cards: FlashCard[]; key: number };
+type Daily = { day: string; index: number };
+type View = { kind: 'home' } | { kind: Mode; title: string; cards: FlashCard[]; key: number; daily?: Daily };
 
 const MODES: { id: Mode; name: string; blurb: string; glyph: string }[] = [
   { id: 'flip', name: 'Flip cards', blurb: 'See it, guess it, flip it. Swipe → if you knew it.', glyph: '⟲' },
@@ -38,8 +64,10 @@ export function FlashcardsClient({
   cards: FlashCard[];
   families: FlashFamily[];
 }) {
-  const { state, ready } = useProgress();
+  const { state, ready, setDailyPlan, completeDailySet } = useProgress();
   const progress = useMemo(() => state.flashcards?.cards ?? {}, [state.flashcards]);
+  const flagged = useMemo(() => state.flashcards?.flagged ?? {}, [state.flashcards]);
+  const plan = state.flashcards?.daily;
   const famById = useMemo(() => Object.fromEntries(families.map((f) => [f.id, f])), [families]);
   const cardByWord = useMemo(() => Object.fromEntries(cards.map((c) => [c.w, c])), [cards]);
 
@@ -50,6 +78,23 @@ export function FlashcardsClient({
   const [size, setSize] = useState(20);
   const [query, setQuery] = useState('');
   const [showAll, setShowAll] = useState(false);
+  // the local date — read on the client only, so server and client render the same markup
+  const [today, setToday] = useState<string | null>(null);
+  useEffect(() => setToday(localDay()), []);
+
+  // deal today's mini sets once a day: due words, then flagged, then missed, plus new words
+  useEffect(() => {
+    if (!ready || !today || plan?.day === today) return;
+    setDailyPlan(
+      buildDailyPlan({
+        words: cards.map((c) => c.w),
+        progress,
+        flagged,
+        newLeft: Math.max(0, NEW_PER_DAY - newToday(progress)),
+        day: today,
+      }),
+    );
+  }, [ready, today, plan?.day]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // remember how you like to play (this browser only)
   useEffect(() => {
@@ -71,10 +116,31 @@ export function FlashcardsClient({
     }
   }, [mode, reverse, pos, size]);
 
-  const start = (title: string, deck: FlashCard[], as: Mode = mode) => {
+  const start = (title: string, deck: FlashCard[], as: Mode = mode, daily?: Daily) => {
     if (!deck.length) return;
-    setView({ kind: as, title, cards: deck, key: Date.now() });
+    setView({ kind: as, title, cards: deck, key: Date.now(), daily });
     window.scrollTo({ top: 0 });
+  };
+  const todaySets = plan && plan.day === today ? plan.sets : [];
+  const startSet = (i: number) => {
+    const set = todaySets[i];
+    if (!set || !plan) return;
+    const deck = set.words.map((w) => cardByWord[w]).filter(Boolean);
+    start(`Mini set ${i + 1} of ${todaySets.length}`, shuffle(deck), 'flip', { day: plan.day, index: i });
+  };
+  const dealAnother = () => {
+    if (!plan || !today) return;
+    const extra = buildDailyPlan({
+      words: cards.map((c) => c.w),
+      progress,
+      flagged,
+      newLeft: SET_SIZE,
+      minNew: 0,
+      day: plan.day,
+      exclude: new Set(plan.sets.flatMap((st) => st.words)),
+      maxSets: 1,
+    });
+    if (extra.sets.length) setDailyPlan({ ...plan, sets: [...plan.sets, ...extra.sets] });
   };
   const home = () => {
     setView({ kind: 'home' });
@@ -94,6 +160,12 @@ export function FlashcardsClient({
             families={famById}
             onExit={home}
             onRestart={(c, t) => start(t, shuffle(c), 'flip')}
+            onComplete={view.daily ? (r) => completeDailySet(view.daily!.day, view.daily!.index, r) : undefined}
+            next={(() => {
+              if (!view.daily) return undefined;
+              const j = todaySets.findIndex((st, i) => i !== view.daily!.index && !st.done);
+              return j >= 0 ? { label: `Next: mini set ${j + 1} →`, go: () => startSet(j) } : undefined;
+            })()}
           />
         )}
         {view.kind === 'match' && (
@@ -114,50 +186,57 @@ export function FlashcardsClient({
     );
   }
 
-  // ---- home: stats, mode, decks ---------------------------------------------------------
-  const now = Date.now();
+  // ---- home: stats, today's sets, decks, word log ------------------------------------------
   const inPos = (c: FlashCard) => pos === 'all' || c.pos === pos;
   const pool = cards.filter(inPos);
   const counts: Record<CardStatus, number> = { new: 0, learning: 0, reviewing: 0, mastered: 0 };
   for (const c of cards) counts[cardStatus(progress[c.w])]++;
-  const due = pool.filter((c) => isDue(progress[c.w], now)).sort((a, b) => progress[a.w].due - progress[b.w].due);
   const fresh = pool.filter((c) => !progress[c.w]);
-  const tricky = pool
+  const missedPool = pool
     .filter((c) => isTricky(progress[c.w]))
     .sort((a, b) => progress[b.w].wrong - progress[a.w].wrong);
+  const flaggedPool = pool.filter((c) => flagged[c.w] !== undefined);
   const mastered = pool.filter((c) => cardStatus(progress[c.w]) === 'mastered');
-  const todayDue = due.slice(0, size);
-  const newLeft = Math.max(0, NEW_PER_DAY - newToday(progress));
-  const todayNew = fresh.slice(0, Math.min(newLeft, Math.max(0, size - todayDue.length)));
   const days = streak(state.flashcards?.days ?? []);
   const fc = state.flashcards;
+  const setsDone = todaySets.filter((st) => st.done).length;
 
-  const decks: { id: string; title: string; sub: string; cards: () => FlashCard[]; primary?: boolean }[] = [
+  const decks: { id: string; title: string; sub: string; cards: () => FlashCard[]; primary?: boolean; empty: boolean }[] = [
     {
-      id: 'today',
-      title: 'Today’s review',
-      sub:
-        todayDue.length + todayNew.length === 0
-          ? newLeft === 0
-            ? `Done for today — ${NEW_PER_DAY} new words learned`
-            : 'All caught up — nothing due'
-          : `${todayDue.length} due · ${todayNew.length} new`,
-      cards: () => [...shuffle(todayDue), ...shuffle(todayNew)],
+      id: 'master',
+      title: 'Master set',
+      sub: `all ${pool.length} words · reshuffled every session`,
+      cards: () => weightedShuffle(pool, (c) => masterWeight(progress[c.w], flagged[c.w] !== undefined)),
       primary: true,
+      empty: pool.length === 0,
     },
-    { id: 'new', title: 'New words', sub: `${fresh.length} you haven’t seen`, cards: () => fresh.slice(0, size) },
     {
-      id: 'tricky',
-      title: 'Tricky words',
-      sub: tricky.length ? `${tricky.length} you’ve missed` : 'none yet — nice',
-      cards: () => shuffle(tricky.slice(0, size)),
+      id: 'missed',
+      title: 'Missed words',
+      sub: missedPool.length ? `${missedPool.length} still to fix` : 'none yet — nice',
+      cards: () => shuffle(missedPool.slice(0, size)),
+      empty: missedPool.length === 0,
     },
-    { id: 'shuffle', title: 'Shuffle', sub: `${size} at random`, cards: () => shuffle(pool).slice(0, size) },
+    {
+      id: 'flagged',
+      title: 'Flagged',
+      sub: flaggedPool.length ? `${flaggedPool.length} flagged` : 'tap ⚐ on any card',
+      cards: () => shuffle(flaggedPool).slice(0, size),
+      empty: flaggedPool.length === 0,
+    },
+    {
+      id: 'new',
+      title: 'New words',
+      sub: `${fresh.length} you haven’t seen`,
+      cards: () => fresh.slice(0, size),
+      empty: fresh.length === 0,
+    },
     {
       id: 'mastered',
       title: 'Keep them fresh',
       sub: mastered.length ? `${mastered.length} mastered` : 'master a few first',
       cards: () => shuffle(mastered).slice(0, size),
+      empty: mastered.length === 0,
     },
   ];
 
@@ -182,7 +261,7 @@ export function FlashcardsClient({
         All {cards.length} words from the core list, in their {families.length} meaning families. Every card shows the
         definition, the word in a real sentence (with the clue underlined), its family, and its opposite family — the
         trap answer on the test. Words you know move up five boxes and come back less and less often; words you miss
-        come straight back.
+        come straight back and land in your missed list. Flag anything you want to see more of.
       </p>
 
       {/* stats */}
@@ -225,8 +304,72 @@ export function FlashcardsClient({
         </div>
       </div>
 
+      {/* today's mini sets */}
+      <div className="mt-8 flex flex-wrap items-baseline justify-between gap-2">
+        <h2 className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.16em] text-muted">
+          Today’s practice · mini sets of {SET_SIZE}
+        </h2>
+        {todaySets.length > 0 && (
+          <span className="font-mono text-[11px] text-muted" data-testid="sets-done">
+            {setsDone} of {todaySets.length} done{setsDone === todaySets.length ? ' — nice work today' : ''}
+          </span>
+        )}
+      </div>
+      <p className="mt-1 text-[12.5px] text-muted">
+        Dealt fresh each day: words due back first, then the ones you flagged or missed, plus up to {NEW_PER_DAY} new
+        words — mixed so every set has some of each.
+      </p>
+      <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {!ready || !today ? (
+          <div className="rounded-lg border border-dashed border-line-strong p-4 text-[13px] text-muted">dealing today’s sets…</div>
+        ) : todaySets.length === 0 ? (
+          <div className="rounded-lg border border-dashed border-line-strong p-4 text-[13px] text-muted sm:col-span-2 lg:col-span-3">
+            Nothing due and you’ve met today’s new words. Run the master set, or play a game below.
+          </div>
+        ) : (
+          todaySets.map((st, i) => {
+            const parts = (['due', 'flagged', 'missed', 'new'] as const)
+              .filter((k) => st.kinds[k])
+              .map((k) => `${st.kinds[k]} ${k}`);
+            return (
+              <button
+                key={i}
+                data-miniset={i}
+                onClick={() => startSet(i)}
+                className={`group rounded-lg border-[1.5px] p-4 text-left transition-all hover:-translate-y-0.5 ${
+                  st.done
+                    ? 'border-done/50 bg-done-wash shadow-[0_4px_0_0_var(--color-done)]'
+                    : 'border-ink bg-panel shadow-[0_4px_0_0_var(--color-ink)]'
+                }`}
+              >
+                <div className="flex items-baseline justify-between gap-2">
+                  <span className="font-display text-[16px] font-semibold">Mini set {i + 1}</span>
+                  {st.done ? (
+                    <span className="font-mono text-[11px] text-done">✓ {st.done.firstTry}/{st.done.total} first try</span>
+                  ) : (
+                    <span className="font-mono text-[11px] text-muted">{st.words.length} cards</span>
+                  )}
+                </div>
+                <div className="mt-1 text-[12px] text-muted">{parts.join(' · ')}</div>
+                <div className={`mt-3 font-mono text-[10.5px] ${st.done ? 'text-done' : 'text-active-deep'}`}>
+                  {st.done ? 'Go again →' : 'Flip cards →'}
+                </div>
+              </button>
+            );
+          })
+        )}
+      </div>
+      {ready && today && setsDone === todaySets.length && todaySets.length > 0 && (
+        <button
+          onClick={dealAnother}
+          className="mt-3 rounded-md border border-dashed border-line-strong px-3 py-2 font-mono text-[11.5px] text-ink-soft hover:border-ink hover:text-ink"
+        >
+          + Deal one more set
+        </button>
+      )}
+
       {/* mode */}
-      <h2 className="mb-2 mt-8 font-mono text-[10.5px] font-semibold uppercase tracking-[0.16em] text-muted">1 · How do you want to play?</h2>
+      <h2 className="mb-2 mt-10 font-mono text-[10.5px] font-semibold uppercase tracking-[0.16em] text-muted">1 · How do you want to play?</h2>
       <div className="grid gap-3 sm:grid-cols-3" role="radiogroup" aria-label="Game mode">
         {MODES.map((m) => (
           <button
@@ -280,18 +423,12 @@ export function FlashcardsClient({
       <h2 className="mb-2 mt-8 font-mono text-[10.5px] font-semibold uppercase tracking-[0.16em] text-muted">2 · Pick a deck</h2>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         {decks.map((d) => {
-          const deck = d.cards;
-          const empty =
-            d.id === 'today' ? todayDue.length + todayNew.length === 0 :
-            d.id === 'tricky' ? tricky.length === 0 :
-            d.id === 'mastered' ? mastered.length === 0 :
-            d.id === 'new' ? fresh.length === 0 : pool.length === 0;
           return (
             <button
               key={d.id}
               data-deck={d.id}
-              disabled={empty}
-              onClick={() => start(d.title, deck())}
+              disabled={d.empty}
+              onClick={() => start(d.title, d.cards())}
               className={`group rounded-lg border-[1.5px] p-4 text-left transition-all disabled:cursor-not-allowed disabled:opacity-50 ${
                 d.primary
                   ? 'border-ink bg-ink text-paper shadow-[0_4px_0_0_var(--color-active)] enabled:hover:-translate-y-0.5 sm:col-span-2 lg:col-span-1'
@@ -309,6 +446,14 @@ export function FlashcardsClient({
           );
         })}
       </div>
+
+      {/* the words you get wrong, and the ones you flagged */}
+      <WordLog
+        cards={cards}
+        progress={progress}
+        flagged={flagged}
+        onPractice={(title, ws) => start(title, shuffle(ws), 'flip')}
+      />
 
       {/* families */}
       <div className="mt-10 flex flex-wrap items-end justify-between gap-3">
@@ -417,5 +562,108 @@ function Segmented({
         ))}
       </div>
     </div>
+  );
+}
+
+function WordLog({
+  cards,
+  progress,
+  flagged,
+  onPractice,
+}: {
+  cards: FlashCard[];
+  progress: Record<string, CardProgress>;
+  flagged: Record<string, number>;
+  onPractice: (title: string, cards: FlashCard[]) => void;
+}) {
+  const [tab, setTab] = useState<'missed' | 'flagged'>('missed');
+  const [all, setAll] = useState(false);
+  const missed = cards
+    .filter((c) => (progress[c.w]?.wrong ?? 0) > 0)
+    .sort(
+      (a, b) =>
+        progress[b.w].wrong - progress[a.w].wrong || (progress[b.w].lastMiss ?? 0) - (progress[a.w].lastMiss ?? 0),
+    );
+  const flags = cards.filter((c) => flagged[c.w] !== undefined).sort((a, b) => flagged[b.w] - flagged[a.w]);
+  const list = tab === 'missed' ? missed : flags;
+  const shown = all ? list : list.slice(0, 8);
+  const toFix = tab === 'missed' ? missed.filter((c) => isTricky(progress[c.w])) : flags;
+
+  return (
+    <section className="mt-10 rounded-lg border border-line bg-panel p-4 sm:p-5" data-testid="word-log">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-1 font-mono text-[11.5px]" role="tablist" aria-label="Word log">
+          {(
+            [
+              ['missed', `Missed · ${missed.length}`],
+              ['flagged', `Flagged · ${flags.length}`],
+            ] as const
+          ).map(([id, label]) => (
+            <button
+              key={id}
+              role="tab"
+              aria-selected={tab === id}
+              onClick={() => {
+                setTab(id);
+                setAll(false);
+              }}
+              className={`rounded-md px-2.5 py-1 ${tab === id ? 'bg-ink text-paper' : 'text-ink-soft hover:bg-paper'}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <button
+          disabled={!toFix.length}
+          onClick={() => onPractice(tab === 'missed' ? 'Missed words' : 'Flagged words', toFix)}
+          className="rounded-md bg-ink px-3 py-1.5 font-mono text-[11.5px] text-paper hover:bg-active-deep disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {tab === 'missed' ? `Practice the ${toFix.length} not yet mastered →` : `Practice all ${toFix.length} →`}
+        </button>
+      </div>
+      {list.length === 0 ? (
+        <p className="mt-4 text-[13px] text-muted">
+          {tab === 'missed'
+            ? 'Every word you get wrong — in flip cards or a speed round — shows up here, with how often you missed it.'
+            : 'Tap ⚐ on any card (or press f) to flag a word. Flagged words get their own deck and show up in your daily sets.'}
+        </p>
+      ) : (
+        <ul className="mt-3 divide-y divide-line">
+          {shown.map((c) => {
+            const p = progress[c.w];
+            const acc = accuracy(p);
+            const status = cardStatus(p);
+            return (
+              <li key={c.w} className="flex items-start gap-3 py-2.5">
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                    <span className="font-semibold">{c.w}</span>
+                    <PosChip pos={c.pos} />
+                    <span className={`rounded border px-1.5 py-0.5 font-mono text-[10px] ${STATUS_CLASS[status]}`}>
+                      {STATUS_LABEL[status]}
+                    </span>
+                  </div>
+                  <div className="truncate text-[13px] text-ink-soft">{c.def}</div>
+                  {p && (
+                    <div className="mt-0.5 font-mono text-[10.5px] text-muted">
+                      {p.wrong > 0 && <span className="text-alert">missed {p.wrong}×</span>}
+                      {p.wrong > 0 && ' · '}
+                      {acc !== undefined && `${acc}% right`}
+                      {p.lastMiss ? ` · last missed ${ago(p.lastMiss)}` : ''}
+                    </div>
+                  )}
+                </div>
+                <FlagButton word={c.w} compact />
+              </li>
+            );
+          })}
+        </ul>
+      )}
+      {list.length > shown.length && (
+        <button onClick={() => setAll(true)} className="mt-2 font-mono text-[11.5px] text-active-deep hover:underline">
+          Show all {list.length} ↓
+        </button>
+      )}
+    </section>
   );
 }
