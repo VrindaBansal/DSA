@@ -6,6 +6,7 @@ import { BlockShell } from './BlockShell';
 import { CHEATSHEET_BY_LESSON } from '@/content/cheatsheets';
 import { useProgress, useLessonProgress } from '@/lib/progress/provider';
 import type { CheatsheetData } from '@/lib/types';
+import { Markdown } from '@/components/tutor/Markdown';
 
 /**
  * Terminal block of every lesson (spec §5.1): ops table, use-when /
@@ -148,7 +149,10 @@ export function MyNotes({ lessonId }: { lessonId: string }) {
         {lp.notes.map((n, i) => (
           <li key={i} className="group flex gap-2 text-[13.5px] leading-snug">
             <span className="font-mono text-active">§</span>
-            <span className="whitespace-pre-wrap">{n}</span>
+            {/* saved tutor replies: same markdown + KaTeX math as the chat */}
+            <div className="min-w-0 flex-1">
+              <Markdown text={n} />
+            </div>
             <button
               onClick={() => removeNote(lessonId, i)}
               className="no-print ml-auto self-start font-mono text-[10px] text-faint opacity-0 transition-opacity hover:text-alert group-hover:opacity-100"

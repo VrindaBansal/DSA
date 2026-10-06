@@ -891,6 +891,31 @@ const navHidden = await page.evaluate(
 if (navHidden) pass('nav hidden under @media print');
 else fail('print stylesheet leaves chrome visible');
 await page.emulateMedia({ media: 'screen' });
+{
+  // saved tutor replies keep their math: \[ … \] is typeset, not shown raw
+  const ctx = await browser.newContext({ viewport: { width: 1100, height: 900 } });
+  await ctx.request.post(`${BASE}/api/unlock`, { data: { password: SITE_PASSWORD } });
+  const note = String.raw`From 20% to 25% is 5 percentage points:
+\[
+\frac{25 - 20}{20} = 0.25 \text{ or } 25\%
+\]
+so a **25% increase**.`;
+  await ctx.addInitScript((n) => {
+    const lp = { lessonId: 'gre-percents', blocksSeen: [], checks: {}, code: {}, chat: [], notes: [n] };
+    localStorage.setItem('invariant.progress.v1', JSON.stringify({ lessons: { 'gre-percents': lp } }));
+  }, note);
+  const np = await ctx.newPage();
+  await np.goto(`${BASE}/lesson/gre-percents/cheatsheet`, { waitUntil: 'networkidle' });
+  const notes = np.locator('li', { hasText: 'From 20% to 25%' }).first();
+  const got = {
+    display: await notes.locator('.katex-display').count(),
+    bold: await notes.locator('strong', { hasText: '25% increase' }).count(),
+    raw: ((await notes.textContent()) ?? '').includes('\\['),
+  };
+  if (got.display === 1 && got.bold === 1 && !got.raw) pass('saved tutor notes render their math and markdown');
+  else fail(`saved tutor note rendering: ${JSON.stringify(got)}`);
+  await ctx.close();
+}
 
 // --- 3. API surface -------------------------------------------------------------
 section('API surface');
