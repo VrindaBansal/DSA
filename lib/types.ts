@@ -200,6 +200,9 @@ export interface TradeoffTableData {
   id: string;
   lessonId: string;
   title: string;
+  /** Header over the row labels (the first column), if it needs one. */
+  labelColumn?: string;
+  /** Headers over the cells: one per cell in every row. */
   columns: string[];
   rows: { label: string; cells: string[] }[];
   note?: string;

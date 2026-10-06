@@ -47,6 +47,7 @@ export function ReferenceClient({ lessons }: { lessons: LessonMeta[] }) {
       matches(
         [
           t.title,
+          t.labelColumn ?? '',
           ...t.columns,
           ...t.rows.map((r) => `${r.label} ${r.cells.join(' ')}`),
         ].join(' '),

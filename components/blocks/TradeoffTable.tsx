@@ -46,7 +46,9 @@ export function TradeoffTableView({
         <table className="w-full border-collapse text-[13px]">
           <thead>
             <tr>
-              <th className="border-b-[1.5px] border-ink px-4 py-2 text-left font-mono text-[10px] uppercase tracking-wider text-muted" />
+              <th className="border-b-[1.5px] border-ink px-4 py-2 text-left font-mono text-[10px] uppercase tracking-wider text-muted">
+                {data.labelColumn}
+              </th>
               {data.columns.map((c) => (
                 <th
                   key={c}

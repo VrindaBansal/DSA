@@ -10,7 +10,8 @@ export const TRADEOFFS: TradeoffTableData[] = [
     id: 'lc-pattern-signals',
     lessonId: 'lc-method',
     title: 'The signal → pattern cheat table',
-    columns: ['If the problem says…', 'Reach for', 'Because'],
+    labelColumn: 'If the problem says…',
+    columns: ['Reach for', 'Because'],
     rows: [
       {
         label: 'Sorted array / two ends / pair summing to a target',
@@ -55,7 +56,8 @@ export const TRADEOFFS: TradeoffTableData[] = [
     id: 'lc-dp-forms',
     lessonId: 'lc-dp-1d',
     title: 'The three forms of the same DP',
-    columns: ['Form', 'How', 'Space', 'When to use'],
+    labelColumn: 'Form',
+    columns: ['How', 'Space', 'When to use'],
     rows: [
       {
         label: 'Top-down (memoized recursion)',

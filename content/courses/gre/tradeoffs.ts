@@ -50,7 +50,8 @@ export const TRADEOFFS: TradeoffTableData[] = [
     id: 'gre-number-zones',
     lessonId: 'gre-quant-comparison',
     title: 'Numbers to test in quantitative comparison (and why)',
-    columns: ['zone', 'try', 'what it catches'],
+    labelColumn: 'zone',
+    columns: ['try', 'what it catches'],
     rows: [
       { label: 'Zero', cells: ['0', 'products vanish; x² = x³ = 0'] },
       { label: 'One', cells: ['1', 'powers stop changing; x = x² = √x'] },
@@ -65,7 +66,8 @@ export const TRADEOFFS: TradeoffTableData[] = [
     id: 'gre-signal-words',
     lessonId: 'gre-tc-method',
     title: 'Signal words: which way does the sentence turn?',
-    columns: ['signal', 'examples', 'effect on the blank'],
+    labelColumn: 'signal',
+    columns: ['examples', 'effect on the blank'],
     rows: [
       { label: 'Contrast', cells: ['but, yet, although, though, despite, however, while, far from, rather than, instead', 'the blank goes AGAINST the clue'] },
       { label: 'Continuation', cells: ['and, moreover, indeed, in fact, also, likewise, not only … but also', 'the blank goes WITH the clue'] },
@@ -107,7 +109,8 @@ export const TRADEOFFS: TradeoffTableData[] = [
     id: 'gre-percent-tools',
     lessonId: 'gre-percents',
     title: 'Percent tools',
-    columns: ['situation', 'multiply by', 'example'],
+    labelColumn: 'situation',
+    columns: ['multiply by', 'example'],
     rows: [
       { label: 'Increase by p%', cells: ['(1 + p/100)', 'up 20% → × 1.2'] },
       { label: 'Decrease by p%', cells: ['(1 − p/100)', 'down 15% → × 0.85'] },

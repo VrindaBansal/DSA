@@ -171,6 +171,26 @@ for (const c of courseIds) {
 }
 console.log('  ok');
 
+section('tradeoff tables line up');
+// Every row fills exactly one cell per column header; a header over the row
+// labels goes in labelColumn. Otherwise headers sit over the wrong cells and
+// the last column comes out empty.
+{
+  const { pathToFileURL } = await import('node:url');
+  let tables = 0;
+  for (const c of courseIds) {
+    const tf = path.join(coursesDir, c, 'tradeoffs.ts');
+    if (!exists(tf)) continue;
+    for (const t of (await import(pathToFileURL(tf).href)).TRADEOFFS) {
+      tables++;
+      for (const r of t.rows)
+        if (r.cells.length !== t.columns.length)
+          fail(`tradeoff ${t.id} / ${r.label}: ${r.cells.length} cells under ${t.columns.length} columns`);
+    }
+  }
+  console.log(`  ${tables} tables, every row fills every column`);
+}
+
 // --- verdict ----------------------------------------------------------------
 console.log(
   failures === 0
