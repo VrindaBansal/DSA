@@ -9,18 +9,18 @@ export const QUESTIONS: Question[] = [
     prompt:
       'Gmail returns control to you the instant you press Send, even though delivering mail over SMTP can take seconds. What property of a queue makes it the right structure here?',
     options: [
-      'It preserves arrival order while letting the producer and consumer run at different speeds',
-      'It allows O(1) lookup of any message by id',
-      'It keeps messages sorted by recipient so delivery is faster',
-      'It compresses messages so the network transfer is cheaper',
+      'It keeps messages sorted by recipient, so each mail server receives them in batches',
+      'It allows O(1) lookup of any message by its id, so the sender can check on delivery',
+      'It preserves arrival order while letting producer and consumer run at different speeds',
+      'It compresses queued messages, so the network transfer is cheaper and finishes sooner',
     ],
-    correctIndex: 0,
+    correctIndex: 2,
     explanation:
       'The queue decouples the producer (the UI thread enqueuing your message) from the consumer (the SMTP worker draining at its own pace), while FIFO ordering guarantees mails go out in the order you sent them. That decoupling-with-order is the whole abstraction.',
     distractorNotes: [
-      'This is the right answer.',
-      'Tempting because queues are fast — but a queue gives you O(1) at the *ends only*; lookup by key is a dict’s job.',
       'Queues never sort. If you need “most important first,” you want a priority queue, which is a different contract.',
+      'Tempting because queues are fast — but a queue gives you O(1) at the *ends only*; lookup by key is a dict’s job.',
+      'This is the right answer.',
       'Nothing about a queue changes the bytes. This confuses the transport with the buffer in front of it.',
     ],
   },
@@ -31,7 +31,12 @@ export const QUESTIONS: Question[] = [
     difficulty: 2,
     prompt:
       'You implement a queue as a Python list: enqueue with lst.append(x), dequeue with lst.pop(0). What is the cost of one dequeue on a queue of n items?',
-    options: ['O(1)', 'O(log n)', 'O(n)', 'Amortized O(1), worst case O(n)'],
+    options: [
+      'O(1): pop(0) just drops the first slot',
+      'O(log n): the list re-balances itself',
+      'O(n): every remaining item shifts left',
+      'Amortized O(1), with an O(n) worst case',
+    ],
     correctIndex: 2,
     explanation:
       'lst.pop(0) removes index 0, and CPython then memmoves all n−1 remaining elements one slot left to keep the array contiguous. Every single dequeue pays O(n). This is precisely why collections.deque exists.',
@@ -50,18 +55,18 @@ export const QUESTIONS: Question[] = [
     prompt:
       'In a ring buffer, you observe head == tail. What do you know about the buffer?',
     options: [
-      'It is empty',
-      'It is full',
-      'Nothing yet — it is either empty or full, and you need extra state (e.g. a count) to tell which',
-      'head == tail is impossible after the first enqueue',
+      'Nothing yet: it’s empty or full, and you need a count to tell which',
+      'It is full: the tail has wrapped all the way around to the head',
+      'It is empty: head == tail means nothing is waiting to be read',
+      'Nothing, because head == tail can never happen after the first enqueue',
     ],
-    correctIndex: 2,
+    correctIndex: 0,
     explanation:
       'Both states collapse to the same pointer picture: dequeue until empty and head catches tail; enqueue until full and tail wraps around to catch head. The classic fixes are an explicit count, or sacrificing one slot so “full” is tail+1 == head.',
     distractorNotes: [
-      'True right after construction, but also the exact picture when the buffer is full — that’s the ambiguity.',
-      'Same trap mirrored: full looks identical to empty from the pointers alone.',
       'Correct.',
+      'Same trap mirrored: full looks identical to empty from the pointers alone.',
+      'True right after construction, but also the exact picture when the buffer is full — that’s the ambiguity.',
       'It recurs constantly — every time the buffer drains completely, and every time it fills completely.',
     ],
   },
@@ -73,19 +78,19 @@ export const QUESTIONS: Question[] = [
     prompt:
       'For a sliding-window problem you need to remove from the front and add to the back, thousands of times. Why is collections.deque the right call over list?',
     options: [
-      'deque keeps elements sorted as they arrive',
-      'deque does O(1) appends and pops at both ends; list pays O(n) at the front',
-      'deque uses less memory per element than list',
-      'deque is thread-safe, list is not',
+      'deque keeps its elements sorted as they arrive, so the window stays ordered',
+      'deque is thread-safe and list is not, so the window can’t be corrupted mid-slide',
+      'deque uses much less memory per element than a list, so it fits in cache better',
+      'deque does O(1) appends and pops at both ends; a list pays O(n) at the front',
     ],
-    correctIndex: 1,
+    correctIndex: 3,
     explanation:
       'deque is a doubly-linked list of fixed-size blocks, so both ends are O(1). A list is one contiguous array: the back is cheap, but the front costs a full shift. In a window loop that difference is O(n) vs O(n²) overall.',
     distractorNotes: [
       'No container in this story sorts anything; ordering is arrival order.',
-      'Correct.',
-      'Backwards, if anything — deque’s block structure carries overhead. You pay a little memory for O(1) ends.',
       'deque’s append/popleft are atomic, which helps, but that’s not why it wins sliding windows — the complexity is.',
+      'Backwards, if anything — deque’s block structure carries overhead. You pay a little memory for O(1) ends.',
+      'Correct.',
     ],
   },
   {
@@ -217,12 +222,12 @@ class RingBuffer:
       prompt:
         'You just implemented enqueue and dequeue. What is the time complexity of each operation?',
       options: [
-        'O(1) worst case — one slot touched, one pointer moved, never a resize',
-        'Amortized O(1) — occasional resizes cost O(n)',
-        'O(n) — the buffer must shift elements on dequeue',
-        'O(log n) — the pointer wrap is a binary operation',
+        'Amortized O(1): an occasional resize to grow the buffer costs O(n)',
+        'O(1) worst case: one slot touched, one pointer moved, never a resize',
+        'O(n): the buffer has to shift every element forward on each dequeue',
+        'O(log n): wrapping the pointer around the end is a binary operation',
       ],
-      correctIndex: 0,
+      correctIndex: 1,
       explanation:
         'Fixed capacity is the point: no resize can ever happen, so this is true worst-case O(1) — stronger than a dynamic array’s amortized O(1) append. (If you answered “amortized,” you were thinking of the growable structure this one deliberately is not.)',
     },

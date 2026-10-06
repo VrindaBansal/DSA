@@ -171,21 +171,21 @@ export const QUESTIONS: Question[] = [
     difficulty: 2,
     prompt: 'A city’s unemployment rate fell from 8% to 6%. Which of the following statements is true?',
     options: [
-      'The rate fell by 2 percent.',
-      'The rate fell by 2 percentage points, a 25% decrease.',
-      'The rate fell by 25 percentage points.',
+      'The rate fell by 2 percent, a 2% decrease.',
+      'The rate fell by 6 percentage points, a 75% decrease.',
+      'The rate fell by 25 percentage points, a 25% decrease.',
       'The rate fell by 2 percentage points, a 33⅓% decrease.',
-      'The rate fell by 6 percentage points.',
+      'The rate fell by 2 percentage points, a 25% decrease.',
     ],
-    correctIndex: 1,
+    correctIndex: 4,
     explanation:
       '**Step 1 — Percentage points:** subtract the rates: 8 − 6 = 2 points.\n**Step 2 — Percent change:** divide the change by the original rate: 2/8 = 0.25 = 25%.\n**Answer:** a drop of **2 percentage points, which is a 25% decrease**.',
     distractorNotes: [
       'The drop is 2 percentage points, but as a percent it is 25%, not 2%.',
-      'Correct.',
+      '6% is the new rate, not the change.',
       'Points are found by subtracting the rates: 2, not 25.',
       '2/6 divides by the new rate; divide by the original, 8.',
-      '6% is the new rate, not the change.',
+      'Correct.',
     ],
   },
   {

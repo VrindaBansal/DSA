@@ -286,7 +286,7 @@ export const Q2H = section(1, 'q2h', [
     3,
     'int',
     'If p is a prime number greater than 3, which of the following must be true?\n\nIndicate all such statements.',
-    ['p + 1 is even.', 'p² − 1 is divisible by 3.', 'p + 2 is prime.', 'p² + 1 is divisible by 5.', 'p² − 1 is divisible by 24.'],
+    ['p + 1 is an even number.', 'p² − 1 is divisible by 3.', 'p + 2 is a prime number.', 'p² + 1 is divisible by 5.', 'p² − 1 is divisible by 24.'],
     [0, 1, 4],
     'Every prime greater than 3 is odd and not a multiple of 3. Odd → p + 1 is even ✓. Not a multiple of 3 → p is 1 or 2 more than a multiple of 3, so p² leaves remainder 1 when divided by 3, and p² − 1 is divisible by 3 ✓. Also p² − 1 = (p − 1)(p + 1) is a product of consecutive even numbers (divisible by 8) and divisible by 3, so by 24 ✓. Counterexamples kill the rest: p = 7 gives p + 2 = 9 (not prime); p = 5 gives p² + 1 = 26 (not divisible by 5).',
   ),

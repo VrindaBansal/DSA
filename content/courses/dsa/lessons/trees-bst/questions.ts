@@ -9,19 +9,19 @@ export const QUESTIONS: Question[] = [
     prompt:
       'Autocomplete backends use a trie. Looking up the prefix "mon" in a trie holding one million words costs:',
     options: [
-      'O(log n) — trees are logarithmic',
-      'O(3) — proportional to the PREFIX length, independent of how many words are stored',
-      'O(n) — every word must be checked against the prefix',
-      'O(n log n) — lookup plus ranking',
+      'O(log n): it’s a tree, and tree lookups are logarithmic in the word count',
+      'O(n log n): one lookup per word, plus the cost of ranking the matches',
+      'O(n): every stored word has to be checked against the prefix one by one',
+      'O(3): proportional to the prefix length, not to how many words are stored',
     ],
-    correctIndex: 1,
+    correctIndex: 3,
     explanation:
       'A trie walk consumes one character per edge: m→o→n, three steps, whether the dictionary holds a thousand words or a billion. Dictionary size affects breadth (children per node), not path length. That decoupling — cost tied to the query, not the corpus — is why tries own prefix search, and the same idea B-trees apply to disk pages.',
     distractorNotes: [
       'Log n is the signature of *comparison* trees (BSTs); tries don’t compare keys, they spell them.',
-      'Correct.',
-      'That’s the grep plan — exactly what the trie exists to avoid.',
       'Ranking the completions costs extra, but the *prefix walk* itself is O(len(prefix)).',
+      'That’s the grep plan — exactly what the trie exists to avoid.',
+      'Correct.',
     ],
   },
   {

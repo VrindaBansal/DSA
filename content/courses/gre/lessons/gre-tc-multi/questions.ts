@@ -12,18 +12,18 @@ export const QUESTIONS: Question[] = [
     prompt: 'In a three-blank text completion, which blank should you usually solve first?',
     options: [
       'Always blank (i), because the blanks must be done in order',
-      'The blank with the most direct clue in the sentence',
       'Blank (iii), because the last blank is always easiest',
+      'The blank with the most direct clue in the sentence',
       'The blank with the hardest vocabulary',
       'It doesn’t matter; guess each blank independently',
     ],
-    correctIndex: 1,
+    correctIndex: 2,
     explanation:
       '**Step 1:** The blanks depend on each other, so a solid first answer makes the others easier.\n**Step 2:** The most solid answer comes from the blank with the strongest clue — wherever it is.\n**Answer:** start with **the blank that has the most direct clue**, then use it as a clue for the rest.',
     distractorNotes: [
       'Blank (i) often comes before the clues and is frequently the hardest.',
-      'Correct.',
       'Sometimes true, but not a rule.',
+      'Correct.',
       'Hard vocabulary is a reason to solve that blank LAST, after the others narrow it down.',
       'The blanks depend on each other — that connection is what makes them solvable.',
     ],

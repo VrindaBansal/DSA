@@ -245,8 +245,9 @@ const stdev: Generator = {
     }
     const sets: number[][] = [];
     const seen = new Set<string>();
+    // every set the same size, so no choice stands out by its length
+    const len = ri(r, 3, 5);
     while (sets.length < 5) {
-      const len = ri(r, 3, 5);
       const center = ri(r, 3, 20);
       const spread = ri(r, 0, 6);
       const xs = Array.from({ length: len }, () => center + ri(r, -spread, spread)).sort((a, b) => a - b);
@@ -803,7 +804,7 @@ const diTable: Generator = {
             note: `${fmt(Number((incs[i] * 100).toFixed(1)))}%${i === absBest && i !== bi ? ' — the largest ABSOLUTE increase, but it started from a bigger base.' : '.'}`,
           }))
           .filter((_, i) => i !== bi)
-          .concat(ctx.rows.length === 4 ? [{ text: 'It cannot be determined from the table.', note: 'Everything needed is in the table.' }] : []),
+          .concat(ctx.rows.length === 4 ? [{ text: 'Can’t be determined', note: 'Everything needed is in the table.' }] : []),
         explanation: `Percent increase = (${years[2]} − ${years[0]}) ÷ ${years[0]} for each row:\n${ctx.rows.map((nm, i) => `${nm}: ${fmt(vals[i][0])} → ${fmt(vals[i][2])} = ${fmt(Number((incs[i] * 100).toFixed(1)))}%`).join('\n')}\nGreatest: **${ctx.rows[bi]}**.${absBest !== bi ? ` (${ctx.rows[absBest]} grew the most in absolute terms — the classic trap.)` : ''}`,
         difficulty: 2,
         stimulus: { table },

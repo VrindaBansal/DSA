@@ -8,11 +8,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "npm run test:content && npm run test:exercises && npm run test:bank && npm run test:tests",
+    "test": "npm run test:content && npm run test:exercises && npm run test:bank && npm run test:tests && npm run test:lengths",
     "test:content": "node scripts/check-content.mjs",
     "test:exercises": "python3 scripts/check-exercises.py",
     "test:bank": "node scripts/check-gre-bank.mjs",
     "test:tests": "node scripts/check-gre-tests.mjs",
+    "test:lengths": "node scripts/check-answer-lengths.mjs",
     "test:e2e": "node scripts/e2e.mjs"
   },
   "dependencies": {

@@ -9,17 +9,17 @@ export const QUESTIONS: Question[] = [
     prompt:
       'BFS explores a graph level by level. Why must its frontier be a queue rather than a stack?',
     options: [
-      'A queue is faster than a stack for graph work',
-      'FIFO guarantees nodes are expanded in discovery order, so all distance-k nodes are processed before any distance-k+1 node',
-      'A stack cannot store graph nodes, only numbers',
-      'BFS needs random access to the frontier and queues provide it',
+      'FIFO expands nodes in discovery order, so all distance-k nodes come before k+1',
+      'A queue is faster than a stack for graph work, so BFS finishes in fewer steps',
+      'A stack can only hold numbers, while a queue can store full graph node objects',
+      'BFS needs random access into its frontier, and only a queue can provide that',
     ],
-    correctIndex: 1,
+    correctIndex: 0,
     explanation:
       'The frontier’s discipline IS the traversal order. FIFO expands oldest-discovered first, which sweeps outward one distance layer at a time — that layering is what makes BFS find shortest paths in unweighted graphs. Swap in a stack (LIFO) and the same loop becomes DFS.',
     distractorNotes: [
-      'Both are O(1) per operation; speed is not the difference — ordering discipline is.',
       'Correct.',
+      'Both are O(1) per operation; speed is not the difference — ordering discipline is.',
       'Any container stores anything; contracts differ, not payloads.',
       'Neither structure offers random access, and BFS never needs it — it only pops the front and pushes the back.',
     ],
@@ -32,10 +32,10 @@ export const QUESTIONS: Question[] = [
     prompt:
       'An ER triage system always treats the most critical patient next, regardless of arrival time. Which structure models this, and what does its “dequeue” cost?',
     options: [
-      'A queue — O(1)',
-      'A priority queue (binary heap) — O(log n)',
-      'A sorted list re-sorted on every arrival — O(1) to serve',
-      'A deque — O(1) at either end',
+      'A plain queue, since dequeue is O(1)',
+      'A priority queue (binary heap): O(log n)',
+      'A list re-sorted on every arrival: O(1)',
+      'A deque, since it’s O(1) at either end',
     ],
     correctIndex: 1,
     explanation:
@@ -142,12 +142,12 @@ class QueueFromStacks:
       prompt:
         'A single dequeue can pour n elements. Why do we still call this queue O(1)?',
       options: [
-        'Because each element is moved at most once ever, the total over n operations is O(n) — amortized O(1) per operation',
-        'Because Python lists make pouring free',
-        'We don’t — dequeue is O(n) and that’s that',
-        'Because the pour happens at most once in the queue’s lifetime',
+        'The pour happens at most once in the queue’s whole lifetime, so it’s negligible',
+        'Python lists make pouring free, because popping and appending are both O(1)',
+        'We don’t: a single dequeue can be O(n), so the queue is O(n) per operation',
+        'Each element is moved at most once ever, so n operations cost O(n): O(1) amortized',
       ],
-      correctIndex: 0,
+      correctIndex: 3,
       explanation:
         'Charge each element two moves (one push into inbox, one pour into outbox) plus one pop when its turn comes — a constant per element. Any sequence of n operations costs O(n) total, so O(1) amortized, even though one unlucky dequeue pays for the whole backlog. Worst-case single-op latency is O(n), which is exactly the amortized-vs-worst-case distinction from Module 1.',
     },

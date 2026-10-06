@@ -34,6 +34,40 @@ export const farClusters = (c: Cluster): Cluster[] => CLUSTERS.filter((o) => o.p
 
 const farWords = (c: Cluster): WordRef[] => farClusters(c).flatMap((o) => o.words.map((x) => ({ ...x, c: o })));
 
+/**
+ * Like farPick, but the words' definitions run about as long as `len`: a
+ * little shorter at most, up to a fifth longer (or a few characters either
+ * way for very short definitions), allowing longer ones only if too few
+ * qualify. When the definitions are the answer choices, no choice stands out
+ * by length.
+ */
+function farPickByLength(r: Rng, c: Cluster, k: number, len: number): WordRef[] {
+  const pool = shuffle(r, farWords(c));
+  for (const widen of [1, 1.5, 2.5]) {
+    const lo = len - Math.max(3, 0.08 * len); // never widen downward: the answer must not end up longest
+    const hi = len + widen * Math.max(8, 0.2 * len);
+    const out: WordRef[] = [];
+    const clusters = new Set<string>();
+    for (const x of pool) {
+      if (x.def.length < lo || x.def.length > hi || clusters.has(x.c.id)) continue;
+      out.push(x);
+      clusters.add(x.c.id);
+      if (out.length === k) return out;
+    }
+  }
+  // still too few: take the closest lengths there are, longer ones first on ties
+  const out: WordRef[] = [];
+  const clusters = new Set<string>();
+  const near = [...pool].sort((x, y) => Math.abs(x.def.length - len) - Math.abs(y.def.length - len) || y.def.length - x.def.length);
+  for (const x of near) {
+    if (clusters.has(x.c.id)) continue;
+    out.push(x);
+    clusters.add(x.c.id);
+    if (out.length === k) break;
+  }
+  return out;
+}
+
 /** Pick k far words from k different clusters. */
 function farPick(r: Rng, c: Cluster, k: number, avoid: Set<string> = new Set()): WordRef[] {
   const cs = shuffle(r, farClusters(c).filter((o) => !avoid.has(o.id))).slice(0, k);
@@ -78,7 +112,7 @@ const vocabMeaning: Generator = {
   all() {
     const r = seeded('vm');
     return shuffleStable(ALL_WORDS, 'vm').flatMap((x) => {
-      const ds = farPick(r, x.c, 4);
+      const ds = farPickByLength(r, x.c, 4, x.def.length);
       const example = fillFrame(pick(r, x.c.frames), x.w);
       const built = mc(r, {
         prompt: `**${x.w}** most nearly means:`,

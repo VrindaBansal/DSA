@@ -9,10 +9,10 @@ export const QUESTIONS: Question[] = [
     prompt:
       'reversed = list(reversed(arr)) vs arr.reverse(). In space-complexity terms, what separates them?',
     options: [
-      'Nothing — both are O(n) because the array has n elements',
-      'The first allocates O(n) auxiliary space; the second reverses in place with O(1) auxiliary',
-      'The second is O(n²) because swaps are expensive',
-      'The first is faster, so it uses less space',
+      'Nothing: both are O(n), because the array itself has n elements either way',
+      'The first allocates O(n) extra space; the second reverses in place in O(1) extra',
+      'The second is O(n²) space, because every swap allocates a temporary element',
+      'The first is faster, and faster code always uses less space, so it’s O(1)',
     ],
     correctIndex: 1,
     explanation:
@@ -32,19 +32,19 @@ export const QUESTIONS: Question[] = [
     prompt:
       'A recursive function sums a linked list of length n, no allocations anywhere. Its space complexity is:',
     options: [
-      'O(1) — it allocates nothing',
-      'O(n) — every unfinished call sits on the call stack',
-      'O(log n) — recursion always logs',
-      'O(n²) — each frame copies the list',
+      'O(1): it never allocates anything, so it needs no extra memory',
+      'O(n²): each new stack frame makes its own copy of the list',
+      'O(log n): recursion depth is always logarithmic in the input',
+      'O(n): every unfinished call is still sitting on the call stack',
     ],
-    correctIndex: 1,
+    correctIndex: 3,
     explanation:
       'Each recursive call pushes a stack frame that lives until its child returns; a linear chain means n simultaneous frames. The call stack is memory — recursion depth IS space complexity. (It’s also why deep recursion hits Python’s 1000-frame limit.)',
     distractorNotes: [
       'The heap is quiet, but the *stack* grows to depth n — frames are allocations too.',
-      'Correct.',
-      'Log-depth needs the problem to *halve* per call (like binary search or balanced-tree walks); walking a list decrements by 1.',
       'Frames hold a pointer each, not a copy — O(1) per frame, n frames.',
+      'Log-depth needs the problem to *halve* per call (like binary search or balanced-tree walks); walking a list decrements by 1.',
+      'Correct.',
     ],
   },
   {
@@ -54,17 +54,17 @@ export const QUESTIONS: Question[] = [
     difficulty: 2,
     prompt: 'Auxiliary space of classic merge sort vs in-place quicksort?',
     options: [
-      'Both O(1) — sorting rearranges, it doesn’t allocate',
-      'Merge O(n) for the merge buffer; quicksort O(log n) expected for its recursion stack',
-      'Both O(n) — recursion always costs linear space',
-      'Merge O(log n), quicksort O(n) — merge is the frugal one',
+      'Merge O(n) for its merge buffer; quicksort O(log n) expected for its stack',
+      'Both O(1): sorting only rearranges elements, it never allocates new space',
+      'Both O(n): any recursive algorithm always costs linear space for its calls',
+      'Merge O(log n) and quicksort O(n): merge sort is the more frugal of the two',
     ],
-    correctIndex: 1,
+    correctIndex: 0,
     explanation:
       'Merging two runs needs a scratch buffer proportional to the run — Θ(n) at top level. Quicksort partitions in place; its only space is the recursion stack, O(log n) deep on balanced splits (O(n) worst case on degenerate pivots — the same degeneration the sorting race shows).',
     distractorNotes: [
-      'Merge fundamentally cannot interleave two runs in place without extra memory (in-place merge exists but is famously impractical).',
       'Correct.',
+      'Merge fundamentally cannot interleave two runs in place without extra memory (in-place merge exists but is famously impractical).',
       'Depth depends on how fast the problem shrinks: halving → log, decrement → linear.',
       'Backwards: merge carries the buffer, quicksort is the in-place one.',
     ],

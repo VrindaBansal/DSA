@@ -9,17 +9,17 @@ export const QUESTIONS: Question[] = [
     prompt:
       'T(n) = 2T(n/2) + cn (merge sort). What does the recursion tree show at each level?',
     options: [
-      'Level costs halve as you descend — the root dominates, so O(n)',
-      'Every level costs exactly cn, and there are log₂ n levels — so O(n log n)',
-      'Level costs double as you descend — the leaves dominate, so O(n²)',
-      'The tree has n levels of cost c — so O(n)',
+      'Every level costs exactly cn, over log₂ n levels: O(n log n)',
+      'Level costs halve as you descend, so the root dominates: O(n)',
+      'Level costs double as you descend, so the leaves dominate: O(n²)',
+      'The tree has n levels that each cost c, so the total is O(n)',
     ],
-    correctIndex: 1,
+    correctIndex: 0,
     explanation:
       'Level k has 2ᵏ nodes each doing c·(n/2ᵏ) work: the product is cn at every level. Flat level sums × log₂ n levels = Θ(n log n). "Every level costs the same" is the signature of the balanced case.',
     distractorNotes: [
-      'Halving level sums happen when the combine work shrinks faster than nodes multiply — e.g. T(n)=T(n/2)+n gives a geometric series dominated by the root: O(n).',
       'Correct.',
+      'Halving level sums happen when the combine work shrinks faster than nodes multiply — e.g. T(n)=T(n/2)+n gives a geometric series dominated by the root: O(n).',
       'Doubling level sums is T(n)=4T(n/2)+n territory: leaves dominate, Θ(n²).',
       'Depth is log₂ n, not n — the input halves each level.',
     ],
@@ -32,10 +32,10 @@ export const QUESTIONS: Question[] = [
     prompt:
       'Naive fib(n) calls fib(n−1) and fib(n−2). What does its recursion tree look like, and what cost does that imply?',
     options: [
-      'A balanced binary tree of depth log n — O(n log n)',
-      'A path of n calls — O(n)',
-      'A binary tree of depth ~n where the node count roughly doubles per level — exponential, Θ(φⁿ)',
-      'A grid of n² calls — O(n²)',
+      'A balanced binary tree of depth log n, so O(n log n) work in total',
+      'A single path of n calls, one for each value, so O(n) work in total',
+      'A tree of depth ~n whose levels roughly double: exponential, Θ(φⁿ)',
+      'A grid of n² calls, one for each pair of values, so O(n²) in total',
     ],
     correctIndex: 2,
     explanation:
@@ -54,18 +54,18 @@ export const QUESTIONS: Question[] = [
     difficulty: 3,
     prompt: 'T(n) = 4T(n/2) + cn. Which term wins, and what is T(n)?',
     options: [
-      'The root — T(n) = Θ(n)',
-      'All levels tie — T(n) = Θ(n log n)',
-      'The leaves — level sums double every level, T(n) = Θ(n²)',
-      'Cannot be determined without the base case constant',
+      'The root: level sums shrink, so T(n) = Θ(n)',
+      'The leaves: level sums double, so T(n) = Θ(n²)',
+      'Every level costs the same, so T(n) = Θ(n log n)',
+      'It can’t be decided without the base-case constant',
     ],
-    correctIndex: 2,
+    correctIndex: 1,
     explanation:
       'Level k: 4ᵏ nodes × c·n/2ᵏ work = cn·2ᵏ — the level sums *grow* geometrically, so the last level dominates. There are n^(log₂4) = n² leaves doing O(1) each: Θ(n²). Master theorem case 1: log_b a = 2 > 1, so n^(log_b a) wins.',
     distractorNotes: [
       'Root-dominates needs level sums that *shrink* (a·f(n/b) < f(n), e.g. T(n)=T(n/2)+n).',
-      'The tie case needs f(n) ≈ n^(log_b a); here n vs n² — no tie.',
       'Correct.',
+      'The tie case needs f(n) ≈ n^(log_b a); here n vs n² — no tie.',
       'Base-case constants shift the answer by a constant factor only; growth class is determined by the recurrence shape.',
     ],
   },

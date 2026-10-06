@@ -9,19 +9,19 @@ export const QUESTIONS: Question[] = [
     prompt:
       '"Binary search on the answer" solves problems with no sorted array in sight (ship capacity, git bisect). What property must the feasibility check have for this to be valid?',
     options: [
-      'Monotonicity: if capacity c works then every c′ > c works — the yes/no answers form a single NO…NO YES…YES boundary to hunt',
-      'The check must run in O(1)',
-      'The answer must be an integer power of two',
-      'The check must be deterministic but can flip arbitrarily between yes and no',
+      'The check must be deterministic, though it may flip between yes and no freely',
+      'The check must run in O(1) time, or else the search loses its logarithmic speedup',
+      'The answer must be an integer power of two so that halving always lands on one',
+      'Monotonicity: if capacity c works, every larger capacity works, so yes/no flips once',
     ],
-    correctIndex: 0,
+    correctIndex: 3,
     explanation:
       'Binary search never searches arrays — it searches any space where one comparison discards half. A monotonic predicate gives the space that structure: all NOs then all YESes, one boundary. can_ship(c) is monotone (more capacity never hurts); "does commit X have the bug" is monotone in history (bugs persist once introduced — git bisect’s actual assumption). Arbitrary flips (option D) destroy the discard step: the eliminated half could hide the boundary.',
     distractorNotes: [
-      'Correct.',
+      'Deterministic but non-monotone is exactly the case where discarding half is unsound.',
       'The check is usually O(n) — total O(n log range) is the whole selling point.',
       'The range can be anything ordered; powers of two are irrelevant.',
-      'Deterministic but non-monotone is exactly the case where discarding half is unsound.',
+      'Correct.',
     ],
   },
   {
@@ -73,12 +73,12 @@ def test_no_crash_on_duplicates_everywhere():
     complexityCheck: {
       prompt: 'Why can’t bisect_left use the classic "if a[mid] == x: return mid" shortcut?',
       options: [
-        'Because an equal element at mid proves nothing about being LEFTMOST — the run of equals may extend left, so the search must continue narrowing (still O(log n))',
-        'Because equality comparisons are slow in Python',
-        'It can — the shortcut is a valid optimization',
-        'Because bisect_left must be O(n) to scan duplicates',
+        'Equality comparisons are slow in Python, so skipping them makes the loop faster',
+        'An equal element at mid doesn’t prove it’s the LEFTMOST one, so the search must go on',
+        'It can: the shortcut is a valid optimization that returns a correct index early',
+        'bisect_left has to be O(n) anyway, because it must scan through every duplicate',
       ],
-      correctIndex: 0,
+      correctIndex: 1,
       explanation:
         'bisect_left answers a boundary question ("first index ≥ x"), not a membership question. Returning at the first equality would give SOME index of x, not the first one — [1,2,2,2,3] could return 2 instead of 1. The boundary formulation with hi = mid handles duplicates for free and is still O(log n): the run of equals is halved like everything else.',
     },

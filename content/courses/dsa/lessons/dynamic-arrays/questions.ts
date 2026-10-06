@@ -9,17 +9,17 @@ export const QUESTIONS: Question[] = [
     prompt:
       'Two pointers finds a pair summing to a target in a SORTED array in O(n). Why does the technique collapse on an unsorted array?',
     options: [
-      'It doesn’t — two pointers works on any array',
-      'The pointer moves are justified by ordering: "sum too small → left++ can only help" is only true when values increase rightward',
-      'Unsorted arrays cannot be indexed from both ends',
-      'The pointers would collide in the middle',
+      'Each move relies on order: “sum too small → left++” only helps if values increase',
+      'It doesn’t: two pointers works on any array, sorted or not, in the same O(n)',
+      'Unsorted arrays can’t be indexed from both ends, so the right pointer has no start',
+      'The two pointers would collide in the middle before they ever reach the pair',
     ],
-    correctIndex: 1,
+    correctIndex: 0,
     explanation:
       'Each pointer move discards candidates forever. That discard is safe only because sortedness proves the discarded pairings couldn’t work (if a[l]+a[r] < target, no pair using a[l] and anything left of r can reach it). Remove the order and the proof — and the algorithm — evaporates. Sort first (O(n log n)) or trade space for a hash set.',
     distractorNotes: [
-      'It runs on any array; it returns wrong answers on unsorted ones — worse than crashing.',
       'Correct.',
+      'It runs on any array; it returns wrong answers on unsorted ones — worse than crashing.',
       'Indexing is always fine; the *inference* from a comparison is what breaks.',
       'They do meet in the middle — that’s the normal termination, not the problem.',
     ],

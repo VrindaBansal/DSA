@@ -86,7 +86,7 @@ export const Q1 = section(5, 'q1', [
       1,
       'data',
       'At which branch were children’s books the greatest percent of that branch’s total checkouts?',
-      ['Central', 'East', 'North', 'West', 'East and West equally'],
+      ['Central', 'East', 'North', 'West', 'East and West tie'],
       2,
       'Children’s share of each branch’s total: Central 2,700/10,000 = 27%; East 1,300/4,000 = 32.5%; North 2,000/6,000 ≈ 33.3%; West 1,300/4,000 = 32.5%. North is highest. East and West tie with each other, but below North.',
     ),

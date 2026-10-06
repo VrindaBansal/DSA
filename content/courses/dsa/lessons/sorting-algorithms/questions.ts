@@ -9,17 +9,17 @@ export const QUESTIONS: Question[] = [
     prompt:
       'Comparison sorts cannot beat Ω(n log n), yet counting sort runs in O(n + k). How does it escape the lower bound, and when is the escape a bad deal?',
     options: [
-      'It never compares elements — it indexes by key value directly; the deal sours when the key range k dwarfs n (e.g. sorting 100 64-bit ids)',
-      'It uses parallelism to hide the log factor',
-      'It doesn’t escape — O(n+k) is secretly n log n',
-      'It only works on already-sorted input',
+      'It uses parallelism to hide the log factor, which only pays off on large inputs',
+      'It never compares elements, it indexes by key; a bad deal when key range k dwarfs n',
+      'It doesn’t escape: O(n + k) is secretly n log n once you count the hidden constant',
+      'It only works on input that is already sorted, so there is nothing left to compare',
     ],
-    correctIndex: 0,
+    correctIndex: 1,
     explanation:
       'The Ω(n log n) bound counts COMPARISONS — it’s an information-theoretic limit on decision trees. Counting sort asks a different question: not "is a < b?" but "what is a?", using the key as an array index. That requires small integer-ish keys: counting 100 elements ranging over 2⁶⁴ would allocate a universe-sized array. Radix sort is the fix — digit-by-digit counting passes, O(d·(n+b)).',
     distractorNotes: [
-      'Correct.',
       'Parallelism divides wall-clock, never asymptotics.',
+      'Correct.',
       'The bound genuinely doesn’t apply — it constrains comparison-based algorithms only. Knowing the bound’s *scope* is the interview point.',
       'Counting sort is oblivious to input order; k is its only sensitivity.',
     ],

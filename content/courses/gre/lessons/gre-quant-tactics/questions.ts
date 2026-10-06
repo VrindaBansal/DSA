@@ -174,18 +174,18 @@ export const QUESTIONS: Question[] = [
     options: [
       'Keep working until you solve it, since every question must be answered correctly.',
       'Leave it blank so that a wrong answer can’t lower your score.',
-      'Pick your best guess, mark it for review, and move on.',
       'Move on without answering and plan to come back if there’s time.',
+      'Pick your best guess, mark it for review, and move on.',
       'Go back and recheck all of the earlier questions first.',
     ],
-    correctIndex: 2,
+    correctIndex: 3,
     explanation:
       '**Step 1:** Every question is worth the same, so minutes spent here are minutes taken from easier questions.\n**Step 2:** There is no penalty for a wrong answer, so a guess can only help.\n**Answer:** **guess, mark it, and move on** — then come back from the Review screen if time allows.',
     distractorNotes: [
       'Spending more time on one question costs you easier questions later.',
       'There is no penalty for wrong answers — a blank is always worse than a guess.',
-      'Correct.',
       'If time runs out, it stays blank. Guess first, then come back.',
+      'Correct.',
       'That spends time without dealing with the current question.',
     ],
   },

@@ -9,10 +9,10 @@ export const QUESTIONS: Question[] = [
     prompt:
       'Chaining stores colliding keys in per-bucket lists. Open addressing (what CPython’s dict does) stores everything in the flat table and probes for the next slot. What does open addressing buy, and what does it pay?',
     options: [
-      'Buys cache-friendly, pointer-free storage; pays with probe sequences that demand a lower load factor and tombstones on delete',
-      'Buys unlimited load factor; pays with slower hashing',
-      'Buys sorted iteration order; pays with O(log n) lookup',
-      'Nothing — it is strictly worse than chaining',
+      'Buys cache-friendly, pointer-free storage; pays with a lower load factor and tombstones',
+      'Buys an unlimited load factor; pays with a slower hash function on every single lookup',
+      'Buys sorted iteration order; pays with O(log n) lookups instead of O(1) on average',
+      'Buys nothing: open addressing is strictly worse than chaining on every workload',
     ],
     correctIndex: 0,
     explanation:

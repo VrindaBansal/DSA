@@ -22,18 +22,18 @@ export const QUESTIONS: Question[] = [
     prompt:
       'You open a problem and have no idea how to solve it optimally. What is the best FIRST move?',
     options: [
-      'Sit and think silently until the clever trick appears',
-      'State a brute-force solution that obviously works, out loud, even if it is slow',
-      'Start typing the fastest algorithm you can half-remember',
-      'Skip it and find an easier problem',
+      'Sit and think silently until the clever trick finally comes to you',
+      'Start typing the fastest algorithm you can half-remember, and fix it as you go',
+      'Say a brute-force solution out loud that clearly works, even if it’s slow',
+      'Skip it, solve an easier problem first, and come back once you’re warmed up',
     ],
-    correctIndex: 1,
+    correctIndex: 2,
     explanation:
       'A correct brute force is a real answer — it locks in the input/output contract, gives you something to test against, and very often the optimization is just “remove the redundant work” from it. Silence and half-remembered tricks are how you freeze.',
     distractorNotes: [
       'Silence gives the interviewer nothing and gives you no traction — externalize the brute force first.',
-      'Correct — brute force first, then optimize.',
       'Typing before you have a correct idea is how you write confident nonsense you then have to debug.',
+      'Correct — brute force first, then optimize.',
       'Avoidance never builds the recognition muscle; work the problem from the brute force.',
     ],
   },
@@ -99,10 +99,10 @@ def test_length():
     prompt:
       'The constraints say 1 ≤ n ≤ 2·10⁵. Modern judges do ~10⁸ simple operations/second. What complexity should you be aiming for?',
     options: [
-      'O(n²) is fine',
-      'O(n log n) or O(n) — around 2·10⁵ log n ≈ a few million ops',
-      'Only O(1) will pass',
-      'O(2ⁿ) is expected',
+      'O(n²) is fine: 4·10¹⁰ operations finish in a few seconds',
+      'O(n log n) or O(n): roughly a few million operations',
+      'Only O(1) will pass, since n can be as large as 200,000',
+      'O(2ⁿ) is expected, since the judge allows generous time',
     ],
     correctIndex: 1,
     explanation:
@@ -122,17 +122,17 @@ def test_length():
     prompt:
       'A problem has n ≤ 18 and asks for “all subsets / the best assignment over all combinations.” What does that tiny bound tell you?',
     options: [
-      'You must find a clever O(n) trick',
       'An exponential solution (about 2ⁿ ≈ 262k) is intended and will pass',
-      'The bound is a typo',
-      'You should use binary search',
+      'You must find a clever O(n) trick, since brute force times out',
+      'The bound is probably a typo, and the real limit is far larger',
+      'You should binary search on the answer to stay under the time limit',
     ],
-    correctIndex: 1,
+    correctIndex: 0,
     explanation:
       'A suspiciously small n (≤ ~20) is the classic tell for an intended exponential solution — 2¹⁸ ≈ 262k is trivial. When you see n ≤ 20 next to “all combinations / subsets,” think bitmask or backtracking, not a hunt for a polynomial trick that may not exist.',
     distractorNotes: [
-      'If a polynomial trick existed the bound would usually be far larger; tiny n signals exponential is OK.',
       'Correct — small n licenses exponential.',
+      'If a polynomial trick existed the bound would usually be far larger; tiny n signals exponential is OK.',
       'It is deliberate: the setter shrank n so 2ⁿ fits.',
       'Binary search needs a sorted/monotonic structure, unrelated to this signal.',
     ],
@@ -163,12 +163,12 @@ def test_length():
     difficulty: 2,
     prompt: 'Which signal most reliably says “try two pointers”?',
     options: [
-      'The array is unsorted and you need every pair',
-      'The input is sorted (or you can sort it) and you want a pair/among-ends relationship in O(1) space',
-      'You need the k most frequent elements',
-      'The problem is about a tree',
+      'The input is sorted (or can be), and you want a pair in O(1) extra space',
+      'The array is unsorted and you need to look at every possible pair',
+      'You need the k most frequent elements of a large, unsorted array',
+      'The problem is about a tree, and you need to compare two of its paths',
     ],
-    correctIndex: 1,
+    correctIndex: 0,
     explanation:
       'Two pointers shine when order lets you move a left/right (or slow/fast) pointer and never look back — sorted arrays, palindromes, and “from both ends” problems. If the answer needs every unordered pair with no structure, hashing is usually the move instead.',
   },
@@ -221,12 +221,12 @@ def test_single():
     complexityCheck: {
       prompt: 'Time and space for the two-pointer palindrome check?',
       options: [
-        'O(n) time, O(1) space',
         'O(n) time, O(n) space',
+        'O(n) time, O(1) space',
         'O(n²) time, O(1) space',
         'O(n log n) time, O(1) space',
       ],
-      correctIndex: 0,
+      correctIndex: 1,
       explanation:
         'Each pointer moves inward at most n times total, so O(n) time. You compare in place without building a filtered copy, so O(1) extra space — that is the win over the “strip then reverse” approach.',
     },
@@ -277,12 +277,12 @@ def test_tall_ends():
       prompt:
         'Why is moving the shorter wall (not the taller) the correct greedy choice?',
       options: [
-        'It is arbitrary — either works',
-        'The area is capped by the shorter wall, so moving the taller one can only keep or lower the height while width shrinks — never an improvement',
-        'Moving the taller wall is faster to compute',
-        'It guarantees the pointers meet in the middle',
+        'It is arbitrary: moving either wall works, as long as the pointers keep moving',
+        'Moving the shorter wall guarantees the two pointers meet exactly in the middle',
+        'Moving the shorter wall is cheaper to compute, since it skips a comparison',
+        'Area is capped by the shorter wall, so moving the taller one can never help',
       ],
-      correctIndex: 1,
+      correctIndex: 3,
       explanation:
         'Height is bounded by the shorter wall. If you move the taller wall inward you lose width and the height ceiling is unchanged or lower — strictly no better. Only replacing the shorter wall gives any chance at a taller container. That argument is why the O(n) sweep never misses the optimum.',
     },
@@ -299,12 +299,12 @@ def test_tall_ends():
     prompt:
       'In a variable-size sliding window, when do you shrink the window from the left?',
     options: [
-      'Every iteration, always',
-      'When the window violates the constraint (e.g. a duplicate appeared, or the sum exceeded the target) — shrink until it is valid again',
-      'Only at the very end',
-      'Never — the window only grows',
+      'On every single iteration, right after the right edge moves one step forward',
+      'Never: a variable window only grows, and the answer is its final size',
+      'Only at the very end, once the right edge has reached the last element',
+      'When the window breaks the constraint (say, a duplicate), until it’s valid',
     ],
-    correctIndex: 1,
+    correctIndex: 3,
     explanation:
       'The pattern is grow-then-shrink: extend the right edge each step, and whenever the window breaks its rule, advance the left edge until the rule holds again. Both pointers only move forward, so the whole scan is O(n).',
   },
@@ -350,12 +350,12 @@ def test_negatives():
       prompt:
         'The naive approach re-sums each window in O(k). What does sliding buy you?',
       options: [
-        'O(n·k) → O(n): each slide is O(1) because you add one element and drop one',
-        'Nothing, it is the same complexity',
-        'O(n) → O(log n)',
-        'It reduces space to O(1) only',
+        'Nothing: re-summing and sliding have exactly the same complexity',
+        'O(n·k) → O(n): each slide adds one element and drops one, in O(1)',
+        'O(n) → O(log n): each slide halves the remaining work to be done',
+        'It only cuts the space to O(1); the running time stays O(n·k)',
       ],
-      correctIndex: 0,
+      correctIndex: 1,
       explanation:
         'Re-summing every window is O(n·k). Reusing the previous sum and adjusting by the entering/leaving element makes each step O(1), so the whole pass is O(n). That reuse — not re-doing overlapping work — is the entire sliding-window idea.',
     },
@@ -406,8 +406,13 @@ def test_two():
 `,
     complexityCheck: {
       prompt: 'Time complexity of the sliding-window longest-unique-substring?',
-      options: ['O(n²)', 'O(n) — each index enters and leaves the window once', 'O(n log n)', 'O(1)'],
-      correctIndex: 1,
+      options: [
+        'O(n): each index enters and leaves the window once',
+        'O(n²): every start index rescans the rest of the string',
+        'O(n log n): the set of seen letters is kept sorted',
+        'O(1): the alphabet is fixed, so the window is bounded',
+      ],
+      correctIndex: 0,
       explanation:
         'The right edge visits each character once and the left edge only ever moves forward, so total pointer movement is O(n). The hash map lookups are O(1). Contrast with the brute force of checking every substring, which is O(n²) or worse.',
     },
@@ -424,12 +429,12 @@ def test_two():
     prompt:
       'A problem asks whether any two numbers sum to a target, in O(n). Why does a hash set beat sorting + two pointers here?',
     options: [
-      'It does not — sorting is always better',
-      'A set gives O(1) “have I seen the complement?” lookups, so one pass is O(n); sorting first is O(n log n)',
-      'Sets use less memory than sorting',
-      'Sorting cannot find pairs',
+      'It doesn’t: sorting is always better, since it needs no extra memory',
+      'Sets use less memory than sorting, which needs a full sorted copy of the array',
+      'Set lookups for the complement are O(1), so one pass is O(n), not O(n log n)',
+      'Sorting can’t find pairs at all, since it scrambles the original indices',
     ],
-    correctIndex: 1,
+    correctIndex: 2,
     explanation:
       'For each number you ask “is (target − n) already in my set?” — an O(1) lookup — and add n. One pass, O(n) time. Sorting-plus-two-pointers also works but pays O(n log n) to sort and loses the original indices. Reach for a hash set the moment the question is “have I seen…?”.',
   },
@@ -471,12 +476,12 @@ def test_dup():
     complexityCheck: {
       prompt: 'The brute force checks every pair. What did the hash map change?',
       options: [
+        'It only saved space; the time is still O(n²) either way',
+        'Nothing: it still checks every pair, so it’s still O(n²)',
+        'O(n) time → O(log n) time, by keeping the map sorted',
         'O(n²) time → O(n) time, at the cost of O(n) extra space',
-        'Nothing — still O(n²)',
-        'O(n) time → O(log n) time',
-        'It only saved space',
       ],
-      correctIndex: 0,
+      correctIndex: 3,
       explanation:
         'Checking every pair is O(n²). Storing values in a map turns “is the complement present?” into an O(1) lookup, so a single pass solves it in O(n) time — the classic time-for-space trade, using O(n) memory for the map.',
     },
@@ -527,12 +532,12 @@ def test_none():
     complexityCheck: {
       prompt: 'Why can’t you use a plain sliding window for this one?',
       options: [
-        'You can — a window is fine',
-        'Negative numbers break the monotonic “grow/shrink” invariant a window relies on, so you need prefix sums + a hash map instead — O(n) time, O(n) space',
-        'The array is too large for a window',
-        'Windows only work on strings',
+        'Negative numbers break the grow/shrink rule a window relies on; use prefix sums',
+        'You can: a sliding window works fine here, and it uses much less memory than a map',
+        'The array is too large for a window, so you need a hash map to compress it',
+        'Sliding windows only work on strings, never on arrays of plain numbers',
       ],
-      correctIndex: 1,
+      correctIndex: 0,
       explanation:
         'A sliding window assumes that extending it only increases the sum (and shrinking decreases it). With negative numbers that monotonicity is gone, so shrinking logic fails. The prefix-sum-plus-hashmap counts matching earlier prefixes in one O(n) pass, using O(n) space.',
     },
@@ -549,12 +554,12 @@ def test_none():
     prompt:
       '“Binary search on the answer” (e.g. minimum speed, smallest capacity). What must be true for it to work?',
     options: [
-      'The input array must already be sorted',
-      'There must be a monotonic predicate: if a candidate answer works, every larger (or every smaller) one does too — so “works?” flips exactly once',
-      'The answer must be unique',
-      'The array must contain the answer',
+      'A monotonic predicate: if one candidate works, every larger one works too',
+      'The input array must already be sorted, or the halving step is invalid',
+      'The answer must be unique, or binary search can’t decide which half to keep',
+      'The array must contain the answer, so the search can land exactly on it',
     ],
-    correctIndex: 1,
+    correctIndex: 0,
     explanation:
       'You are not searching the array; you are searching the range of possible answers for the boundary where a yes/no test flips. That only works if the test is monotonic (once it becomes feasible it stays feasible). Then you binary-search the smallest feasible value in O(log(range)) checks.',
   },
@@ -606,12 +611,12 @@ def test_first():
     complexityCheck: {
       prompt: 'Time complexity, and why the “lo <= hi with mid ± 1” template matters?',
       options: [
-        'O(log n); the ± 1 updates guarantee the range strictly shrinks, so it always terminates',
-        'O(n); it scans linearly',
-        'O(log n), but it can infinite-loop',
-        'O(1)',
+        'O(log n), but the ± 1 updates can make it loop forever on two elements',
+        'O(n); the loop scans linearly, and the ± 1 just skips the middle element',
+        'O(log n); the ± 1 updates make the range strictly shrink, so it terminates',
+        'O(1); the ± 1 template jumps straight to the target in one comparison',
       ],
-      correctIndex: 0,
+      correctIndex: 2,
       explanation:
         'Halving the search range each step is O(log n). Moving lo/hi to mid ± 1 (never leaving mid inside the range) is what prevents the classic infinite loop when lo and hi are adjacent — the single most common binary-search bug.',
     },
@@ -663,12 +668,12 @@ def test_single():
     complexityCheck: {
       prompt: 'What is the complexity, with n piles and M = max(piles)?',
       options: [
-        'O(n log M) — O(log M) binary-search steps, each an O(n) feasibility check',
-        'O(n · M)',
-        'O(n²)',
-        'O(log n)',
+        'O(n · M): every speed from 1 to M gets tried against all n piles',
+        'O(n log M): log M search steps, each an O(n) feasibility check',
+        'O(n²): every pile is compared against every other pile once',
+        'O(log n): binary search over the piles finds the speed directly',
       ],
-      correctIndex: 0,
+      correctIndex: 1,
       explanation:
         'You binary-search speeds over [1, M], which is O(log M) iterations, and each “can she finish?” test sums over all n piles in O(n). Total O(n log M). Brute-forcing every speed from 1 to M would be O(n·M).',
     },
@@ -685,12 +690,12 @@ def test_single():
     prompt:
       'A monotonic stack (kept increasing or decreasing) is the go-to for which kind of question?',
     options: [
-      'Sorting an array in place',
-      '“For each element, find the next greater/smaller element” (or the span until one appears)',
-      'Finding the k most frequent elements',
-      'Detecting a cycle in a linked list',
+      'For each element, finding the next greater or smaller element',
+      'Sorting an array in place without allocating any extra memory',
+      'Finding the k most frequent elements of a stream in one pass',
+      'Detecting a cycle in a linked list without a visited set',
     ],
-    correctIndex: 1,
+    correctIndex: 0,
     explanation:
       'When you need, for every element, the nearest larger/smaller one to its left or right, a monotonic stack does it in O(n): each element is pushed and popped at most once, and the moment it gets popped you have found its “next greater/smaller” neighbor.',
   },
@@ -744,12 +749,12 @@ def test_unclosed():
     complexityCheck: {
       prompt: 'Why is the leftover stack check at the end necessary?',
       options: [
-        'It is not needed',
-        'To catch unclosed openers like "(" — the loop never rejects them, so a non-empty stack at the end means invalid; overall O(n) time, O(n) space',
-        'To sort the brackets',
-        'To reverse the string',
+        'To catch unclosed openers like “(”, which the loop never rejects',
+        'It isn’t needed: the loop already rejects every invalid string',
+        'To sort the remaining brackets so they can be matched in order',
+        'To reverse the string so the closers can be read left to right',
       ],
-      correctIndex: 1,
+      correctIndex: 0,
       explanation:
         'A string like "(" or "([" never triggers a mismatch during the loop — the failure is that openers were never closed. Returning “valid only if the stack is empty” catches exactly that. One pass, O(n) time, and up to O(n) stack space.',
     },
@@ -798,12 +803,12 @@ def test_three():
     complexityCheck: {
       prompt: 'The nested while-loop looks like O(n²). What is the real complexity?',
       options: [
-        'O(n²) always',
-        'O(n): each index is pushed once and popped at most once, so total work across all while-iterations is linear',
-        'O(n log n)',
-        'O(1)',
+        'O(n²): the while loop can scan back over every earlier day',
+        'O(n log n): the stack keeps the temperatures sorted',
+        'O(n): each index is pushed once and popped at most once',
+        'O(1): there are only so many temperatures that can occur',
       ],
-      correctIndex: 1,
+      correctIndex: 2,
       explanation:
         'Amortized analysis: an index can be popped only once ever, so the inner while-loop does at most n pops in total across the whole run. Push + pop each element once → O(n) time, O(n) stack space. A nested loop is not automatically O(n²).',
     },
@@ -819,12 +824,12 @@ def test_three():
     difficulty: 2,
     prompt: 'Why do linked-list solutions so often start with a “dummy” head node?',
     options: [
-      'It makes the list longer',
-      'It removes the special case for the head: you always have a node whose .next you can set, so inserting/merging/deleting at the front needs no separate branch — return dummy.next at the end',
-      'It sorts the list',
-      'It is required by Python',
+      'It makes the list one node longer, which avoids off-by-one errors in loops',
+      'Python requires one, because a linked list can’t start from a None reference',
+      'It keeps the list sorted, since every insert starts from the same fixed node',
+      'It removes the head special case: there’s always a node whose .next you can set',
     ],
-    correctIndex: 1,
+    correctIndex: 3,
     explanation:
       'A dummy (sentinel) node gives you a stable handle before the real first node. Every insertion or deletion becomes “set some node’s .next,” with no special-casing when the change is at the head. You build off dummy and return dummy.next.',
   },
@@ -893,12 +898,12 @@ def reverse_list(head):
     complexityCheck: {
       prompt: 'Time and space for in-place reversal?',
       options: [
-        'O(n) time, O(1) space',
         'O(n) time, O(n) space',
+        'O(n) time, O(1) space',
         'O(n²) time, O(1) space',
         'O(log n) time, O(1) space',
       ],
-      correctIndex: 0,
+      correctIndex: 1,
       explanation:
         'One pass over n nodes, flipping a pointer each step → O(n) time. You reuse the existing nodes and keep only three pointers → O(1) extra space. Building a new reversed list instead would cost O(n) space.',
     },
@@ -970,12 +975,12 @@ def has_cycle(head):
     complexityCheck: {
       prompt: 'Why does fast/slow beat a “visited set” here?',
       options: [
-        'It does not',
-        'Same O(n) time but O(1) space instead of O(n): the two pointers must eventually meet inside a cycle because the gap closes by one each step',
-        'It is O(log n)',
-        'The set version is wrong',
+        'It doesn’t: both use O(n) time and O(n) space, so they are equivalent',
+        'The visited-set version is wrong, since different nodes can hold duplicate values',
+        'It runs in O(log n), because the fast pointer skips half of the nodes',
+        'Same O(n) time, but O(1) space: the gap closes by one each step, so they meet',
       ],
-      correctIndex: 1,
+      correctIndex: 3,
       explanation:
         'A visited-set detector is O(n) time and O(n) space. Floyd’s two pointers are also O(n) time but O(1) space — inside a loop the fast pointer gains one step on the slow pointer each iteration, so they are guaranteed to collide. Constant space is the whole point.',
     },
@@ -991,12 +996,12 @@ def has_cycle(head):
     difficulty: 2,
     prompt: 'You need the shortest path (fewest edges) from the root to some target. DFS or BFS — and why?',
     options: [
-      'DFS, because recursion is simpler',
-      'BFS, because it explores level by level, so the first time it reaches the target it has used the fewest edges',
-      'Either; they give the same first-arrival distance',
-      'Neither works on trees',
+      'DFS, because recursion is simpler and reaches the deepest nodes first',
+      'Either one works, since both give the same distance the first time they arrive',
+      'BFS, because it goes level by level, so its first arrival uses the fewest edges',
+      'Neither works on trees; shortest paths only make sense in general graphs',
     ],
-    correctIndex: 1,
+    correctIndex: 2,
     explanation:
       'BFS fans out in distance layers, so first arrival = fewest edges — that is why it gives shortest paths in unweighted graphs/trees. DFS may plunge down a long branch first and reach the target by a longer route. Use DFS for “does a path exist / all paths / subtree info,” BFS for “fewest steps / level order.”',
   },
@@ -1051,12 +1056,12 @@ def max_depth(root):
     complexityCheck: {
       prompt: 'Complexity of this recursive depth (n nodes, height h)?',
       options: [
+        'O(log n) time, since it halves at each level',
+        'O(n) time, O(n) space in every case',
         'O(n) time, O(h) space for the call stack',
-        'O(n) time, O(n) space always',
-        'O(log n) time',
-        'O(n²) time',
+        'O(n²) time, since each level rescans the tree',
       ],
-      correctIndex: 0,
+      correctIndex: 2,
       explanation:
         'Every node is visited once → O(n) time. The recursion stack is as deep as the tree, O(h): that is O(log n) for a balanced tree but O(n) for a degenerate (chain) tree — worth knowing when recursion depth is a risk.',
     },
@@ -1128,10 +1133,10 @@ def level_order(root):
     complexityCheck: {
       prompt: 'Why snapshot len(q) at the start of each outer iteration?',
       options: [
-        'To fix the number of pops to exactly the current level, so children enqueued now go into the NEXT level, not this one',
-        'For speed only',
-        'It is optional and changes nothing',
-        'To sort each level',
+        'So the pops stop at the current level; children added now belong to the next',
+        'Only for speed: calling len(q) once is faster than calling it on every pop',
+        'It’s optional: the loop processes the same nodes whether or not you do it',
+        'To sort each level, since the queue must be ordered before it’s drained',
       ],
       correctIndex: 0,
       explanation:
@@ -1150,12 +1155,12 @@ def level_order(root):
     prompt:
       'To keep the k LARGEST elements of a big stream, you maintain a size-k MIN-heap. Why a min-heap?',
     options: [
-      'A max-heap would be simpler and equivalent',
-      'The root of a size-k min-heap is the WEAKEST of your current champions — the only one a newcomer must beat, and it is O(1) to compare/evict',
-      'Min-heaps are faster than max-heaps',
-      'You actually want the smallest k',
+      'A max-heap would be simpler and equivalent, since it holds the same k items',
+      'Min-heaps are faster than max-heaps in Python, so pushes cost less per item',
+      'Its root is the weakest current champion: the only one a newcomer must beat',
+      'You actually want the smallest k, and the largest are what’s left at the end',
     ],
-    correctIndex: 1,
+    correctIndex: 2,
     explanation:
       'You only keep k elements. The smallest of them (the min-heap root) is exactly the one on the chopping block: if the next value beats it, pop the root and push the newcomer; otherwise discard. Each event is O(log k), total O(n log k) with O(k) memory — no sorting the whole stream.',
   },
@@ -1204,12 +1209,12 @@ def find_kth_largest(nums, k):
     complexityCheck: {
       prompt: 'Complexity of the size-k heap approach vs. sorting?',
       options: [
-        'O(n log k) time, O(k) space — better than sorting’s O(n log n) when k is small',
-        'O(n²) time',
-        'O(n log n), identical to sorting',
-        'O(n) time, O(n) space',
+        'O(n log n), identical to sorting, because each push still costs log n',
+        'O(n²) time, because every new element is compared with the whole heap',
+        'O(n log k) time, O(k) space: better than sorting’s O(n log n) when k is small',
+        'O(n) time and O(n) space, because the heap ends up holding every single element',
       ],
-      correctIndex: 0,
+      correctIndex: 2,
       explanation:
         'Each of n elements does an O(log k) push/pop on a heap capped at size k → O(n log k) time, O(k) space. Sorting everything is O(n log n) time and O(n) space; the heap wins whenever k is much smaller than n, and it works on a stream you can’t fully store.',
     },
@@ -1253,12 +1258,12 @@ def top_k_frequent(nums, k):
       prompt:
         'Counting is O(n). Picking the top k with a heap of size k costs what, versus fully sorting the counts?',
       options: [
-        'Heap: O(m log k) over m distinct values — better than sorting all counts at O(m log m) when k ≪ m',
-        'Both are O(n²)',
-        'Heap is O(1)',
-        'Sorting is always faster',
+        'The heap is O(1) overall, since it never holds more than k items at once',
+        'Both are O(n²), since every count is compared against every other count',
+        'Heap: O(m log k) over m distinct values, beating sorting’s O(m log m) when k ≪ m',
+        'Sorting all of the counts is always faster, since heaps have worse constant factors',
       ],
-      correctIndex: 0,
+      correctIndex: 2,
       explanation:
         'With m distinct values, a size-k heap selects the top k in O(m log k); sorting every count is O(m log m). When k is small relative to the number of distinct values, the heap (what most_common uses under the hood) is the cheaper selection.',
     },
@@ -1275,10 +1280,10 @@ def top_k_frequent(nums, k):
     prompt:
       'The backtracking template is choose → explore → un-choose. What breaks if you forget the un-choose step?',
     options: [
-      'Nothing — it is optional',
-      'Your partial state (the path) leaks between branches, so sibling explorations start from a dirty state and produce wrong results',
-      'The recursion never starts',
-      'It becomes iterative',
+      'Nothing: un-choosing is optional and only makes the code a little tidier',
+      'The path leaks between branches, so siblings start from a dirty state',
+      'The recursion never starts, because the first choice is never released',
+      'It quietly becomes iterative, since no frame is ever returned from',
     ],
     correctIndex: 1,
     explanation:
@@ -1336,12 +1341,12 @@ def test_count():
     complexityCheck: {
       prompt: 'How many subsets are there, and what does that make the time complexity?',
       options: [
-        'O(n · 2ⁿ): there are 2ⁿ subsets and copying each into the result is up to O(n)',
-        'O(n²)',
-        'O(n log n)',
-        'O(2ⁿ) but only O(1) per subset',
+        'O(n log n): the subsets are generated in sorted order, one per level',
+        'O(n²): each element is either in or out, so there are n² subsets',
+        'O(n · 2ⁿ): 2ⁿ subsets, and copying each into the result is up to O(n)',
+        'O(2ⁿ), with O(1) work per subset, since nothing needs to be copied',
       ],
-      correctIndex: 0,
+      correctIndex: 2,
       explanation:
         'Each element is either in or out → 2ⁿ subsets. Building/copying each subset is up to O(n), so O(n · 2ⁿ). This is expected: the OUTPUT itself has exponential size, so you can’t beat exponential — and the tiny-n constraint told you exponential was fine.',
     },
@@ -1401,12 +1406,12 @@ def test_single_hit():
     complexityCheck: {
       prompt: 'What role does the “start index” play in avoiding wrong answers?',
       options: [
-        'It sorts the output',
-        'Recursing from i (never before start) prevents counting the same combination in different orders (e.g. [2,3] and [3,2]) as distinct',
-        'It makes it O(n)',
-        'Nothing important',
+        'It sorts the output, so the combinations always come back in ascending order',
+        'Nothing important: it’s only there to make the recursion a bit faster',
+        'It makes the search O(n), since each candidate is tried exactly once',
+        'Never recursing before start stops [2,3] and [3,2] counting as two combos',
       ],
-      correctIndex: 1,
+      correctIndex: 3,
       explanation:
         'Passing a start index means each recursion only considers candidates from the current position onward, so combinations are built in nondecreasing order and permutations of the same multiset aren’t re-generated. Recursing with i (not i+1) is what permits reusing a number.',
     },
@@ -1422,10 +1427,10 @@ def test_single_hit():
     difficulty: 2,
     prompt: 'A 2-D grid of land/water cells is secretly a graph. What are its “edges”?',
     options: [
-      'There are no edges in a grid',
-      'Each cell connects to its up/down/left/right neighbors — so grid problems are just BFS/DFS with (row, col) as the node',
-      'Only diagonal neighbors',
-      'Every cell connects to every other cell',
+      'There are no edges in a grid, so graph algorithms don’t apply to it',
+      'Each cell links to its up, down, left, and right neighbors, so BFS/DFS apply',
+      'Only diagonal neighbors are connected, since they share a single corner',
+      'Every cell connects to every other cell, since any two of them can be compared directly',
     ],
     correctIndex: 1,
     explanation:
@@ -1489,10 +1494,10 @@ def test_diagonal_not_connected():
     complexityCheck: {
       prompt: 'Complexity for an m×n grid?',
       options: [
-        'O(m·n): every cell is visited a constant number of times across all flood-fills',
-        'O((m·n)²)',
-        'O(m + n)',
-        'O(m·n·log(m·n))',
+        'O(m·n): each cell is visited a constant number of times overall',
+        'O((m·n)²): every flood-fill can rescan the whole grid from the start',
+        'O(m + n): the fill only walks along one row and one column',
+        'O(m·n·log(m·n)): visited cells are kept in a sorted set',
       ],
       correctIndex: 0,
       explanation:
@@ -1554,12 +1559,12 @@ def test_three_cycle():
     complexityCheck: {
       prompt: 'How does Kahn’s algorithm detect a cycle?',
       options: [
-        'It sorts the courses',
-        'If a cycle exists, its nodes never reach in-degree 0, so the queue empties before all n are taken → taken < numCourses',
-        'It throws an exception on a cycle',
-        'It counts edges',
+        'It sorts the courses first, and a cycle shows up as a duplicate entry',
+        'It counts the edges, and more edges than courses means there is a cycle',
+        'It throws an exception the moment it finds an edge pointing backward',
+        'Cycle nodes never reach in-degree 0, so fewer than numCourses get taken',
       ],
-      correctIndex: 1,
+      correctIndex: 3,
       explanation:
         'Nodes inside a cycle always have an unsatisfied prerequisite, so they never enter the zero-in-degree queue. When the queue starves with taken < numCourses, the leftover nodes form a cycle. Runs in O(V + E).',
     },
@@ -1575,12 +1580,12 @@ def test_three_cycle():
     difficulty: 2,
     prompt: 'What two things must you pin down to turn a problem into a dynamic program?',
     options: [
-      'A sort order and a pointer',
-      'A STATE (what a subproblem’s answer depends on) and a TRANSITION (how to build it from smaller states) — plus base cases',
-      'A stack and a queue',
-      'A hash map and a set',
+      'A state (what a subproblem depends on) and a transition between states',
+      'A sort order and a pointer, so each subproblem is visited in sequence',
+      'A stack and a queue, so each subproblem is stored and replayed in order',
+      'A hash map and a heap, so the cheapest subproblem is always solved first',
     ],
-    correctIndex: 1,
+    correctIndex: 0,
     explanation:
       'DP = define dp[state] as the answer to a subproblem, write the recurrence (transition) that expresses dp[state] in terms of smaller states, and nail the base cases. Once those are right, memoizing or tabulating is mechanical. Overlapping subproblems are what make caching pay off.',
   },
@@ -1626,10 +1631,10 @@ def test_zero():
     complexityCheck: {
       prompt: 'Why is the two-variable version better than naive recursion?',
       options: [
-        'Naive recursion recomputes the same subproblems exponentially (O(2ⁿ)); the rolling DP is O(n) time, O(1) space',
-        'They are the same',
-        'The DP is O(log n)',
-        'Recursion is faster here',
+        'Recursion repeats subproblems, O(2ⁿ); the rolling DP is O(n) time, O(1) space',
+        'They’re the same: both make about n calls and use O(n) memory in total',
+        'The DP is O(log n), because each step can jump two stairs at a time',
+        'Naive recursion is actually faster here, because Python optimizes the tail calls',
       ],
       correctIndex: 0,
       explanation:
@@ -1682,14 +1687,14 @@ def test_exact():
     complexityCheck: {
       prompt: 'Complexity for amount A and c coin types?',
       options: [
+        'O(A²) time, O(A) space',
         'O(A · c) time, O(A) space',
-        'O(A²)',
-        'O(c²)',
-        'O(2^A)',
+        'O(c²) time, O(1) space',
+        'O(2^A) time, O(2^A) space',
       ],
-      correctIndex: 0,
+      correctIndex: 1,
       explanation:
-        'You fill A subproblems, each trying c coins → O(A · c) time and O(A) space for the table. Greedy (always take the biggest coin) fails for denominations like [1, 3, 4] making 6, which is why this needs DP.',
+        'You fill A subproblems, each trying c coins → O(A · c) time and O(B) space for the table. Greedy (always take the biggest coin) fails for denominations like [1, 3, 4] making 6, which is why this needs DP.',
     },
   },
 
@@ -1704,12 +1709,12 @@ def test_exact():
     prompt:
       'In 2-D DP where dp[i][j] depends on dp[i-1][j], dp[i][j-1], and dp[i-1][j-1], what order must you fill the table in?',
     options: [
-      'Any order works',
-      'In increasing i and j (top-to-bottom, left-to-right) so every cell a transition reads is already computed',
-      'Bottom-right to top-left',
-      'Randomly',
+      'Any order works, since every single cell gets computed exactly once anyway',
+      'Diagonal by diagonal, so no cell ever depends on its neighbors',
+      'Bottom-right to top-left, so the answer cell is computed first',
+      'Increasing i and j, so each cell a transition reads is already filled',
     ],
-    correctIndex: 1,
+    correctIndex: 3,
     explanation:
       'A cell may only be computed after the cells its transition depends on. When dependencies point up and left, iterating rows top-to-bottom and columns left-to-right guarantees dp[i-1][*] and dp[i][j-1] are ready. Getting the fill order to respect dependencies is the crux of tabulation.',
   },
@@ -1754,12 +1759,12 @@ def test_square():
     complexityCheck: {
       prompt: 'How does the single rolling row cut space from O(m·n) to O(n)?',
       options: [
-        'It doesn’t',
-        'Each new row only needs the row above and the left neighbor, so one array updated in place carries both — O(m·n) time, O(n) space',
-        'It uses O(1) space',
-        'It makes it O(m + n) time',
+        'It doesn’t: the rolling row still stores m·n values over the whole run',
+        'It makes the time O(m + n), since each row is computed in one step',
+        'It cuts the space all the way down to O(1), since only the final cell must be kept',
+        'Each row needs only the row above and its left neighbor, so one array is enough',
       ],
-      correctIndex: 1,
+      correctIndex: 3,
       explanation:
         'When row j reads only “above” (the old row[j]) and “left” (the freshly updated row[j-1]), you can overwrite the array in place. That drops space from a full O(m·n) table to a single O(n) row while time stays O(m·n).',
     },
@@ -1811,12 +1816,12 @@ def test_empty():
     complexityCheck: {
       prompt: 'Complexity of the LCS table for strings of length m and n?',
       options: [
-        'O(m·n) time and O(m·n) space (reducible to O(min(m,n)) space)',
-        'O(m + n)',
-        'O(2^(m+n))',
-        'O(m·n·log n)',
+        'O(m + n) time and space, from a single pass over each string',
+        'O(m·n) time and space (space reducible to O(min(m, n)))',
+        'O(2^(m+n)) time, since every subsequence is checked',
+        'O(m·n·log n) time, from a binary search in each cell',
       ],
-      correctIndex: 0,
+      correctIndex: 1,
       explanation:
         'Every (i, j) prefix pair is computed once → O(m·n) time and O(m·n) space. Since each row depends only on the previous row, you can roll it down to O(min(m, n)) space — the same trick as unique-paths. Edit distance uses this identical shape.',
     },
@@ -1832,10 +1837,10 @@ def test_empty():
     difficulty: 3,
     prompt: 'What is the most useful mindset when a problem is labeled “Hard”?',
     options: [
-      'Hard problems need a brand-new algorithm you have never seen',
-      'A Hard is usually 2–3 familiar patterns stacked (or one pattern with a twist) — decompose it into pieces you already know',
-      'Skip Hards entirely',
-      'Memorize the exact solution',
+      'A Hard needs a brand-new algorithm you have never seen, so look one up',
+      'A Hard is usually 2–3 familiar patterns stacked: split it into those',
+      'Skip Hards entirely, since interviews almost never ask them anyway',
+      'Memorize the exact solution, since Hards can’t be derived under time',
     ],
     correctIndex: 1,
     explanation:
@@ -1895,12 +1900,12 @@ def test_flat():
     complexityCheck: {
       prompt: 'The two-pointer version vs. precomputing left/right max arrays?',
       options: [
-        'Same O(n) time, but two pointers use O(1) space instead of O(n) for the two max arrays',
-        'Two pointers are O(n²)',
-        'The array version is faster asymptotically',
-        'Both are O(log n)',
+        'The array version is asymptotically faster, since each of its max lookups is O(1)',
+        'Two pointers are O(n²), since each pointer can rescan the other’s side',
+        'Same O(n) time, but two pointers need O(1) space instead of two O(n) arrays',
+        'Both are O(log n), since each step discards half of the remaining bars',
       ],
-      correctIndex: 0,
+      correctIndex: 2,
       explanation:
         'The DP/array version precomputes left_max[] and right_max[] in O(n) time but O(n) space. The two-pointer version realizes you only ever need the smaller side’s running max, collapsing it to O(1) space at the same O(n) time — a textbook space optimization.',
     },
@@ -1964,12 +1969,12 @@ def test_empty_t():
     complexityCheck: {
       prompt: 'Complexity, with |s| = n and |t| = m?',
       options: [
-        'O(n + m) time, O(m) space — each character of s enters and leaves the window once',
-        'O(n · m)',
-        'O(n²)',
-        'O(n log n)',
+        'O(n log n) time, since the window’s letter counts are kept sorted',
+        'O(n · m) time, since each window is re-checked against all of t',
+        'O(n²) time, since every start index grows a window of its own',
+        'O(n + m) time, O(m) space: each char of s enters and leaves once',
       ],
-      correctIndex: 0,
+      correctIndex: 3,
       explanation:
         'The right pointer traverses s once and the left pointer only moves forward, so pointer movement is O(n); building need is O(m). The map holds at most the distinct chars of t → O(m) space. The “missing” counter avoids re-scanning the map to check validity.',
     },
@@ -2028,10 +2033,10 @@ def test_direct():
     complexityCheck: {
       prompt: 'Why BFS rather than DFS for the shortest transformation?',
       options: [
-        'DFS is impossible here',
-        'BFS explores by distance, so the first time endWord is dequeued it is via the fewest transformations — DFS could find a longer path first',
-        'BFS uses less memory',
-        'They are equivalent for shortest path',
+        'DFS is impossible here, since the word graph is never built explicitly',
+        'BFS goes by distance, so endWord’s first dequeue is via the fewest steps',
+        'BFS uses less memory than DFS, since it never stores a recursion stack',
+        'They’re equivalent for shortest paths, so it’s only a matter of style',
       ],
       correctIndex: 1,
       explanation:

@@ -329,7 +329,7 @@ export const Q2E = section(4, 'q2e', [
     2,
     'prob',
     'An integer is chosen at random from the integers 1 through 12, inclusive. Which of the following events have a probability of exactly 1/3?\n\nIndicate all such events.',
-    ['The integer is a multiple of 3.', 'The integer is greater than 8.', 'The integer is prime.', 'The integer is even.', 'The integer is a multiple of 4.'],
+    ['The integer is a multiple of 3.', 'The integer is greater than 8.', 'The integer is a prime number.', 'The integer is an even number.', 'The integer is a multiple of 4.'],
     [0, 1],
     'Each event needs exactly 4 of the 12 integers. Multiples of 3: 3, 6, 9, 12 (4 ✓). Greater than 8: 9, 10, 11, 12 (4 ✓). Primes: 2, 3, 5, 7, 11 (5 ✗). Even: 6 ✗. Multiples of 4: 4, 8, 12 (3 ✗).',
   ),

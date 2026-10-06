@@ -8,10 +8,10 @@ export const QUESTIONS: Question[] = [
     difficulty: 2,
     prompt: 'What does "amortized O(1)" actually promise?',
     options: [
-      'Each operation takes O(1) in the worst case',
-      'Each operation takes O(1) on random inputs, on average',
-      'Any sequence of n operations costs O(n) total — expensive ops are paid for by the cheap ones around them',
-      'The operation is O(1) if the compiler optimizes it',
+      'Each operation takes O(1) in the worst case, no matter which operations came before it',
+      'Each operation takes O(1) on average, assuming the inputs arrive in random order',
+      'Any n operations cost O(n) total; the rare expensive ones are paid for by cheap ones',
+      'Each operation is O(1) once the compiler has optimized the resizing code away',
     ],
     correctIndex: 2,
     explanation:
@@ -31,18 +31,18 @@ export const QUESTIONS: Question[] = [
     prompt:
       'A dynamic array doubles capacity when full. Total element-copies across n appends starting from capacity 1?',
     options: [
-      'About n²/2 — each resize copies everything',
-      'About 2n — the copy costs form a geometric series that sums below 2n',
-      'About n log n — log n resizes of n elements each',
-      'Zero — doubling avoids copying',
+      'About n²/2, because every resize copies all of the elements stored so far',
+      'About n log n, because there are log n resizes that each copy n elements',
+      'About 2n, because the copy costs form a geometric series that sums below 2n',
+      'Zero, because doubling the capacity means nothing ever has to be copied',
     ],
-    correctIndex: 1,
+    correctIndex: 2,
     explanation:
       'Resizes copy 1, 2, 4, 8, … n/2, n elements. That geometric series sums to less than 2n. Spread 2n copies over n appends: O(1) amortized each. The doubling is what makes the series geometric — that’s the entire trick.',
     distractorNotes: [
       'n²/2 is what you get if you grow by a FIXED amount (+k) instead of doubling — then resizes are frequent and each copies ~n.',
-      'Correct.',
       'There are ~log n resizes, but they copy geometrically growing amounts, not n each — the sum telescopes to O(n), not O(n log n).',
+      'Correct.',
       'Every resize copies the whole array; doubling just makes resizes exponentially rare.',
     ],
   },
@@ -54,10 +54,10 @@ export const QUESTIONS: Question[] = [
     prompt:
       'Your game loop appends to a dynamic array every frame and must never exceed 16ms. Why might amortized O(1) not be good enough?',
     options: [
-      'Amortized analysis is usually wrong in practice',
-      'The one append that triggers a resize still pays O(n) right then — a latency spike the average hides',
-      'Doubling wastes memory, which slows the game',
-      'It is good enough — amortized O(1) bounds every individual operation',
+      'Amortized analysis is often wrong in practice, so the 16ms budget can’t be trusted',
+      'The append that triggers a resize still pays O(n) right then: a spike the average hides',
+      'Doubling wastes memory, and that extra memory pressure slows down every single frame',
+      'It is good enough, since amortized O(1) also caps each individual append at O(1)',
     ],
     correctIndex: 1,
     explanation:

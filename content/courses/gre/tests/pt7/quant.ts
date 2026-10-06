@@ -223,7 +223,7 @@ export const Q2E = section(7, 'q2e', [
       1,
       'data',
       'Which language had the greatest percent increase in enrollment from 2021 to 2023?',
-      ['Spanish', 'French', 'Mandarin', 'All three increased by the same percent', 'None of the three increased'],
+      ['Spanish', 'French', 'Mandarin', 'All the same', 'None increased'],
       2,
       'Spanish: 240 → 300, up 60/240 = 25%. French fell. Mandarin: 60 → 110, up 50/60 ≈ 83%. Spanish gained more students, but Mandarin’s percent increase is far larger.',
     ),

@@ -9,17 +9,17 @@ export const QUESTIONS: Question[] = [
     prompt:
       'The monotonic-stack sweep for "next greater element" has a while-loop inside a for-loop, yet it is O(n) total. What justifies that?',
     options: [
-      'The inner while rarely executes in practice',
-      'Each element is pushed exactly once and popped at most once, so all inner-loop iterations across the whole run total ≤ n',
-      'Python optimizes nested loops into one',
-      'It is actually O(n²); people quote the average case',
+      'Each element is pushed once and popped at most once, so all inner loops total ≤ n',
+      'The inner while loop rarely runs on real inputs, so it adds almost nothing extra',
+      'Python merges the nested loops into one, so the code only runs a single pass',
+      'It is really O(n²); the O(n) figure people quote is only the average case',
     ],
-    correctIndex: 1,
+    correctIndex: 0,
     explanation:
       'Charge the work to elements, not to loop nests: every while-iteration pops something, and nothing is pushed twice. Total pops ≤ total pushes = n, so the "nested" loop does ≤ 2n work. This is the amortized argument from Module 1 wearing a stack costume — and the single most common false-O(n²) reading in interviews.',
     distractorNotes: [
-      '"Rarely" is a hope, not a bound — the argument must survive adversarial input, and it does.',
       'Correct.',
+      '"Rarely" is a hope, not a bound — the argument must survive adversarial input, and it does.',
       'No language does this; the bound is algorithmic.',
       'The pop-once argument is airtight and worst-case — no averaging over inputs involved.',
     ],
@@ -71,12 +71,12 @@ def test_empty():
     complexityCheck: {
       prompt: 'Total time of next_greater on n elements, and why?',
       options: [
-        'O(n) — every index is pushed once and popped at most once; the nested while is amortized away',
-        'O(n²) — nested loops multiply',
-        'O(n log n) — the stack keeps things sorted',
-        'O(n) only on random inputs',
+        'O(n log n): the stack keeps its items sorted, and that costs a log factor per push',
+        'O(n²): the while loop nested inside the for loop multiplies the total work done',
+        'O(n): each index is pushed once and popped at most once, so the while is amortized',
+        'O(n), but only on random inputs; sorted inputs make the while loop quadratic',
       ],
-      correctIndex: 0,
+      correctIndex: 2,
       explanation:
         'The while-loop’s lifetime total is bounded by total pushes (n), not by n per outer iteration. "Nested loops multiply" applies to independent trip counts — here the inner loop consumes a budget the outer loop fills at 1 per step. Amortized analysis, third appearance in this curriculum.',
     },

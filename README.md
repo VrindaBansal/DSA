@@ -234,7 +234,7 @@ swap point required by §3. Practice-bank answers are stored compactly
 ## Tests
 
 ```bash
-npm test              # content integrity + code exercises + GRE bank + practice tests
+npm test              # content integrity + code exercises + GRE bank + practice tests + answer choices
 npm run test:content    # every Check/Exercise/Visual/TradeoffTable reference
                         # resolves; frontmatter valid; cheatsheet terminal +
                         # registered; question ids unique; prereqs exist
@@ -256,6 +256,11 @@ npm run test:tests      # checks the 10 practice tests against the real test's
                         # that harder second sections are harder, that ids
                         # and content are unique, and that the scoring model
                         # is monotonic. `--print 3 v2h` prints a section
+npm run test:lengths    # no multiple-choice question in any course gives
+                        # itself away: the right answer is never noticeably
+                        # longer than the wrong ones, options run about the
+                        # same length, and the right answer is spread evenly
+                        # across the letters. `--list` prints every failure
 npm run test:e2e        # full browser sweep: all 214 routes load with zero
                         # page errors, visual stepping + drive-it-yourself,
                         # MCQ grading, progress persistence across reload,
